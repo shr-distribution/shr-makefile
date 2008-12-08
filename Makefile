@@ -114,7 +114,7 @@ shr-%-index: shr-%/.configured
 .PRECIOUS: common/.git/config
 setup-common common/.git/config:
 	[ -e common/.git/config ] || \
-	( git clone git://git.freesmartphone.org/fso-makefile.git common && \
+	( git clone http://shr.bearstech.com/repo/shr-makefile.git common && \
 	  rm -f Makefile && \
 	  ln -s common/Makefile Makefile )
 	touch common/.git/config
@@ -143,7 +143,7 @@ setup-openembedded openembedded/.git/config:
 .PRECIOUS: shr/.svn/entries
 setup-shr shr/.svn/entries:
 	[ -e shr/.git/config ] || \
-	( git clone http://shr.bearstech.com/repo/shr.git shr )
+	( git clone http://shr.bearstech.com/repo/shr-overlay.git shr )
 	touch shr/.git/config
 
 .PHONY: setup-%
