@@ -165,7 +165,7 @@ update-bitbake: bitbake/.svn/entries
 
 .PHONY: update-openembedded
 update-openembedded: openembedded/.git/config
-	( cd openembedded ; git pull )
+	( cd openembedded ; rm -f .patched ; git clean -d -f ; git reset --hard ; git pull ; ../shr/patches/do-patch )
 
 .PHONY: update-shr
 update-shr: shr/.git/config
