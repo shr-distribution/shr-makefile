@@ -100,8 +100,8 @@ setup-openembedded openembedded/.git/config:
 	touch openembedded/.git/config
 
 .PHONY: setup-shr
-.PRECIOUS: shr/.svn/entries
-setup-shr shr/.svn/entries:
+.PRECIOUS: shr/.git/config
+setup-shr shr/.git/config:
 	[ -e shr/.git/config ] || \
 	( git clone http://shr.bearstech.com/repo/shr-overlay.git shr )
 	touch shr/.git/config
@@ -112,7 +112,7 @@ setup-%:
 
 
 .PRECIOUS: shr-%/.configured
-shr-%/.configured: common/.git/config bitbake/.svn/entries openembedded/.git/config shr/.svn/entries
+shr-%/.configured: common/.git/config bitbake/.svn/entries openembedded/.git/config shr/.git/config
 	[ -d shr-$* ] || ( mkdir -p shr-$* )
 	[ -e downloads ] || ( mkdir -p downloads )
 	[ -e shr-$*/Makefile ] || ( cd shr-$* ; ln -sf ../common/openembedded.mk Makefile )
@@ -156,7 +156,7 @@ update-openembedded: openembedded/.git/config
 	( cd openembedded ; git pull )
 
 .PHONY: update-shr
-update-shr: shr/.svn/entries
+update-shr: shr/.git/config
 	( cd shr ; git pull )
 
 .PHONY: status-common
@@ -172,7 +172,7 @@ status-openembedded: openembedded/.git/config
 	( cd openembedded ; git diff --stat )
 
 .PHONY: status-shr
-status-shr: shr/.svn/entries
+status-shr: shr/.git/config
 	( cd shr ; git status )
 
 .PHONY: clobber-%
