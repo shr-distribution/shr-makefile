@@ -6,6 +6,11 @@ BITBAKE_VERSION = branches/bitbake-1.8
 SHR_STABLE_MILESTONE = milestone1
 SHR_STABLE_VERSION = HEAD 
 
+#SHR_MAKEFILE_URL = "http://shr.bearstech.com/repo/shr-makefile.git"
+#SHR_OVERLAY_URL = "http://shr.bearstech.com/repo/shr-overlay.git"
+SHR_MAKEFILE_URL = "/home/mok/src/other/openmoko/shr-makefile"
+SHR_OVERLAY_URL = "/home/mok/src/other/openmoko/shr-overlay"
+
 .PHONY: all
 all: update build
 
@@ -74,7 +79,7 @@ shr-%-index: shr-%/.configured
 .PRECIOUS: common/.git/config
 setup-common common/.git/config:
 	[ -e common/.git/config ] || \
-	( git clone http://shr.bearstech.com/repo/shr-makefile.git common && \
+	( git clone ${SHR_MAKEFILE_URL} common && \
 	  rm -f Makefile && \
 	  ln -s common/Makefile Makefile )
 	touch common/.git/config
@@ -99,11 +104,18 @@ setup-openembedded openembedded/.git/config:
 	( cd openembedded && git checkout org.openembedded.dev )
 	touch openembedded/.git/config
 
+.PHONY: patch-openembedded
+.PRECIOUS: openembedded/.patched
+patch-openembedded openembedded/.patched:
+	[ -e openembedded/.patched ] || \
+	( cd openembedded ; \
+	  ../shr/patches/do-patch )
+
 .PHONY: setup-shr
 .PRECIOUS: shr/.git/config
 setup-shr shr/.git/config:
 	[ -e shr/.git/config ] || \
-	( git clone http://shr.bearstech.com/repo/shr-overlay.git shr )
+	( git clone ${SHR_OVERLAY_URL} shr )
 	touch shr/.git/config
 
 .PHONY: setup-%
