@@ -122,7 +122,7 @@ setup-%:
 
 
 .PRECIOUS: shr-%/.configured
-shr-%/.configured: common/.git/config bitbake/.svn/entries openembedded/.git/config shr/.git/config openembedded/.patched
+shr-%/.configured: common/.git/config bitbake/.svn/entries shr/.git/config openembedded/.git/config openembedded/.patched
 	[ -d shr-$* ] || ( mkdir -p shr-$* )
 	[ -e downloads ] || ( mkdir -p downloads )
 	[ -e shr-$*/Makefile ] || ( cd shr-$* ; ln -sf ../common/openembedded.mk Makefile )
