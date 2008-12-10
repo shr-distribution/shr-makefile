@@ -93,7 +93,7 @@ setup-bitbake bitbake/.svn/entries:
 
 .PHONY: setup-openembedded
 .PRECIOUS: openembedded/.git/config
-setup-openembedded openembedded/.git/config:
+setup-openembedded openembedded/.git/config: shr/.git/config
 	[ -e openembedded/.git/config ] || \
 	( git clone git://git.openembedded.net/openembedded openembedded ; \
 	  cd openembedded ; \
