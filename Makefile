@@ -3,7 +3,7 @@
 
 BITBAKE_VERSION = branches/bitbake-1.8
 
-OE_SRCREV = $(shell if [ -e shr/oe-revision ] ; then cat shr/oe-revision ; else echo org.openembedded.dev ; fi)"
+OE_SRCREV = $(shell if [ -e shr/oe-revision ] ; then cat shr/oe-revision ; else echo org.openembedded.dev ; fi)
 
 SHR_STABLE_MILESTONE = milestone1
 SHR_STABLE_VERSION = HEAD 
