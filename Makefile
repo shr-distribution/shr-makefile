@@ -8,8 +8,10 @@ OE_SRCREV = $(shell if [ -e shr/oe-revision ] ; then cat shr/oe-revision ; else 
 SHR_STABLE_MILESTONE = milestone1
 SHR_STABLE_VERSION = HEAD 
 
-SHR_MAKEFILE_URL = "http://shr.bearstech.com/repo/shr-makefile.git"
-SHR_OVERLAY_URL = "http://shr.bearstech.com/repo/shr-overlay.git"
+SHR_MAKEFILE_URL = "/home/mok/src/other/openmoko/shr-makefile"
+SHR_OVERLAY_URL = "/home/mok/src/other/openmoko/shr-overlay"
+#SHR_MAKEFILE_URL = "http://shr.bearstech.com/repo/shr-makefile.git"
+#SHR_OVERLAY_URL = "http://shr.bearstech.com/repo/shr-overlay.git"
 
 .PHONY: all
 all: update build
@@ -28,12 +30,10 @@ setup:  setup-common setup-bitbake setup-openembedded \
 	setup-shr-unstable setup-shr-testing setup-shr-${SHR_STABLE_MILESTONE}
 
 .PHONY: update
-update: update-common update-bitbake update-openembedded
-	[ ! -e shr ] || ${MAKE} update-shr
+update: update-common update-bitbake update-shr update-openembedded
 
 .PHONY: status
-status: status-common status-bitbake status-openembedded
-	[ ! -e shr ] || ${MAKE} status-shr
+status: status-common status-bitbake status-shr status-openembedded
 
 .PHONY: clobber
 clobber: clobber-shr-unstable clobber-shr-testing clobber-shr-${SHR_STABLE_MILESTONE}
