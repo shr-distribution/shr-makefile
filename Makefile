@@ -8,10 +8,8 @@ OE_SRCREV = $(shell if [ -e shr/oe-revision ] ; then cat shr/oe-revision ; else 
 SHR_STABLE_MILESTONE = milestone1
 SHR_STABLE_VERSION = HEAD 
 
-SHR_MAKEFILE_URL = "/home/mok/src/other/openmoko/shr-makefile"
-SHR_OVERLAY_URL = "/home/mok/src/other/openmoko/shr-overlay"
-#SHR_MAKEFILE_URL = "http://shr.bearstech.com/repo/shr-makefile.git"
-#SHR_OVERLAY_URL = "http://shr.bearstech.com/repo/shr-overlay.git"
+SHR_MAKEFILE_URL = "http://shr.bearstech.com/repo/shr-makefile.git"
+SHR_OVERLAY_URL = "http://shr.bearstech.com/repo/shr-overlay.git"
 
 .PHONY: all
 all: update build
