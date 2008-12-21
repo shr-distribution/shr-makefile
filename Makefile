@@ -135,9 +135,10 @@ shr-%/.configured: common/.git/config bitbake/.svn/entries shr/.git/config opene
 	[ -e shr-$*/conf/site.conf ] || ( cd shr-$*/conf ; ln -sf ../../common/conf/site.conf . )
 	[ -e shr-$*/conf/auto.conf ] || ( \
 		echo "DISTRO = \"openmoko\"" > shr-$*/conf/auto.conf ; \
+		echo "DISTRO_TYPE = \"$*\"" >> shr-$*/conf/auto.conf ; \
 		echo "MACHINE = \"om-gta02\"" >> shr-$*/conf/auto.conf ; \
 		echo "IMAGE_TARGET = \"shr-image\"" >> shr-$*/conf/auto.conf ; \
-		echo "DISTRO_TARGET = \"openmoko-feed\"" >> shr-$*/conf/auto.conf ; \
+		echo "DISTRO_TARGET = \"task-shr-feed\"" >> shr-$*/conf/auto.conf ; \
 		echo "INHERIT += \"rm_work\"" >> shr-$*/conf/auto.conf ; \
 	)
 	[ -e shr-$*/conf/local.conf ] || ( \
