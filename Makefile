@@ -146,6 +146,11 @@ shr-%/.configured: common/.git/config bitbake/.svn/entries shr/.git/config opene
 		echo "BBFILES += \"\$${TOPDIR}/shr/openembedded/packages/*/*.bb\"" >> shr-$*/conf/local.conf ; \
 		echo "BB_GIT_CLONE_FOR_SRCREV = \"1\"" >> shr-$*/conf/local.conf ; \
 		echo "OE_ALLOW_INSECURE_DOWNLOADS=1" >> shr-$*/conf/local.conf ; \
+		echo "# speed up build by parallel building - usefull for multicore cpus" >> shr-$*/conf/local.conf ; \
+		echo "#PARALLEL_MAKE = \"-j 4\"" >> shr-$*/conf/local.conf ; \
+		echo "#BB_NUMBER_THREADS = \"4\"" >> shr-$*/conf/local.conf ; \
+		echo "# avoid multiple locales generation to speedup the build and save space" >> shr-$*/conf/local.conf ; \
+		echo "#GLIBC_GENERATE_LOCALES = \"en_US.UTF-8\"" >> shr-$*/conf/local.conf ; \
 		echo "require conf/distro/include/sane-srcrevs.inc" >> shr-$*/conf/local.conf ; \
 		echo "require conf/distro/include/sane-srcdates.inc" >> shr-$*/conf/local.conf ; \
 		echo "require conf/distro/include/shr-autorev.inc" >> shr-$*/conf/local.conf ; \
