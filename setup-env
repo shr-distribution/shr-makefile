@@ -9,7 +9,7 @@
 . ./conf/topdir.conf
 test -n "$TOPDIR" -a -d "$TOPDIR" || {
 	echo "environment: TOPDIR not defined" >&2
-	exit 1
+	return
 }
 
 #
