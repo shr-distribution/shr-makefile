@@ -155,7 +155,7 @@ shr-%/.configured: common/.git/config bitbake/.svn/entries shr/.git/config opene
 		echo "require conf/distro/include/sane-srcrevs.inc" >> shr-$*/conf/local.conf ; \
 		echo "require conf/distro/include/sane-srcdates.inc" >> shr-$*/conf/local.conf ; \
 		echo "require conf/distro/include/shr-autorev.inc" >> shr-$*/conf/local.conf ; \
-		if [ "shr-$*" == "shr-unstable" ] ; then echo "require conf/distro/include/shr-autorev-unstable.inc" >> shr-$*/conf/local.conf ; fi ; \
+		case "shr-$*" in shr-unstable) echo "require conf/distro/include/shr-autorev-unstable.inc" >> shr-$*/conf/local.conf ;; esac ; \
 	)
 	rm -rf shr-$*/tmp/cache
 	touch shr-$*/.configured
