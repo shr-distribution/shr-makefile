@@ -140,6 +140,8 @@ shr-%/.configured: common/.git/config bitbake/.svn/entries shr/.git/config opene
 		echo "IMAGE_TARGET = \"shr-image\"" >> shr-$*/conf/auto.conf ; \
 		echo "DISTRO_TARGET = \"task-shr-feed\"" >> shr-$*/conf/auto.conf ; \
 		echo "INHERIT += \"rm_work\"" >> shr-$*/conf/auto.conf ; \
+		echo "DISTRO_FEED_PREFIX = \"shr\"" >> shr-$*/conf/auto.conf ; \
+		echo "DISTRO_FEED_URI = \"http://shr.bearstech.com/shr-$*/ipk/\"" >> shr-$*/conf/auto.conf ; \
 	)
 	[ -e shr-$*/conf/local.conf ] || ( \
 		echo "# require conf/distro/include/moko-autorev.inc" > shr-$*/conf/local.conf ; \
