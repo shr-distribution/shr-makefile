@@ -154,6 +154,8 @@ shr-%/.configured: common/.git/config bitbake/.svn/entries shr/.git/config opene
 		echo "#BB_NUMBER_THREADS = \"4\"" >> shr-$*/conf/local.conf ; \
 		echo "# avoid multiple locales generation to speedup the build and save space" >> shr-$*/conf/local.conf ; \
 		echo "#GLIBC_GENERATE_LOCALES = \"en_US.UTF-8\"" >> shr-$*/conf/local.conf ; \
+		echo "# completely disable generation of locales. If building qemu fails this might help" >> shr-$*/conf/local.conf ; \
+		echo "#ENABLE_BINARY_LOCALE_GENERATION = \"0\"" >> shr-$*/conf/local.conf ; \
 		echo "require conf/distro/include/sane-srcrevs.inc" >> shr-$*/conf/local.conf ; \
 		echo "require conf/distro/include/sane-srcdates.inc" >> shr-$*/conf/local.conf ; \
 		echo "require conf/distro/include/shr-autorev.inc" >> shr-$*/conf/local.conf ; \
