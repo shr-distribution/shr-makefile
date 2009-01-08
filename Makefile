@@ -93,9 +93,7 @@ setup-bitbake bitbake/.svn/entries:
 .PRECIOUS: openembedded/.git/config
 setup-openembedded openembedded/.git/config: shr/.git/config
 	[ -e openembedded/.git/config ] || \
-	( git clone git://git.openembedded.net/openembedded openembedded ; \
-	  cd openembedded ; \
-	  git config --add remote.origin.fetch '+refs/heads/*:refs/remotes/*' )
+	git clone git://git.openembedded.net/openembedded openembedded
 	( cd openembedded && \
 	  ( git branch | egrep -e ' org.openembedded.dev$$' > /dev/null || \
 	    git checkout -b org.openembedded.dev --track origin/org.openembedded.dev ))
