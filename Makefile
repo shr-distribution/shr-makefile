@@ -173,7 +173,7 @@ update-bitbake: bitbake/.svn/entries
 .PHONY: update-openembedded
 update-openembedded: openembedded/.git/config
 	( cd openembedded ; \
-	  rm -f .patched ; git clean -d -f ; git reset --hard ; git pull ; \
+	  rm -f .patched ; git checkout org.openembedded.dev; git clean -d -f ; git reset --hard ; git pull ; \
 	  git checkout ${OE_SRCREV} ; \
 	  ../shr/patches/do-patch )
 
