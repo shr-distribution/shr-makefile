@@ -97,7 +97,7 @@ setup-openembedded openembedded/.git/config: shr/.git/config
 	( cd openembedded && \
 	  ( git branch | egrep -e ' org.openembedded.dev$$' > /dev/null || \
 	    git checkout -b org.openembedded.dev --track origin/org.openembedded.dev ))
-	( cd openembedded && git checkout ${OE_SRCREV} )
+	( cd openembedded && git checkout `git rev-parse ${OE_SRCREV}` )
 	touch openembedded/.git/config
 
 .PHONY: patch-openembedded
@@ -173,8 +173,8 @@ update-bitbake: bitbake/.svn/entries
 .PHONY: update-openembedded
 update-openembedded: openembedded/.git/config
 	( cd openembedded ; \
-	  rm -f .patched ; git checkout org.openembedded.dev; git clean -d -f ; git reset --hard ; git pull ; \
-	  git checkout ${OE_SRCREV} ; \
+	  rm -f .patched ; git clean -d -f ; git reset --hard ; git fetch ; \
+	  git checkout `git rev-parse ${OE_SRCREV}` ; \
 	  ../shr/patches/do-patch )
 
 .PHONY: update-shr
