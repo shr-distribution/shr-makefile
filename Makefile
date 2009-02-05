@@ -147,6 +147,8 @@ shr-%/.configured: common/.git/config bitbake/.svn/entries shr/.git/config opene
 		echo "BBFILES += \"\$${TOPDIR}/shr/openembedded/packages/*/*.bb\"" >> shr-$*/conf/local.conf ; \
 		echo "BB_GIT_CLONE_FOR_SRCREV = \"1\"" >> shr-$*/conf/local.conf ; \
 		echo "OE_ALLOW_INSECURE_DOWNLOADS=1" >> shr-$*/conf/local.conf ; \
+		echo "# additionally build a tar.gz image file (as needed for installing on SD)" >> shr-$*/conf/local.conf ; \
+		echo "#IMAGE_FSTYPES = "jffs2 tar.gz" >> shr-$*/conf/local.conf ; \
 		echo "# speed up build by parallel building - usefull for multicore cpus" >> shr-$*/conf/local.conf ; \
 		echo "#PARALLEL_MAKE = \"-j 4\"" >> shr-$*/conf/local.conf ; \
 		echo "#BB_NUMBER_THREADS = \"4\"" >> shr-$*/conf/local.conf ; \
