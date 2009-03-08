@@ -9,7 +9,7 @@ SHR_TESTING_BRANCH_SHR = testing
 SHR_TESTING_BRANCH_OE = fso/milestone5
 
 SHR_UNSTABLE_BRANCH_SHR = master
-SHR_UNSTABLE_BRANCH = fso/milestone5.5
+SHR_UNSTABLE_BRANCH_OE = fso/milestone5.5
 
 SHR_MAKEFILE_URL = "http://shr.bearstech.com/repo/shr-makefile.git"
 SHR_OVERLAY_URL = "http://shr.bearstech.com/repo/shr-overlay.git"
