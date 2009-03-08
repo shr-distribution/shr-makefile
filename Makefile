@@ -5,8 +5,11 @@ BITBAKE_VERSION = branches/bitbake-1.8
 
 OE_SRCREV = $(shell if [ -e shr/oe-revision ] ; then cat shr/oe-revision ; else echo org.openembedded.dev ; fi)
 
-SHR_STABLE_MILESTONE = milestone1
-SHR_STABLE_VERSION = HEAD 
+SHR_TESTING_BRANCH_SHR = testing
+SHR_TESTING_BRANCH_OE = fso/milestone5
+
+SHR_UNSTABLE_BRANCH_SHR = master
+SHR_UNSTABLE_BRANCH = fso/milestone5.5
 
 SHR_MAKEFILE_URL = "http://shr.bearstech.com/repo/shr-makefile.git"
 SHR_OVERLAY_URL = "http://shr.bearstech.com/repo/shr-overlay.git"
@@ -14,31 +17,38 @@ SHR_OVERLAY_URL = "http://shr.bearstech.com/repo/shr-overlay.git"
 .PHONY: all
 all: update build
 
+.PHONY: setup
+setup:  setup-common setup-bitbake setup-shr setup-openembedded \
+	setup-shr-unstable setup-shr-testing 
+
 .PHONY: prefetch
-prefetch: prefetch-shr-unstable prefetch-shr-testing prefetch-shr-${SHR_STABLE_MILESTONE}
+prefetch: prefetch-shr-unstable prefetch-shr-testing 
+
+.PHONY: update
+update: 
+	[ ! -e common ] || ${MAKE} update-common 
+	[ ! -e bitbake ] || ${MAKE} update-bitbake 
+	[ ! -e shr ] || ${MAKE} update-shr 
+	[ ! -e openembedded ] || ${MAKE} update-openembedded 
+	[ ! -e shr-testing ] || ${MAKE} update-shr-testing 
+	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
 
 .PHONY: build
 build:
 	[ ! -e shr-unstable ]                 || ${MAKE} shr-unstable-image
-#	[ ! -e shr-testing ]                  || ${MAKE} shr-testing-image
-#	[ ! -e shr-${SHR_STABLE_MILESTONE} ]  || ${MAKE} shr-${SHR_STABLE_MILESTONE}-image
-
-.PHONY: setup
-setup:  setup-common setup-bitbake setup-openembedded \
-	setup-shr-unstable setup-shr-testing setup-shr-${SHR_STABLE_MILESTONE}
-
-.PHONY: update
-update: update-common update-bitbake update-shr update-openembedded
+	[ ! -e shr-testing ]                  || ${MAKE} shr-testing-image
+	[ ! -e shr-unstable ]                 || ${MAKE} shr-unstable-packages
+	[ ! -e shr-testing ]                  || ${MAKE} shr-testing-packages
 
 .PHONY: status
 status: status-common status-bitbake status-shr status-openembedded
 
 .PHONY: clobber
-clobber: clobber-shr-unstable clobber-shr-testing clobber-shr-${SHR_STABLE_MILESTONE}
+clobber: clobber-shr-unstable clobber-shr-testing
 
 .PHONY: distclean
 distclean: distclean-bitbake distclean-openembedded \
-	 distclean-shr-unstable distclean-shr-testing distclean-shr-${SHR_STABLE_MILESTONE}
+	 distclean-shr-unstable distclean-shr-testing
 
 .PHONY: prefetch-%
 prefetch-%: %/.configured
@@ -93,18 +103,18 @@ setup-bitbake bitbake/.svn/entries:
 .PRECIOUS: openembedded/.git/config
 setup-openembedded openembedded/.git/config: shr/.git/config
 	[ -e openembedded/.git/config ] || \
-	git clone git://git.openembedded.net/openembedded openembedded
+	( git clone git://git.openembedded.net/openembedded openembedded )
 	( cd openembedded && \
 	  ( git branch | egrep -e ' org.openembedded.dev$$' > /dev/null || \
 	    git checkout -b org.openembedded.dev --track origin/org.openembedded.dev ))
-	( cd openembedded && git checkout `git rev-parse ${OE_SRCREV}` )
+	( cd openembedded && git checkout org.openembedded.dev )
 	touch openembedded/.git/config
 
 .PHONY: patch-openembedded
 .PRECIOUS: openembedded/.patched
 patch-openembedded openembedded/.patched:
-	[ -e openembedded/.patched ] || \
-	( cd openembedded ; \
+	[ -e shr-testing/openembedded/.patched ] || \
+	( cd shr-testing/openembedded ; \
 	  ../shr/patches/do-patch )
 
 .PHONY: setup-shr
@@ -119,50 +129,108 @@ setup-%:
 	${MAKE} $*/.configured
 
 
-.PRECIOUS: shr-%/.configured
-shr-%/.configured: common/.git/config bitbake/.svn/entries shr/.git/config openembedded/.git/config openembedded/.patched
-	[ -d shr-$* ] || ( mkdir -p shr-$* )
+.PRECIOUS: shr-testing/.configured
+shr-testing/.configured: common/.git/config bitbake/.svn/entries shr/.git/config openembedded/.git/config
+	[ -d shr-testing ] || ( mkdir -p shr-testing )
 	[ -e downloads ] || ( mkdir -p downloads )
-	[ -e shr-$*/Makefile ] || ( cd shr-$* ; ln -sf ../common/openembedded.mk Makefile )
-	[ -e shr-$*/setup-env ] || ( cd shr-$* ; ln -sf ../common/setup-env . )
-	[ -e shr-$*/downloads ] || ( cd shr-$* ; ln -sf ../downloads . )
-	[ -e shr-$*/bitbake ] || ( cd shr-$* ; ln -sf ../bitbake . )
-	[ -e shr-$*/openembedded ] || ( cd shr-$* ; ln -sf ../openembedded . )
-	[ -e shr-$*/shr ] || ( cd shr-$* ; ln -sf ../shr . )
-	[ -d shr-$*/conf ] || ( mkdir -p shr-$*/conf )
-	[ -e shr-$*/conf/site.conf ] || ( cd shr-$*/conf ; ln -sf ../../common/conf/site.conf . )
-	[ -e shr-$*/conf/auto.conf ] || ( \
-		echo "DISTRO = \"openmoko\"" > shr-$*/conf/auto.conf ; \
-		echo "DISTRO_TYPE = \"$*\"" >> shr-$*/conf/auto.conf ; \
-		echo "MACHINE = \"om-gta02\"" >> shr-$*/conf/auto.conf ; \
-		echo "IMAGE_TARGET = \"shr-image\"" >> shr-$*/conf/auto.conf ; \
-		echo "DISTRO_TARGET = \"task-shr-feed\"" >> shr-$*/conf/auto.conf ; \
-		echo "INHERIT += \"rm_work\"" >> shr-$*/conf/auto.conf ; \
-		echo "DISTRO_FEED_PREFIX = \"shr\"" >> shr-$*/conf/auto.conf ; \
-		echo "DISTRO_FEED_URI = \"http://shr.bearstech.com/shr-$*/ipk/\"" >> shr-$*/conf/auto.conf ; \
+	[ -e shr-testing/Makefile ] || ( cd shr-testing ; ln -sf ../common/openembedded.mk Makefile )
+	[ -e shr-testing/setup-env ] || ( cd shr-testing ; ln -sf ../common/setup-env . )
+	[ -e shr-testing/downloads ] || ( cd shr-testing ; ln -sf ../downloads . )
+	[ -e shr-testing/bitbake ] || ( cd shr-testing ; ln -sf ../bitbake . )
+	[ -e shr-testing/shr ] || ( cd shr-testing ; \
+	  git clone --reference ../shr ${SHR_OVERLAY_URL} shr; \
+	  cd shr ; \
+	  git checkout --no-track -b ${SHR_TESTING_BRANCH_SHR} origin/${SHR_TESTING_BRANCH_SHR} )
+	[ -e shr-testing/openembedded ] || ( cd shr-testing ; \
+	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
+	  cd openembedded ; \
+	  git checkout --no-track -b ${SHR_TESTING_BRANCH_OE} origin/${SHR_TESTING_BRANCH_OE}; \
+	  ../shr/patches/do-patch )
+	[ -d shr-testing/conf ] || ( mkdir -p shr-testing/conf )
+	[ -e shr-testing/conf/site.conf ] || ( cd shr-testing/conf ; ln -sf ../../common/conf/site.conf . )
+	[ -e shr-testing/conf/auto.conf ] || ( \
+		echo "DISTRO = \"openmoko\"" > shr-testing/conf/auto.conf ; \
+		echo "DISTRO_TYPE = \"testing\"" >> shr-testing/conf/auto.conf ; \
+		echo "MACHINE = \"om-gta02\"" >> shr-testing/conf/auto.conf ; \
+		echo "IMAGE_TARGET = \"shr-lite-image\"" >> shr-testing/conf/auto.conf ; \
+		echo "DISTRO_TARGET = \"task-shr-feed\"" >> shr-testing/conf/auto.conf ; \
+		echo "INHERIT += \"rm_work\"" >> shr-testing/conf/auto.conf ; \
+		echo "DISTRO_FEED_PREFIX = \"shr\"" >> shr-testing/conf/auto.conf ; \
+		echo "DISTRO_FEED_URI = \"http://build.shr-project.org/shr-testing/ipk/\"" >> shr-testing/conf/auto.conf ; \
 	)
-	[ -e shr-$*/conf/local.conf ] || ( \
-		echo "# require conf/distro/include/moko-autorev.inc" > shr-$*/conf/local.conf ; \
-		echo "# require conf/distro/include/fso-autorev.inc" >> shr-$*/conf/local.conf ; \
-		echo "BBFILES += \"\$${TOPDIR}/shr/openembedded/packages/*/*.bb\"" >> shr-$*/conf/local.conf ; \
-		echo "BB_GIT_CLONE_FOR_SRCREV = \"1\"" >> shr-$*/conf/local.conf ; \
-		echo "OE_ALLOW_INSECURE_DOWNLOADS=1" >> shr-$*/conf/local.conf ; \
-		echo "# additionally build a tar.gz image file (as needed for installing on SD)" >> shr-$*/conf/local.conf ; \
-		echo "#IMAGE_FSTYPES = \"jffs2 tar.gz\"" >> shr-$*/conf/local.conf ; \
-		echo "# speed up build by parallel building - usefull for multicore cpus" >> shr-$*/conf/local.conf ; \
-		echo "#PARALLEL_MAKE = \"-j 4\"" >> shr-$*/conf/local.conf ; \
-		echo "#BB_NUMBER_THREADS = \"4\"" >> shr-$*/conf/local.conf ; \
-		echo "# avoid multiple locales generation to speedup the build and save space" >> shr-$*/conf/local.conf ; \
-		echo "#GLIBC_GENERATE_LOCALES = \"en_US.UTF-8\"" >> shr-$*/conf/local.conf ; \
-		echo "# completely disable generation of locales. If building qemu fails this might help" >> shr-$*/conf/local.conf ; \
-		echo "#ENABLE_BINARY_LOCALE_GENERATION = \"0\"" >> shr-$*/conf/local.conf ; \
-		echo "require conf/distro/include/sane-srcrevs.inc" >> shr-$*/conf/local.conf ; \
-		echo "require conf/distro/include/sane-srcdates.inc" >> shr-$*/conf/local.conf ; \
-		echo "require conf/distro/include/shr-autorev.inc" >> shr-$*/conf/local.conf ; \
-		case "shr-$*" in shr-unstable) echo "require conf/distro/include/shr-autorev-unstable.inc" >> shr-$*/conf/local.conf ;; esac ; \
+	[ -e shr-testing/conf/local.conf ] || ( \
+		echo "# require conf/distro/include/moko-autorev.inc" > shr-testing/conf/local.conf ; \
+		echo "# require conf/distro/include/fso-autorev.inc" >> shr-testing/conf/local.conf ; \
+		echo "BBFILES += \"\$${TOPDIR}/shr/openembedded/packages/*/*.bb\"" >> shr-testing/conf/local.conf ; \
+		echo "BB_GIT_CLONE_FOR_SRCREV = \"1\"" >> shr-testing/conf/local.conf ; \
+		echo "OE_ALLOW_INSECURE_DOWNLOADS=1" >> shr-testing/conf/local.conf ; \
+		echo "# additionally build a tar.gz image file (as needed for installing on SD)" >> shr-testing/conf/local.conf ; \
+		echo "#IMAGE_FSTYPES = \"jffs2 tar.gz\"" >> shr-testing/conf/local.conf ; \
+		echo "# speed up build by parallel building - usefull for multicore cpus" >> shr-testing/conf/local.conf ; \
+		echo "#PARALLEL_MAKE = \"-j 4\"" >> shr-testing/conf/local.conf ; \
+		echo "#BB_NUMBER_THREADS = \"4\"" >> shr-testing/conf/local.conf ; \
+		echo "# avoid multiple locales generation to speedup the build and save space" >> shr-testing/conf/local.conf ; \
+		echo "#GLIBC_GENERATE_LOCALES = \"en_US.UTF-8\"" >> shr-testing/conf/local.conf ; \
+		echo "# completely disable generation of locales. If building qemu fails this might help" >> shr-testing/conf/local.conf ; \
+		echo "#ENABLE_BINARY_LOCALE_GENERATION = \"0\"" >> shr-testing/conf/local.conf ; \
+		echo "require conf/distro/include/sane-srcrevs.inc" >> shr-testing/conf/local.conf ; \
+		echo "require conf/distro/include/sane-srcdates.inc" >> shr-testing/conf/local.conf ; \
+		echo "require conf/distro/include/shr-autorev.inc" >> shr-testing/conf/local.conf ; \
 	)
-	rm -rf shr-$*/tmp/cache
-	touch shr-$*/.configured
+	rm -rf shr-testing/tmp/cache
+	touch shr-testing/.configured
+
+.PRECIOUS: shr-unstable/.configured
+shr-unstable/.configured: common/.git/config bitbake/.svn/entries shr/.git/config openembedded/.git/config
+	[ -d shr-unstable ] || ( mkdir -p shr-unstable )
+	[ -e downloads ] || ( mkdir -p downloads )
+	[ -e shr-unstable/Makefile ] || ( cd shr-unstable ; ln -sf ../common/openembedded.mk Makefile )
+	[ -e shr-unstable/setup-env ] || ( cd shr-unstable ; ln -sf ../common/setup-env . )
+	[ -e shr-unstable/downloads ] || ( cd shr-unstable ; ln -sf ../downloads . )
+	[ -e shr-unstable/bitbake ] || ( cd shr-unstable ; ln -sf ../bitbake . )
+	[ -e shr-unstable/shr ] || ( cd shr-unstable ; \
+	  git clone --reference ../shr ${SHR_OVERLAY_URL} shr; \
+	  cd shr ; \
+	  git checkout --no-track -b ${SHR_UNSTABLE_BRANCH_SHR} origin/${SHR_UNSTABLE_BRANCH_SHR} )
+	[ -e shr-unstable/openembedded ] || ( cd shr-unstable ; \
+	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
+	  cd openembedded ; \
+	  git checkout --no-track -b ${SHR_UNSTABLE_BRANCH_OE} origin/${SHR_UNSTABLE_BRANCH_OE}; \
+	  ../shr/patches/do-patch )
+	[ -d shr-unstable/conf ] || ( mkdir -p shr-unstable/conf )
+	[ -e shr-unstable/conf/site.conf ] || ( cd shr-unstable/conf ; ln -sf ../../common/conf/site.conf . )
+	[ -e shr-unstable/conf/auto.conf ] || ( \
+		echo "DISTRO = \"openmoko\"" > shr-unstable/conf/auto.conf ; \
+		echo "DISTRO_TYPE = \"testing\"" >> shr-unstable/conf/auto.conf ; \
+		echo "MACHINE = \"om-gta02\"" >> shr-unstable/conf/auto.conf ; \
+		echo "IMAGE_TARGET = \"shr-lite-image\"" >> shr-unstable/conf/auto.conf ; \
+		echo "DISTRO_TARGET = \"task-shr-feed\"" >> shr-unstable/conf/auto.conf ; \
+		echo "INHERIT += \"rm_work\"" >> shr-unstable/conf/auto.conf ; \
+		echo "DISTRO_FEED_PREFIX = \"shr\"" >> shr-unstable/conf/auto.conf ; \
+		echo "DISTRO_FEED_URI = \"http://build.shr-project.org/shr-unstable/ipk/\"" >> shr-unstable/conf/auto.conf ; \
+	)
+	[ -e shr-unstable/conf/local.conf ] || ( \
+		echo "# require conf/distro/include/moko-autorev.inc" > shr-unstable/conf/local.conf ; \
+		echo "# require conf/distro/include/fso-autorev.inc" >> shr-unstable/conf/local.conf ; \
+		echo "BBFILES += \"\$${TOPDIR}/shr/openembedded/packages/*/*.bb\"" >> shr-unstable/conf/local.conf ; \
+		echo "BB_GIT_CLONE_FOR_SRCREV = \"1\"" >> shr-unstable/conf/local.conf ; \
+		echo "OE_ALLOW_INSECURE_DOWNLOADS=1" >> shr-unstable/conf/local.conf ; \
+		echo "# additionally build a tar.gz image file (as needed for installing on SD)" >> shr-unstable/conf/local.conf ; \
+		echo "#IMAGE_FSTYPES = \"jffs2 tar.gz\"" >> shr-unstable/conf/local.conf ; \
+		echo "# speed up build by parallel building - usefull for multicore cpus" >> shr-unstable/conf/local.conf ; \
+		echo "#PARALLEL_MAKE = \"-j 4\"" >> shr-unstable/conf/local.conf ; \
+		echo "#BB_NUMBER_THREADS = \"4\"" >> shr-unstable/conf/local.conf ; \
+		echo "# avoid multiple locales generation to speedup the build and save space" >> shr-unstable/conf/local.conf ; \
+		echo "#GLIBC_GENERATE_LOCALES = \"en_US.UTF-8\"" >> shr-unstable/conf/local.conf ; \
+		echo "# completely disable generation of locales. If building qemu fails this might help" >> shr-unstable/conf/local.conf ; \
+		echo "#ENABLE_BINARY_LOCALE_GENERATION = \"0\"" >> shr-unstable/conf/local.conf ; \
+		echo "require conf/distro/include/sane-srcrevs.inc" >> shr-unstable/conf/local.conf ; \
+		echo "require conf/distro/include/sane-srcdates.inc" >> shr-unstable/conf/local.conf ; \
+		echo "require conf/distro/include/shr-autorev.inc" >> shr-unstable/conf/local.conf ; \
+		echo "require conf/distro/include/shr-autorev-unstable.inc" >> shr-unstable/conf/local.conf ; \
+	)
+	rm -rf shr-unstable/tmp/cache
+	touch shr-unstable/.configured
 
 .PHONY: update-common
 update-common: common/.git/config
@@ -174,9 +242,18 @@ update-bitbake: bitbake/.svn/entries
 
 .PHONY: update-openembedded
 update-openembedded: openembedded/.git/config
-	( cd openembedded ; \
-	  rm -f .patched ; git clean -d -f ; git reset --hard ; git fetch ; \
-	  git checkout `git rev-parse ${OE_SRCREV}` ; \
+	( cd openembedded ; git pull )
+
+.PHONY: update-shr-testing
+update-shr-testing: shr-testing/.configured
+	( cd shr-testing/openembedded ; \
+	  rm -f .patched ; git clean -d -f ; git reset --hard ; git pull ; \
+	  ../shr/patches/do-patch )
+
+.PHONY: update-shr-unstable
+update-shr-unstable: shr-unstable/.configured
+	( cd shr-unstable/openembedded ; \
+	  rm -f .patched ; git clean -d -f ; git reset --hard ; git pull ; \
 	  ../shr/patches/do-patch )
 
 .PHONY: update-shr
