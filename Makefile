@@ -244,21 +244,31 @@ update-bitbake: bitbake/.svn/entries
 update-openembedded: openembedded/.git/config
 	( cd openembedded ; git pull )
 
+.PHONY: update-shr
+update-shr: shr/.git/config
+	( cd shr ; git pull )
+
 .PHONY: update-shr-testing
 update-shr-testing: shr-testing/.configured
+	( cd shr-testing/shr ; \
+	  git fetch ; \
+	  git checkout ${SHR_TESTING_BRANCH_SHR} ; \
+	  git reset --hard origin/${SHR_TESTING_BRANCH_SHR} )
 	( cd shr-testing/openembedded ; \
-	  rm -f .patched ; git clean -d -f ; git reset --hard ; git pull ; \
+	  rm -f .patched ; git clean -d -f ; git reset --hard ; git fetch ; \
+	  git checkout ${SHR_TESTING_BRANCH_OE} ; git reset --hard origin/${SHR_TESTING_BRANCH_OE} ; \
 	  ../shr/patches/do-patch )
 
 .PHONY: update-shr-unstable
 update-shr-unstable: shr-unstable/.configured
+	( cd shr-unstable/shr ; \
+	  git fetch ; \
+	  git checkout ${SHR_UNSTABLE_BRANCH_SHR} ; \
+	  git reset --hard origin/${SHR_UNSTABLE_BRANCH_SHR} )
 	( cd shr-unstable/openembedded ; \
-	  rm -f .patched ; git clean -d -f ; git reset --hard ; git pull ; \
+	  rm -f .patched ; git clean -d -f ; git reset --hard ; git fetch ; \
+	  git checkout ${SHR_UNSTABLE_BRANCH_OE} ; git reset --hard origin/${SHR_UNSTABLE_BRANCH_OE} ; \
 	  ../shr/patches/do-patch )
-
-.PHONY: update-shr
-update-shr: shr/.git/config
-	( cd shr ; git pull )
 
 .PHONY: status-common
 status-common: common/.git/config
