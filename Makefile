@@ -140,7 +140,7 @@ shr-testing/.configured: common/.git/config bitbake/.svn/entries shr/.git/config
 	[ -e shr-testing/shr ] || ( cd shr-testing ; \
 	  git clone --reference ../shr ${SHR_OVERLAY_URL} shr; \
 	  cd shr ; \
-	  git checkout --no-track -b ${SHR_TESTING_BRANCH_SHR} origin/${SHR_TESTING_BRANCH_SHR} )
+	  case "${SHR_TESTING_BRANCH_SHR}" in master) : ;; *) git checkout --no-track -b ${SHR_TESTING_BRANCH_SHR} origin/${SHR_TESTING_BRANCH_SHR} ;; esac )
 	[ -e shr-testing/openembedded ] || ( cd shr-testing ; \
 	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
 	  cd openembedded ; \
@@ -191,7 +191,7 @@ shr-unstable/.configured: common/.git/config bitbake/.svn/entries shr/.git/confi
 	[ -e shr-unstable/shr ] || ( cd shr-unstable ; \
 	  git clone --reference ../shr ${SHR_OVERLAY_URL} shr; \
 	  cd shr ; \
-	  git checkout --no-track -b ${SHR_UNSTABLE_BRANCH_SHR} origin/${SHR_UNSTABLE_BRANCH_SHR} )
+	  case "${SHR_UNSTABLE_BRANCH_SHR}" in master) : ;; *) git checkout --no-track -b ${SHR_UNSTABLE_BRANCH_SHR} origin/${SHR_UNSTABLE_BRANCH_SHR} ;; esac )
 	[ -e shr-unstable/openembedded ] || ( cd shr-unstable ; \
 	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
 	  cd openembedded ; \
