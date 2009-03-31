@@ -1,6 +1,8 @@
 # Makefile for the OpenMoko SHR development system
 # Licensed under the GPL v2 or later
 
+MAKEFLAGS = -swr
+
 BITBAKE_VERSION = branches/bitbake-1.8
 
 OE_SRCREV = $(shell if [ -e shr/oe-revision ] ; then cat shr/oe-revision ; else echo org.openembedded.dev ; fi)
@@ -87,7 +89,8 @@ shr-%-index: shr-%/.configured
 .PRECIOUS: common/.git/config
 setup-common common/.git/config:
 	[ -e common/.git/config ] || \
-	( git clone ${SHR_MAKEFILE_URL} common && \
+	( echo "setting up common (Makefile)"; \
+	  git clone ${SHR_MAKEFILE_URL} common && \
 	  rm -f Makefile && \
 	  ln -s common/Makefile Makefile )
 	touch common/.git/config
@@ -96,14 +99,16 @@ setup-common common/.git/config:
 .PRECIOUS: bitbake/.svn/entries
 setup-bitbake bitbake/.svn/entries:
 	[ -e bitbake/.svn/entries ] || \
-	( svn co svn://svn.berlios.de/bitbake/${BITBAKE_VERSION} bitbake )
+	( echo "setting up bitbake ..."; \
+	  svn co svn://svn.berlios.de/bitbake/${BITBAKE_VERSION} bitbake )
 	touch bitbake/.svn/entries
 
 .PHONY: setup-openembedded
 .PRECIOUS: openembedded/.git/config
 setup-openembedded openembedded/.git/config: shr/.git/config
 	[ -e openembedded/.git/config ] || \
-	( git clone git://git.openembedded.net/openembedded openembedded )
+	( echo "setting up openembedded"; \
+	  git clone git://git.openembedded.net/openembedded openembedded )
 	( cd openembedded && \
 	  ( git branch | egrep -e ' org.openembedded.dev$$' > /dev/null || \
 	    git checkout -b org.openembedded.dev --track origin/org.openembedded.dev ))
@@ -114,14 +119,16 @@ setup-openembedded openembedded/.git/config: shr/.git/config
 .PRECIOUS: openembedded/.patched
 patch-openembedded openembedded/.patched:
 	[ -e shr-testing/openembedded/.patched ] || \
-	( cd shr-testing/openembedded ; \
+	( echo "patching openembedded"; \
+	  cd shr-testing/openembedded ; \
 	  ../shr/patches/do-patch )
 
 .PHONY: setup-shr
 .PRECIOUS: shr/.git/config
 setup-shr shr/.git/config:
 	[ -e shr/.git/config ] || \
-	( git clone ${SHR_OVERLAY_URL} shr )
+	( echo "setting up shr"; \
+	  git clone ${SHR_OVERLAY_URL} shr )
 	touch shr/.git/config
 
 .PHONY: setup-%
@@ -131,6 +138,7 @@ setup-%:
 
 .PRECIOUS: shr-testing/.configured
 shr-testing/.configured: common/.git/config bitbake/.svn/entries shr/.git/config openembedded/.git/config
+	@echo "preparing shr-testing tree"
 	[ -d shr-testing ] || ( mkdir -p shr-testing )
 	[ -e downloads ] || ( mkdir -p downloads )
 	[ -e shr-testing/Makefile ] || ( cd shr-testing ; ln -sf ../common/openembedded.mk Makefile )
@@ -183,6 +191,7 @@ shr-testing/.configured: common/.git/config bitbake/.svn/entries shr/.git/config
 
 .PRECIOUS: shr-unstable/.configured
 shr-unstable/.configured: common/.git/config bitbake/.svn/entries shr/.git/config openembedded/.git/config
+	@echo "preparing shr-unstable tree"
 	[ -d shr-unstable ] || ( mkdir -p shr-unstable )
 	[ -e downloads ] || ( mkdir -p downloads )
 	[ -e shr-unstable/Makefile ] || ( cd shr-unstable ; ln -sf ../common/openembedded.mk Makefile )
@@ -236,15 +245,18 @@ shr-unstable/.configured: common/.git/config bitbake/.svn/entries shr/.git/confi
 
 .PHONY: update-common
 update-common: common/.git/config
+	@echo "updating common (Makefile)"
 	( cd common ; git pull )
 
 .PHONY: update-bitbake
 update-bitbake: bitbake/.svn/entries
+	@echo "updating bitbake"
 	( cd bitbake ; svn up )
 
 .PHONY: update-openembedded
 update-openembedded: openembedded/.git/config
-   ( cd openembedded ; git pull || ( \
+	@echo "updating openembedded"
+	( cd openembedded ; git pull || ( \
       echo ; \
       echo "!!! looks like you have a dirty OE tree ;)"; \
       echo "to fix that do the following:"; \
@@ -254,10 +266,12 @@ update-openembedded: openembedded/.git/config
 
 .PHONY: update-shr
 update-shr: shr/.git/config
+	@echo "updating shr"
 	( cd shr ; git pull )
 
 .PHONY: update-shr-testing
 update-shr-testing: shr-testing/.configured
+	@echo "updating shr-testing tree"
 	( cd shr-testing/shr ; \
 	  git fetch ; \
 	  git checkout ${SHR_TESTING_BRANCH_SHR} ; \
@@ -269,6 +283,7 @@ update-shr-testing: shr-testing/.configured
 
 .PHONY: update-shr-unstable
 update-shr-unstable: shr-unstable/.configured
+	@echo "updating shr-unstable tree"
 	( cd shr-unstable/shr ; \
 	  git fetch ; \
 	  git checkout ${SHR_UNSTABLE_BRANCH_SHR} ; \
