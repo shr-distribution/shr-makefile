@@ -177,6 +177,7 @@ shr-testing/.configured: common/.git/config bitbake/.svn/entries shr/.git/config
 		echo "require conf/distro/include/sane-srcdates.inc" >> shr-testing/conf/local.conf ; \
 		echo "require conf/distro/include/shr-autorev.inc" >> shr-testing/conf/local.conf ; \
 	)
+	[ -e shr-testing/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-testing'" > shr-testing/conf/topdir.conf
 	rm -rf shr-testing/tmp/cache
 	touch shr-testing/.configured
 
@@ -229,6 +230,7 @@ shr-unstable/.configured: common/.git/config bitbake/.svn/entries shr/.git/confi
 		echo "require conf/distro/include/shr-autorev.inc" >> shr-unstable/conf/local.conf ; \
 		echo "require conf/distro/include/shr-autorev-unstable.inc" >> shr-unstable/conf/local.conf ; \
 	)
+	[ -e shr-unstable/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-unstable'" > shr-unstable/conf/topdir.conf
 	rm -rf shr-unstable/tmp/cache
 	touch shr-unstable/.configured
 
