@@ -244,7 +244,13 @@ update-bitbake: bitbake/.svn/entries
 
 .PHONY: update-openembedded
 update-openembedded: openembedded/.git/config
-	( cd openembedded ; git pull )
+   ( cd openembedded ; git pull || ( \
+      echo ; \
+      echo "!!! looks like you have a dirty OE tree ;)"; \
+      echo "to fix that do the following:"; \
+      echo "cd `pwd`; git reset --hard"; \
+      echo ; \
+      echo "ATTENTION: that will kill all eventual changes" ) )
 
 .PHONY: update-shr
 update-shr: shr/.git/config
