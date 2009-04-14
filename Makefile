@@ -39,8 +39,8 @@ update:
 build:
 	[ ! -e shr-unstable ]                 || ${MAKE} shr-unstable-image
 	[ ! -e shr-testing ]                  || ${MAKE} shr-testing-image
-	[ ! -e shr-unstable ]                 || ${MAKE} shr-unstable-packages
-	[ ! -e shr-testing ]                  || ${MAKE} shr-testing-packages
+	[ ! -e shr-unstable ]                 || ${MAKE} shr-unstable-recipes
+	[ ! -e shr-testing ]                  || ${MAKE} shr-testing-recipes
 
 .PHONY: status
 status: status-common status-bitbake status-shr status-openembedded
@@ -68,8 +68,8 @@ shr-%-image: shr-%/.configured
 	  ${MAKE} setup-machine-om-gta02 ; \
 	  ${MAKE} -k image )
 
-.PHONY: shr-%-packages
-shr-%-packages: shr-%/.configured
+.PHONY: shr-%-recipes
+shr-%-recipes: shr-%/.configured
 	( cd shr-$* ; \
 	  ${MAKE} setup-image-shr-image ; \
 	  ${MAKE} setup-machine-om-gta01 ; \
@@ -169,7 +169,7 @@ shr-testing/.configured: common/.git/config bitbake/.svn/entries shr/.git/config
 	[ -e shr-testing/conf/local.conf ] || ( \
 		echo "# require conf/distro/include/moko-autorev.inc" > shr-testing/conf/local.conf ; \
 		echo "# require conf/distro/include/fso-autorev.inc" >> shr-testing/conf/local.conf ; \
-		echo "BBFILES += \"\$${TOPDIR}/shr/openembedded/packages/*/*.bb\"" >> shr-testing/conf/local.conf ; \
+		echo "BBFILES += \"\$${TOPDIR}/shr/openembedded/recipes/*/*.bb\"" >> shr-testing/conf/local.conf ; \
 		echo "BB_GIT_CLONE_FOR_SRCREV = \"1\"" >> shr-testing/conf/local.conf ; \
 		echo "OE_ALLOW_INSECURE_DOWNLOADS=1" >> shr-testing/conf/local.conf ; \
 		echo "# additionally build a tar.gz image file (as needed for installing on SD)" >> shr-testing/conf/local.conf ; \
@@ -222,7 +222,7 @@ shr-unstable/.configured: common/.git/config bitbake/.svn/entries shr/.git/confi
 	[ -e shr-unstable/conf/local.conf ] || ( \
 		echo "# require conf/distro/include/moko-autorev.inc" > shr-unstable/conf/local.conf ; \
 		echo "# require conf/distro/include/fso-autorev.inc" >> shr-unstable/conf/local.conf ; \
-		echo "BBFILES += \"\$${TOPDIR}/shr/openembedded/packages/*/*.bb\"" >> shr-unstable/conf/local.conf ; \
+		echo "BBFILES += \"\$${TOPDIR}/shr/openembedded/recipes/*/*.bb\"" >> shr-unstable/conf/local.conf ; \
 		echo "BB_GIT_CLONE_FOR_SRCREV = \"1\"" >> shr-unstable/conf/local.conf ; \
 		echo "OE_ALLOW_INSECURE_DOWNLOADS=1" >> shr-unstable/conf/local.conf ; \
 		echo "# additionally build a tar.gz image file (as needed for installing on SD)" >> shr-unstable/conf/local.conf ; \

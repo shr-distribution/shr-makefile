@@ -28,7 +28,7 @@ distro: $(FIRMWARE_DEPS)
 ifdef DISTRO_TARGET
 	. ./setup-env; exec ${BITBAKE} $(DISTRO_TARGET)
 else
-	. ./setup-env; exec ${BITBAKE} $(DISTRO)-packages
+	. ./setup-env; exec ${BITBAKE} $(DISTRO)-recipes
 endif
 
 kernel: $(FIRMWARE_DEPS)
@@ -45,7 +45,7 @@ prefetch: $(FIRMWARE_DEPS)
 ifdef DISTRO_TARGET
 	. ./setup-env; exec ${BITBAKE} -cfetch $(DISTRO_TARGET)
 else
-	. ./setup-env; exec ${BITBAKE} -cfetch $(DISTRO)-packages
+	. ./setup-env; exec ${BITBAKE} -cfetch $(DISTRO)-recipes
 endif
 
 # topdir.conf is re-created automatically if the directory is
@@ -82,8 +82,8 @@ setup-image-%:
 	( grep "IMAGE_TARGET = \"$*\"" conf/auto.conf > /dev/null ) || \
 	sed -i -e 's/^IMAGE_TARGET[[:space:]]*=[[:space:]]*\".*\"/IMAGE_TARGET = \"$*\"/' conf/auto.conf
 
-.PHONY: setup-packages-%
-setup-packages-%:
+.PHONY: setup-recipes-%
+setup-recipes-%:
 	( grep "DISTRO_TARGET = \"$*\"" conf/auto.conf > /dev/null ) || \
 	sed -i -e 's/^DISTRO_TARGET[[:space:]]*=[[:space:]]*\".*\"/DISTRO_TARGET = \"$*\"/' conf/auto.conf
 
