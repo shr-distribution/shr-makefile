@@ -155,7 +155,7 @@ shr-testing/.configured: common/.git/config bitbake/.svn/entries shr/.git/config
 	  git checkout --no-track -b ${SHR_TESTING_BRANCH_OE} origin/${SHR_TESTING_BRANCH_OE}; \
 	  ../shr/patches/do-patch )
 	[ -d shr-testing/conf ] || ( mkdir -p shr-testing/conf )
-	[ -e shr-testing/conf/site.conf ] || ( cd shr-testing/conf ; ln -sf ../../common/conf/site.conf . )
+	[ -e shr-testing/conf/site.conf ] || ( cd shr-testing/conf ; ln -sf ../../common/conf/site.testing.conf ./site.conf )
 	[ -e shr-testing/conf/auto.conf ] || ( \
 		echo "DISTRO = \"openmoko\"" > shr-testing/conf/auto.conf ; \
 		echo "DISTRO_TYPE = \"testing\"" >> shr-testing/conf/auto.conf ; \
