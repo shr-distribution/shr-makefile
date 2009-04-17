@@ -169,7 +169,7 @@ shr-testing/.configured: common/.git/config bitbake/.svn/entries shr/.git/config
 	[ -e shr-testing/conf/local.conf ] || ( \
 		echo "# require conf/distro/include/moko-autorev.inc" > shr-testing/conf/local.conf ; \
 		echo "# require conf/distro/include/fso-autorev.inc" >> shr-testing/conf/local.conf ; \
-		echo "BBFILES += \"\$${TOPDIR}/shr/openembedded/packages/*/*.bb\"" >> shr-testing/conf/local.conf ; \
+		echo "BBFILES += \"\$${TOPDIR}/shr/openembedded/recipes/*/*.bb\"" >> shr-testing/conf/local.conf ; \
 		echo "BB_GIT_CLONE_FOR_SRCREV = \"1\"" >> shr-testing/conf/local.conf ; \
 		echo "OE_ALLOW_INSECURE_DOWNLOADS=1" >> shr-testing/conf/local.conf ; \
 		echo "# additionally build a tar.gz image file (as needed for installing on SD)" >> shr-testing/conf/local.conf ; \
