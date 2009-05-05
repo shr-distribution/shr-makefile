@@ -5,8 +5,6 @@ MAKEFLAGS = -swr
 
 BITBAKE_VERSION = branches/bitbake-1.8
 
-OE_SRCREV = $(shell if [ -e shr/oe-revision ] ; then cat shr/oe-revision ; else echo org.openembedded.dev ; fi)
-
 SHR_TESTING_BRANCH_SHR = testing
 SHR_TESTING_BRANCH_OE = fso/milestone5.5
 
