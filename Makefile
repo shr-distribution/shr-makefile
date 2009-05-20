@@ -215,7 +215,7 @@ shr-unstable/.configured: common/.git/config bitbake/.svn/entries shr/.git/confi
 	[ -d shr-unstable/conf ] || ( mkdir -p shr-unstable/conf )
 	[ -e shr-unstable/conf/site.conf ] || ( cd shr-unstable/conf ; ln -sf ../../common/conf/site.conf . )
 	[ -e shr-unstable/conf/auto.conf ] || ( \
-		echo "DISTRO = \"openmoko\"" > shr-unstable/conf/auto.conf ; \
+		echo "DISTRO = \"shr\"" > shr-unstable/conf/auto.conf ; \
 		echo "DISTRO_TYPE = \"testing\"" >> shr-unstable/conf/auto.conf ; \
 		echo "MACHINE = \"om-gta02\"" >> shr-unstable/conf/auto.conf ; \
 		echo "IMAGE_TARGET = \"shr-lite-image\"" >> shr-unstable/conf/auto.conf ; \
