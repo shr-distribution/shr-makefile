@@ -309,7 +309,7 @@ shr-oemerge/.configured: common/.git/config bitbake/.svn/entries shr/.git/config
 		echo "require conf/distro/include/sane-srcrevs.inc" >> shr-oemerge/conf/local.conf ; \
 		echo "require conf/distro/include/sane-srcdates.inc" >> shr-oemerge/conf/local.conf ; \
 		echo "require conf/distro/include/shr-autorev.inc" >> shr-oemerge/conf/local.conf ; \
-		echo "require conf/distro/include/shr-autorev-oemerge.inc" >> shr-oemerge/conf/local.conf ; \
+		echo "require conf/distro/include/shr-autorev-unstable.inc" >> shr-oemerge/conf/local.conf ; \
 		echo "# enable local builds for SHR apps" >> shr-oemerge/conf/local.conf ; \
 		echo "#require local-builds.inc" >> shr-oemerge/conf/local.conf ; \
 	)
