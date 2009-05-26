@@ -194,6 +194,7 @@ shr-testing/.configured: common/.git/config bitbake/.svn/entries shr/.git/config
 	[ -e shr-testing/conf/local-builds.inc ] || ( \
 			echo "SRC_URI_pn-libframeworkd-phonegui-efl = \"file:///path/to/source/shr\"" > shr-testing/conf/local-builds.inc ; \
 			echo "SRCREV_pn-libframeworkd-phonegui-efl = \"LOCAL\"" >> shr-testing/conf/local-builds.inc ; \
+			echo "SRCPV_pn-libframeworkd-phonegui-efl = \"LOCAL\"" >> shr-testing/conf/local-builds.inc ; \
 			echo "S_pn-libframeworkd-phonegui-efl = \"\$${WORKDIR}/shr/\$${PN}\"" >> shr-testing/conf/local-builds.inc ; \
 	)
 	[ -e shr-testing/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-testing'" > shr-testing/conf/topdir.conf
@@ -255,6 +256,7 @@ shr-unstable/.configured: common/.git/config bitbake/.svn/entries shr/.git/confi
 	[ -e shr-unstable/conf/local-builds.inc ] || ( \
 			echo "SRC_URI_pn-libframeworkd-phonegui-efl = \"file:///path/to/source/shr\"" > shr-unstable/conf/local-builds.inc ; \
 			echo "SRCREV_pn-libframeworkd-phonegui-efl = \"LOCAL\"" >> shr-unstable/conf/local-builds.inc ; \
+			echo "SRCPV_pn-libframeworkd-phonegui-efl = \"LOCAL\"" >> shr-unstable/conf/local-builds.inc ; \
 			echo "S_pn-libframeworkd-phonegui-efl = \"\$${WORKDIR}/shr/\$${PN}\"" >> shr-unstable/conf/local-builds.inc ; \
 	)
 	[ -e shr-unstable/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-unstable'" > shr-unstable/conf/topdir.conf
@@ -316,6 +318,7 @@ shr-oemerge/.configured: common/.git/config bitbake/.svn/entries shr/.git/config
 	[ -e shr-oemerge/conf/local-builds.inc ] || ( \
 			echo "SRC_URI_pn-libframeworkd-phonegui-efl = \"file:///path/to/source/shr\"" > shr-oemerge/conf/local-builds.inc ; \
 			echo "SRCREV_pn-libframeworkd-phonegui-efl = \"LOCAL\"" >> shr-oemerge/conf/local-builds.inc ; \
+			echo "SRCPV_pn-libframeworkd-phonegui-efl = \"LOCAL\"" >> shr-oemerge/conf/local-builds.inc ; \
 			echo "S_pn-libframeworkd-phonegui-efl = \"\$${WORKDIR}/shr/\$${PN}\"" >> shr-oemerge/conf/local-builds.inc ; \
 	)
 	[ -e shr-oemerge/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-oemerge'" > shr-oemerge/conf/topdir.conf
