@@ -15,7 +15,7 @@ test -n "$TOPDIR" -a -d "$TOPDIR" || {
 #
 # the following must match the definitions in common/conf/site.conf
 export PYTHONPATH="${TOPDIR}/bitbake/lib"
-export BBPATH="${TOPDIR}:${TOPDIR}/openembedded:${TOPDIR}/bitbake"
+export BBPATH="${TOPDIR}:${TOPDIR}/openembedded:${TOPDIR}/shr/openembedded:${TOPDIR}/bitbake"
 export PATH="${TOPDIR}/bitbake/bin:${PATH}"
 export LD_LIBRARY_PATH=
 export LANG=C
