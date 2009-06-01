@@ -373,9 +373,8 @@ update-shr-unstable: shr-unstable/.configured
 update-shr-oemerge: shr-oemerge/.configured
 	@echo "updating shr-oemerge tree"
 	( cd shr-oemerge/openembedded ; \
-	  rm -f .patched ; git clean -d -f ; git reset --hard ; git fetch ; \
-	  git checkout ${SHR_OEMERGE_BRANCH_OE} ; git reset --hard origin/${SHR_OEMERGE_BRANCH_OE} ; \
-	  ../shr/patches/do-patch )
+	  git clean -d -f ; git reset --hard ; git fetch ; \
+	  git checkout ${SHR_OEMERGE_BRANCH_OE} ; git reset --hard origin/${SHR_OEMERGE_BRANCH_OE} )
 
 .PHONY: status-common
 status-common: common/.git/config
