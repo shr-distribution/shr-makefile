@@ -8,8 +8,7 @@ BITBAKE_VERSION = branches/bitbake-1.8
 SHR_TESTING_BRANCH_SHR = testing
 SHR_TESTING_BRANCH_OE = fso/milestone5.5
 
-SHR_UNSTABLE_BRANCH_SHR = master
-SHR_UNSTABLE_BRANCH_OE = fso/milestone5.5
+SHR_UNSTABLE_BRANCH_OE = shr/import
 
 SHR_OEMERGE_BRANCH_OE = shr/import
 
@@ -209,20 +208,15 @@ shr-unstable/.configured: common/.git/config bitbake/.svn/entries shr/.git/confi
 	[ -e shr-unstable/setup-env ] || ( cd shr-unstable ; ln -sf ../common/setup-env . )
 	[ -e shr-unstable/downloads ] || ( cd shr-unstable ; ln -sf ../downloads . )
 	[ -e shr-unstable/bitbake ] || ( cd shr-unstable ; ln -sf ../bitbake . )
-	[ -e shr-unstable/shr ] || ( cd shr-unstable ; \
-	  git clone --reference ../shr ${SHR_OVERLAY_URL} shr; \
-	  cd shr ; \
-	  case "${SHR_UNSTABLE_BRANCH_SHR}" in master) : ;; *) git checkout --no-track -b ${SHR_UNSTABLE_BRANCH_SHR} origin/${SHR_UNSTABLE_BRANCH_SHR} ;; esac )
 	[ -e shr-unstable/openembedded ] || ( cd shr-unstable ; \
 	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
 	  cd openembedded ; \
-	  git checkout --no-track -b ${SHR_UNSTABLE_BRANCH_OE} origin/${SHR_UNSTABLE_BRANCH_OE}; \
-	  ../shr/patches/do-patch )
+	  git checkout --no-track -b ${SHR_UNSTABLE_BRANCH_OE} origin/${SHR_UNSTABLE_BRANCH_OE} )
 	[ -d shr-unstable/conf ] || ( mkdir -p shr-unstable/conf )
 	[ -e shr-unstable/conf/site.conf ] || ( cd shr-unstable/conf ; ln -sf ../../common/conf/site.conf . )
 	[ -e shr-unstable/conf/auto.conf ] || ( \
 		echo "DISTRO = \"shr\"" > shr-unstable/conf/auto.conf ; \
-		echo "DISTRO_TYPE = \"testing\"" >> shr-unstable/conf/auto.conf ; \
+		echo "DISTRO_TYPE = \"debug\"" >> shr-unstable/conf/auto.conf ; \
 		echo "MACHINE = \"om-gta02\"" >> shr-unstable/conf/auto.conf ; \
 		echo "IMAGE_TARGET = \"shr-lite-image\"" >> shr-unstable/conf/auto.conf ; \
 		echo "DISTRO_TARGET = \"task-shr-feed\"" >> shr-unstable/conf/auto.conf ; \
@@ -360,14 +354,9 @@ update-shr-testing: shr-testing/.configured
 .PHONY: update-shr-unstable
 update-shr-unstable: shr-unstable/.configured
 	@echo "updating shr-unstable tree"
-	( cd shr-unstable/shr ; \
-	  git fetch ; \
-	  git checkout ${SHR_UNSTABLE_BRANCH_SHR} ; \
-	  git reset --hard origin/${SHR_UNSTABLE_BRANCH_SHR} )
 	( cd shr-unstable/openembedded ; \
-	  rm -f .patched ; git clean -d -f ; git reset --hard ; git fetch ; \
-	  git checkout ${SHR_UNSTABLE_BRANCH_OE} ; git reset --hard origin/${SHR_UNSTABLE_BRANCH_OE} ; \
-	  ../shr/patches/do-patch )
+	  git clean -d -f ; git reset --hard ; git fetch ; \
+	  git checkout ${SHR_UNSTABLE_BRANCH_OE} ; git reset --hard origin/${SHR_UNSTABLE_BRANCH_OE} )
 
 .PHONY: update-shr-oemerge
 update-shr-oemerge: shr-oemerge/.configured
