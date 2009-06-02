@@ -10,8 +10,6 @@ SHR_TESTING_BRANCH_OE = fso/milestone5.5
 
 SHR_UNSTABLE_BRANCH_OE = shr/import
 
-SHR_OEMERGE_BRANCH_OE = shr/import
-
 SHR_MAKEFILE_URL = "http://shr.bearstech.com/repo/shr-makefile.git"
 SHR_OVERLAY_URL = "http://shr.bearstech.com/repo/shr-overlay.git"
 
@@ -20,10 +18,10 @@ all: update build
 
 .PHONY: setup
 setup:  setup-common setup-bitbake setup-shr setup-openembedded \
-	setup-shr-unstable setup-shr-testing setup-shr-oemerge
+	setup-shr-unstable setup-shr-testing
 
 .PHONY: prefetch
-prefetch: prefetch-shr-unstable prefetch-shr-testing prefetch-shr-oemerge
+prefetch: prefetch-shr-unstable prefetch-shr-testing
 
 .PHONY: update
 update: 
@@ -33,7 +31,6 @@ update:
 	[ ! -e openembedded ] || ${MAKE} update-openembedded 
 	[ ! -e shr-testing ] || ${MAKE} update-shr-testing 
 	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
-	[ ! -e shr-oemerge ] || ${MAKE} update-shr-oemerge
 
 .PHONY: build
 build:
@@ -41,18 +38,16 @@ build:
 	[ ! -e shr-testing ]                  || ${MAKE} shr-testing-image
 	[ ! -e shr-unstable ]                 || ${MAKE} shr-unstable-recipes
 	[ ! -e shr-testing ]                  || ${MAKE} shr-testing-recipes
-	[ ! -e shr-oemerge ]                  || ${MAKE} shr-oemerge-image
-	[ ! -e shr-oemerge ]                  || ${MAKE} shr-oemerge-recipes
 
 .PHONY: status
 status: status-common status-bitbake status-shr status-openembedded
 
 .PHONY: clobber
-clobber: clobber-shr-unstable clobber-shr-testing clobber-shr-oemerge
+clobber: clobber-shr-unstable clobber-shr-testing
 
 .PHONY: distclean
 distclean: distclean-bitbake distclean-openembedded \
-	 distclean-shr-unstable distclean-shr-testing distclean-shr-oemerge
+	 distclean-shr-unstable distclean-shr-testing
 
 .PHONY: prefetch-%
 prefetch-%: %/.configured
@@ -256,62 +251,6 @@ shr-unstable/.configured: common/.git/config bitbake/.svn/entries shr/.git/confi
 	rm -rf shr-unstable/tmp/cache
 	touch shr-unstable/.configured
 
-.PRECIOUS: shr-oemerge/.configured
-shr-oemerge/.configured: common/.git/config bitbake/.svn/entries shr/.git/config openembedded/.git/config
-	@echo "preparing shr-oemerge tree"
-	[ -d shr-oemerge ] || ( mkdir -p shr-oemerge )
-	[ -e downloads ] || ( mkdir -p downloads )
-	[ -e shr-oemerge/Makefile ] || ( cd shr-oemerge ; ln -sf ../common/openembedded.mk Makefile )
-	[ -e shr-oemerge/setup-env ] || ( cd shr-oemerge ; ln -sf ../common/setup-env . )
-	[ -e shr-oemerge/downloads ] || ( cd shr-oemerge ; ln -sf ../downloads . )
-	[ -e shr-oemerge/bitbake ] || ( cd shr-oemerge ; ln -sf ../bitbake . )
-	[ -e shr-oemerge/openembedded ] || ( cd shr-oemerge ; \
-	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
-	  cd openembedded ; \
-	  git checkout --no-track -b ${SHR_OEMERGE_BRANCH_OE} origin/${SHR_OEMERGE_BRANCH_OE}; \
-	  ../shr/patches/do-patch )
-	[ -d shr-oemerge/conf ] || ( mkdir -p shr-oemerge/conf )
-	[ -e shr-oemerge/conf/site.conf ] || ( cd shr-oemerge/conf ; ln -sf ../../common/conf/site.conf . )
-	[ -e shr-oemerge/conf/auto.conf ] || ( \
-		echo "DISTRO = \"shr\"" > shr-oemerge/conf/auto.conf ; \
-		echo "DISTRO_TYPE = \"debug\"" >> shr-oemerge/conf/auto.conf ; \
-		echo "MACHINE = \"om-gta02\"" >> shr-oemerge/conf/auto.conf ; \
-		echo "IMAGE_TARGET = \"shr-lite-image\"" >> shr-oemerge/conf/auto.conf ; \
-		echo "DISTRO_TARGET = \"task-shr-feed\"" >> shr-oemerge/conf/auto.conf ; \
-		echo "INHERIT += \"rm_work\"" >> shr-oemerge/conf/auto.conf ; \
-		echo "DISTRO_FEED_PREFIX = \"shr\"" >> shr-oemerge/conf/auto.conf ; \
-		echo "DISTRO_FEED_URI = \"http://build.shr-project.org/shr-oemerge/ipk/\"" >> shr-oemerge/conf/auto.conf ; \
-	)
-	[ -e shr-oemerge/conf/local.conf ] || ( \
-		echo "# require conf/distro/include/moko-autorev.inc" > shr-oemerge/conf/local.conf ; \
-		echo "# require conf/distro/include/fso-autorev.inc" >> shr-oemerge/conf/local.conf ; \
-		echo "BB_GIT_CLONE_FOR_SRCREV = \"1\"" >> shr-oemerge/conf/local.conf ; \
-		echo "OE_ALLOW_INSECURE_DOWNLOADS=1" >> shr-oemerge/conf/local.conf ; \
-		echo "# additionally build a tar.gz image file (as needed for installing on SD)" >> shr-oemerge/conf/local.conf ; \
-		echo "#IMAGE_FSTYPES = \"jffs2 tar.gz\"" >> shr-oemerge/conf/local.conf ; \
-		echo "# speed up build by parallel building - usefull for multicore cpus" >> shr-oemerge/conf/local.conf ; \
-		echo "#PARALLEL_MAKE = \"-j 4\"" >> shr-oemerge/conf/local.conf ; \
-		echo "#BB_NUMBER_THREADS = \"4\"" >> shr-oemerge/conf/local.conf ; \
-		echo "# avoid multiple locales generation to speedup the build and save space" >> shr-oemerge/conf/local.conf ; \
-		echo "#GLIBC_GENERATE_LOCALES = \"en_US.UTF-8\"" >> shr-oemerge/conf/local.conf ; \
-		echo "# completely disable generation of locales. If building qemu fails this might help" >> shr-oemerge/conf/local.conf ; \
-		echo "#ENABLE_BINARY_LOCALE_GENERATION = \"0\"" >> shr-oemerge/conf/local.conf ; \
-		echo "require conf/distro/include/sane-srcrevs.inc" >> shr-oemerge/conf/local.conf ; \
-		echo "require conf/distro/include/sane-srcdates.inc" >> shr-oemerge/conf/local.conf ; \
-		echo "require conf/distro/include/shr-autorev.inc" >> shr-oemerge/conf/local.conf ; \
-		echo "require conf/distro/include/shr-autorev-unstable.inc" >> shr-oemerge/conf/local.conf ; \
-		echo "# enable local builds for SHR apps" >> shr-oemerge/conf/local.conf ; \
-		echo "#require local-builds.inc" >> shr-oemerge/conf/local.conf ; \
-	)
-	[ -e shr-oemerge/conf/local-builds.inc ] || ( \
-			echo "SRC_URI_pn-libframeworkd-phonegui-efl = \"file:///path/to/source/shr\"" > shr-oemerge/conf/local-builds.inc ; \
-			echo "SRCREV_pn-libframeworkd-phonegui-efl = \"LOCAL\"" >> shr-oemerge/conf/local-builds.inc ; \
-			echo "SRCPV_pn-libframeworkd-phonegui-efl = \"LOCAL\"" >> shr-oemerge/conf/local-builds.inc ; \
-			echo "S_pn-libframeworkd-phonegui-efl = \"\$${WORKDIR}/shr/\$${PN}\"" >> shr-oemerge/conf/local-builds.inc ; \
-	)
-	[ -e shr-oemerge/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-oemerge'" > shr-oemerge/conf/topdir.conf
-	rm -rf shr-oemerge/tmp/cache
-	touch shr-oemerge/.configured
 
 .PHONY: update-common
 update-common: common/.git/config
@@ -357,13 +296,6 @@ update-shr-unstable: shr-unstable/.configured
 	( cd shr-unstable/openembedded ; \
 	  git clean -d -f ; git reset --hard ; git fetch ; \
 	  git checkout ${SHR_UNSTABLE_BRANCH_OE} ; git reset --hard origin/${SHR_UNSTABLE_BRANCH_OE} )
-
-.PHONY: update-shr-oemerge
-update-shr-oemerge: shr-oemerge/.configured
-	@echo "updating shr-oemerge tree"
-	( cd shr-oemerge/openembedded ; \
-	  git clean -d -f ; git reset --hard ; git fetch ; \
-	  git checkout ${SHR_OEMERGE_BRANCH_OE} ; git reset --hard origin/${SHR_OEMERGE_BRANCH_OE} )
 
 .PHONY: status-common
 status-common: common/.git/config
