@@ -5,9 +5,7 @@ MAKEFLAGS = -swr
 
 BITBAKE_VERSION = branches/bitbake-1.8
 
-SHR_TESTING_BRANCH_SHR = testing
-SHR_TESTING_BRANCH_OE = fso/milestone5.5
-
+SHR_TESTING_BRANCH_OE = shr/import
 SHR_UNSTABLE_BRANCH_OE = shr/import
 
 SHR_MAKEFILE_URL = "http://shr.bearstech.com/repo/shr-makefile.git"
@@ -17,8 +15,7 @@ SHR_OVERLAY_URL = "http://shr.bearstech.com/repo/shr-overlay.git"
 all: update build
 
 .PHONY: setup
-setup:  setup-common setup-bitbake setup-shr setup-openembedded \
-	setup-shr-unstable setup-shr-testing
+setup:  setup-common setup-bitbake setup-openembedded setup-shr-unstable setup-shr-testing
 
 .PHONY: prefetch
 prefetch: prefetch-shr-unstable prefetch-shr-testing
@@ -27,7 +24,6 @@ prefetch: prefetch-shr-unstable prefetch-shr-testing
 update: 
 	[ ! -e common ] || ${MAKE} update-common 
 	[ ! -e bitbake ] || ${MAKE} update-bitbake 
-	[ ! -e shr ] || ${MAKE} update-shr 
 	[ ! -e openembedded ] || ${MAKE} update-openembedded 
 	[ ! -e shr-testing ] || ${MAKE} update-shr-testing 
 	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
@@ -40,7 +36,7 @@ build:
 	[ ! -e shr-testing ]                  || ${MAKE} shr-testing-recipes
 
 .PHONY: status
-status: status-common status-bitbake status-shr status-openembedded
+status: status-common status-bitbake status-openembedded
 
 .PHONY: clobber
 clobber: clobber-shr-unstable clobber-shr-testing
@@ -120,14 +116,6 @@ patch-openembedded openembedded/.patched:
 	  cd shr-testing/openembedded ; \
 	  ../shr/patches/do-patch )
 
-.PHONY: setup-shr
-.PRECIOUS: shr/.git/config
-setup-shr shr/.git/config:
-	[ -e shr/.git/config ] || \
-	( echo "setting up shr"; \
-	  git clone ${SHR_OVERLAY_URL} shr )
-	touch shr/.git/config
-
 .PHONY: setup-%
 setup-%:
 	${MAKE} $*/.configured
@@ -142,20 +130,15 @@ shr-testing/.configured: common/.git/config bitbake/.svn/entries shr/.git/config
 	[ -e shr-testing/setup-env ] || ( cd shr-testing ; ln -sf ../common/setup-env . )
 	[ -e shr-testing/downloads ] || ( cd shr-testing ; ln -sf ../downloads . )
 	[ -e shr-testing/bitbake ] || ( cd shr-testing ; ln -sf ../bitbake . )
-	[ -e shr-testing/shr ] || ( cd shr-testing ; \
-	  git clone --reference ../shr ${SHR_OVERLAY_URL} shr; \
-	  cd shr ; \
-	  case "${SHR_TESTING_BRANCH_SHR}" in master) : ;; *) git checkout --no-track -b ${SHR_TESTING_BRANCH_SHR} origin/${SHR_TESTING_BRANCH_SHR} ;; esac )
 	[ -e shr-testing/openembedded ] || ( cd shr-testing ; \
 	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
 	  cd openembedded ; \
-	  git checkout --no-track -b ${SHR_TESTING_BRANCH_OE} origin/${SHR_TESTING_BRANCH_OE}; \
-	  ../shr/patches/do-patch )
+	  git checkout --no-track -b ${SHR_TESTING_BRANCH_OE} origin/${SHR_TESTING_BRANCH_OE} )
 	[ -d shr-testing/conf ] || ( mkdir -p shr-testing/conf )
 	[ -e shr-testing/conf/site.conf ] || ( cd shr-testing/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
 	[ -e shr-testing/conf/auto.conf ] || ( \
 		echo "DISTRO = \"openmoko\"" > shr-testing/conf/auto.conf ; \
-		echo "DISTRO_TYPE = \"testing\"" >> shr-testing/conf/auto.conf ; \
+		echo "DISTRO_TYPE = \"debug\"" >> shr-testing/conf/auto.conf ; \
 		echo "MACHINE = \"om-gta02\"" >> shr-testing/conf/auto.conf ; \
 		echo "IMAGE_TARGET = \"shr-lite-image\"" >> shr-testing/conf/auto.conf ; \
 		echo "DISTRO_TARGET = \"task-shr-feed\"" >> shr-testing/conf/auto.conf ; \
@@ -166,7 +149,6 @@ shr-testing/.configured: common/.git/config bitbake/.svn/entries shr/.git/config
 	[ -e shr-testing/conf/local.conf ] || ( \
 		echo "# require conf/distro/include/moko-autorev.inc" > shr-testing/conf/local.conf ; \
 		echo "# require conf/distro/include/fso-autorev.inc" >> shr-testing/conf/local.conf ; \
-		echo "BBFILES += \"\$${TOPDIR}/shr/openembedded/recipes/*/*.bb\"" >> shr-testing/conf/local.conf ; \
 		echo "BB_GIT_CLONE_FOR_SRCREV = \"1\"" >> shr-testing/conf/local.conf ; \
 		echo "OE_ALLOW_INSECURE_DOWNLOADS=1" >> shr-testing/conf/local.conf ; \
 		echo "# additionally build a tar.gz image file (as needed for installing on SD)" >> shr-testing/conf/local.conf ; \
@@ -195,7 +177,7 @@ shr-testing/.configured: common/.git/config bitbake/.svn/entries shr/.git/config
 	touch shr-testing/.configured
 
 .PRECIOUS: shr-unstable/.configured
-shr-unstable/.configured: common/.git/config bitbake/.svn/entries shr/.git/config openembedded/.git/config
+shr-unstable/.configured: common/.git/config bitbake/.svn/entries openembedded/.git/config
 	@echo "preparing shr-unstable tree"
 	[ -d shr-unstable ] || ( mkdir -p shr-unstable )
 	[ -e downloads ] || ( mkdir -p downloads )
@@ -266,28 +248,19 @@ update-openembedded: openembedded/.git/config
 	@echo "updating openembedded"
 	( cd openembedded ; git pull || ( \
       echo ; \
-      echo "!!! looks like you have a dirty OE tree ;)"; \
+      echo "!!! looks like either the OE git server has problems"; \
+      echo "or you have a dirty OE tree ;)"; \
       echo "to fix that do the following:"; \
       echo "cd `pwd`; git reset --hard"; \
       echo ; \
       echo "ATTENTION: that will kill all eventual changes" ) )
 
-.PHONY: update-shr
-update-shr: shr/.git/config
-	@echo "updating shr"
-	( cd shr ; git pull )
-
 .PHONY: update-shr-testing
 update-shr-testing: shr-testing/.configured
 	@echo "updating shr-testing tree"
-	( cd shr-testing/shr ; \
-	  git fetch ; \
-	  git checkout ${SHR_TESTING_BRANCH_SHR} ; \
-	  git reset --hard origin/${SHR_TESTING_BRANCH_SHR} )
 	( cd shr-testing/openembedded ; \
-	  rm -f .patched ; git clean -d -f ; git reset --hard ; git fetch ; \
-	  git checkout ${SHR_TESTING_BRANCH_OE} ; git reset --hard origin/${SHR_TESTING_BRANCH_OE} ; \
-	  ../shr/patches/do-patch )
+	  git clean -d -f ; git reset --hard ; git fetch ; \
+	  git checkout ${SHR_TESTING_BRANCH_OE} ; git reset --hard origin/${SHR_TESTING_BRANCH_OE} )
 
 .PHONY: update-shr-unstable
 update-shr-unstable: shr-unstable/.configured
@@ -308,10 +281,6 @@ status-bitbake: bitbake/.svn/entries
 status-openembedded: openembedded/.git/config
 	( cd openembedded ; git diff --stat )
 
-.PHONY: status-shr
-status-shr: shr/.git/config
-	( cd shr ; git status )
-
 .PHONY: clobber-%
 clobber-%:
 	[ ! -e $*/Makefile ] || ( cd $* ; ${MAKE} clobber )
@@ -323,10 +292,6 @@ distclean-bitbake:
 .PHONY: distclean-openembedded
 distclean-openembedded:
 	rm -rf openembedded
-
-.PHONY: distclean-shr
-distclean-shr:
-	rm -rf shr
 
 .PHONY: distclean-%
 distclean-%:
