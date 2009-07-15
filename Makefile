@@ -98,7 +98,7 @@ setup-bitbake bitbake/.svn/entries:
 
 .PHONY: setup-openembedded
 .PRECIOUS: openembedded/.git/config
-setup-openembedded openembedded/.git/config: shr/.git/config
+setup-openembedded openembedded/.git/config:
 	[ -e openembedded/.git/config ] || \
 	( echo "setting up openembedded"; \
 	  git clone git://git.openembedded.net/openembedded openembedded )
@@ -122,7 +122,7 @@ setup-%:
 
 
 .PRECIOUS: shr-testing/.configured
-shr-testing/.configured: common/.git/config bitbake/.svn/entries shr/.git/config openembedded/.git/config
+shr-testing/.configured: common/.git/config bitbake/.svn/entries openembedded/.git/config
 	@echo "preparing shr-testing tree"
 	[ -d shr-testing ] || ( mkdir -p shr-testing )
 	[ -e downloads ] || ( mkdir -p downloads )
