@@ -137,7 +137,7 @@ shr-testing/.configured: common/.git/config bitbake/.svn/entries openembedded/.g
 	[ -d shr-testing/conf ] || ( mkdir -p shr-testing/conf )
 	[ -e shr-testing/conf/site.conf ] || ( cd shr-testing/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
 	[ -e shr-testing/conf/auto.conf ] || ( \
-		echo "DISTRO = \"openmoko\"" > shr-testing/conf/auto.conf ; \
+		echo "DISTRO = \"shr\"" > shr-testing/conf/auto.conf ; \
 		echo "DISTRO_TYPE = \"debug\"" >> shr-testing/conf/auto.conf ; \
 		echo "MACHINE = \"om-gta02\"" >> shr-testing/conf/auto.conf ; \
 		echo "IMAGE_TARGET = \"shr-lite-image\"" >> shr-testing/conf/auto.conf ; \
