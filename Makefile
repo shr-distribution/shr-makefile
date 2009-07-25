@@ -3,7 +3,7 @@
 
 MAKEFLAGS = -swr
 
-BITBAKE_VERSION = branches/bitbake-1.8
+BITBAKE_VERSION = 1.8
 
 SHR_TESTING_BRANCH_OE = shr/import
 SHR_UNSTABLE_BRANCH_OE = shr/import
@@ -91,10 +91,10 @@ setup-common common/.git/config:
 .PHONY: setup-bitbake
 .PRECIOUS: bitbake/.svn/entries
 setup-bitbake bitbake/.svn/entries:
-	[ -e bitbake/.svn/entries ] || \
+	[ -e bitbake/.git/config ] || \
 	( echo "setting up bitbake ..."; \
-	  svn co svn://svn.berlios.de/bitbake/${BITBAKE_VERSION} bitbake )
-	touch bitbake/.svn/entries
+	  git clone git://git.openembedded.net/bitbake bitbake; \
+	  cd bitbake; git checkout -b ${BITBAKE_VERSION} --track origin/${BITBAKE_VERSION} )
 
 .PHONY: setup-openembedded
 .PRECIOUS: openembedded/.git/config
@@ -241,7 +241,16 @@ update-common: common/.git/config
 .PHONY: update-bitbake
 update-bitbake: bitbake/.svn/entries
 	@echo "updating bitbake"
-	( cd bitbake ; svn up )
+	if [ -d bitbake/.svn ]; then \
+		echo; \
+		echo "ATTENTION: you still have bitbake from the svn tree!!!"; \
+		echo "           bitbake changed to git - please do:"; \
+		echo; \
+		echo "           rm -rf bitbake && make setup-bitbake"; \
+		echo; \
+		exit 1;\
+	fi
+	( cd bitbake ; git pull )
 
 .PHONY: update-openembedded
 update-openembedded: openembedded/.git/config
