@@ -89,8 +89,8 @@ setup-common common/.git/config:
 	touch common/.git/config
 
 .PHONY: setup-bitbake
-.PRECIOUS: bitbake/.svn/entries
-setup-bitbake bitbake/.svn/entries:
+.PRECIOUS: bitbake/.git/config
+setup-bitbake bitbake/.git/config:
 	[ -e bitbake/.git/config ] || \
 	( echo "setting up bitbake ..."; \
 	  git clone git://git.openembedded.net/bitbake bitbake; \
@@ -122,7 +122,7 @@ setup-%:
 
 
 .PRECIOUS: shr-testing/.configured
-shr-testing/.configured: common/.git/config bitbake/.svn/entries openembedded/.git/config
+shr-testing/.configured: common/.git/config bitbake/.git/config openembedded/.git/config
 	@echo "preparing shr-testing tree"
 	[ -d shr-testing ] || ( mkdir -p shr-testing )
 	[ -e downloads ] || ( mkdir -p downloads )
@@ -177,7 +177,7 @@ shr-testing/.configured: common/.git/config bitbake/.svn/entries openembedded/.g
 	touch shr-testing/.configured
 
 .PRECIOUS: shr-unstable/.configured
-shr-unstable/.configured: common/.git/config bitbake/.svn/entries openembedded/.git/config
+shr-unstable/.configured: common/.git/config bitbake/.git/config openembedded/.git/config
 	@echo "preparing shr-unstable tree"
 	[ -d shr-unstable ] || ( mkdir -p shr-unstable )
 	[ -e downloads ] || ( mkdir -p downloads )
@@ -239,7 +239,7 @@ update-common: common/.git/config
 	( cd common ; git pull )
 
 .PHONY: update-bitbake
-update-bitbake: bitbake/.svn/entries
+update-bitbake: bitbake/.git/config
 	@echo "updating bitbake"
 	if [ -d bitbake/.svn ]; then \
 		echo; \
@@ -283,8 +283,8 @@ status-common: common/.git/config
 	( cd common ; git diff --stat )
 
 .PHONY: status-bitbake
-status-bitbake: bitbake/.svn/entries
-	( cd bitbake ; svn status )
+status-bitbake: bitbake/.git/config
+	( cd bitbake ; git diff --stat )
 
 .PHONY: status-openembedded
 status-openembedded: openembedded/.git/config
