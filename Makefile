@@ -91,6 +91,15 @@ setup-common common/.git/config:
 .PHONY: setup-bitbake
 .PRECIOUS: bitbake/.git/config
 setup-bitbake bitbake/.git/config:
+	if [ -d bitbake/.svn ]; then \
+		echo; \
+		echo "ATTENTION: you still have bitbake from the svn tree!!!"; \
+		echo "           bitbake changed to git - please do:"; \
+		echo; \
+		echo "           rm -rf bitbake && make setup-bitbake"; \
+		echo; \
+		exit 1;\
+	fi
 	[ -e bitbake/.git/config ] || \
 	( echo "setting up bitbake ..."; \
 	  git clone git://git.openembedded.net/bitbake bitbake; \
@@ -241,15 +250,6 @@ update-common: common/.git/config
 .PHONY: update-bitbake
 update-bitbake: bitbake/.git/config
 	@echo "updating bitbake"
-	if [ -d bitbake/.svn ]; then \
-		echo; \
-		echo "ATTENTION: you still have bitbake from the svn tree!!!"; \
-		echo "           bitbake changed to git - please do:"; \
-		echo; \
-		echo "           rm -rf bitbake && make setup-bitbake"; \
-		echo; \
-		exit 1;\
-	fi
 	( cd bitbake ; git pull )
 
 .PHONY: update-openembedded
