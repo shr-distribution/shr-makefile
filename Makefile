@@ -8,8 +8,7 @@ BITBAKE_VERSION = 1.8
 SHR_TESTING_BRANCH_OE = shr/import
 SHR_UNSTABLE_BRANCH_OE = shr/import
 
-SHR_MAKEFILE_URL = "http://shr.bearstech.com/repo/shr-makefile.git"
-SHR_OVERLAY_URL = "http://shr.bearstech.com/repo/shr-overlay.git"
+SHR_MAKEFILE_URL = "git://git.shr-project.org/shr-makefile.git"
 
 .PHONY: all
 all: update build
