@@ -6,7 +6,7 @@ MAKEFLAGS = -swr
 BITBAKE_VERSION = 1.8
 
 SHR_TESTING_BRANCH_OE = shr/import
-SHR_UNSTABLE_BRANCH_OE = shr/import
+SHR_UNSTABLE_BRANCH_OE = shr/merge
 
 SHR_MAKEFILE_URL = "git://git.shr-project.org/shr-makefile.git"
 
@@ -219,9 +219,6 @@ shr-unstable/.configured: common/.git/config bitbake/.git/config openembedded/.g
 		echo "#GLIBC_GENERATE_LOCALES = \"en_US.UTF-8\"" >> shr-unstable/conf/local.conf ; \
 		echo "# completely disable generation of locales. If building qemu fails this might help" >> shr-unstable/conf/local.conf ; \
 		echo "#ENABLE_BINARY_LOCALE_GENERATION = \"0\"" >> shr-unstable/conf/local.conf ; \
-		echo "require conf/distro/include/sane-srcrevs.inc" >> shr-unstable/conf/local.conf ; \
-		echo "require conf/distro/include/sane-srcdates.inc" >> shr-unstable/conf/local.conf ; \
-		echo "require conf/distro/include/shr-autorev.inc" >> shr-unstable/conf/local.conf ; \
 		echo "# enable local builds for SHR apps" >> shr-unstable/conf/local.conf ; \
 		echo "#require local-builds.inc" >> shr-unstable/conf/local.conf ; \
 	)
