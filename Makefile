@@ -8,7 +8,7 @@ BITBAKE_VERSION = 1.8
 SHR_TESTING_BRANCH_OE = shr/import
 SHR_UNSTABLE_BRANCH_OE = shr/merge
 
-SHR_MAKEFILE_URL = "git://git.shr-project.org/shr-makefile.git"
+SHR_MAKEFILE_URL = "http://git.shr-project.org/repo/shr-makefile.git"
 
 .PHONY: all
 all: update build
