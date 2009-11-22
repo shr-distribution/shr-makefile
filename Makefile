@@ -155,7 +155,6 @@ shr-testing/.configured: common/.git/config bitbake/.git/config openembedded/.gi
 		echo "DISTRO_FEED_URI = \"http://build.shr-project.org/shr-testing/ipk/\"" >> shr-testing/conf/auto.conf ; \
 	)
 	[ -e shr-testing/conf/local.conf ] || ( \
-		echo "#BB_GIT_CLONE_FOR_SRCREV = \"1\"" >> shr-testing/conf/local.conf ; \
 		echo "OE_ALLOW_INSECURE_DOWNLOADS=1" >> shr-testing/conf/local.conf ; \
 		echo "# additionally build a tar.gz image file (as needed for installing on SD)" >> shr-testing/conf/local.conf ; \
 		echo "#IMAGE_FSTYPES = \"jffs2 tar.gz\"" >> shr-testing/conf/local.conf ; \
@@ -208,7 +207,6 @@ shr-unstable/.configured: common/.git/config bitbake/.git/config openembedded/.g
 		echo "DISTRO_FEED_URI = \"http://build.shr-project.org/shr-unstable/ipk/\"" >> shr-unstable/conf/auto.conf ; \
 	)
 	[ -e shr-unstable/conf/local.conf ] || ( \
-		echo "#BB_GIT_CLONE_FOR_SRCREV = \"1\"" >> shr-unstable/conf/local.conf ; \
 		echo "OE_ALLOW_INSECURE_DOWNLOADS=1" >> shr-unstable/conf/local.conf ; \
 		echo "# additionally build a tar.gz image file (as needed for installing on SD)" >> shr-unstable/conf/local.conf ; \
 		echo "#IMAGE_FSTYPES = \"jffs2 tar.gz\"" >> shr-unstable/conf/local.conf ; \
