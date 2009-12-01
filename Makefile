@@ -169,10 +169,10 @@ shr-testing/.configured: common/.git/config bitbake/.git/config openembedded/.gi
 		echo "#require local-builds.inc" >> shr-testing/conf/local.conf ; \
 	)
 	[ -e shr-testing/conf/local-builds.inc ] || ( \
-			echo "SRC_URI_pn-libframeworkd-phonegui-efl = \"file:///path/to/source/shr\"" > shr-testing/conf/local-builds.inc ; \
-			echo "SRCREV_pn-libframeworkd-phonegui-efl = \"LOCAL\"" >> shr-testing/conf/local-builds.inc ; \
-			echo "SRCPV_pn-libframeworkd-phonegui-efl = \"LOCAL\"" >> shr-testing/conf/local-builds.inc ; \
-			echo "S_pn-libframeworkd-phonegui-efl = \"\$${WORKDIR}/shr/\$${PN}\"" >> shr-testing/conf/local-builds.inc ; \
+			echo "SRC_URI_pn-libphone-ui-shr = \"file:///path/to/source/shr\"" > shr-testing/conf/local-builds.inc ; \
+			echo "SRCREV_pn-libphone-ui-shr = \"LOCAL\"" >> shr-testing/conf/local-builds.inc ; \
+			echo "SRCPV_pn-libphone-ui-shr = \"LOCAL\"" >> shr-testing/conf/local-builds.inc ; \
+			echo "S_pn-libphone-ui-shr = \"\$${WORKDIR}/shr/\$${PN}\"" >> shr-testing/conf/local-builds.inc ; \
 	)
 	[ -e shr-testing/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-testing'" > shr-testing/conf/topdir.conf
 	rm -rf shr-testing/tmp/cache
@@ -218,10 +218,10 @@ shr-unstable/.configured: common/.git/config bitbake/.git/config openembedded/.g
 		echo "#require local-builds.inc" >> shr-unstable/conf/local.conf ; \
 	)
 	[ -e shr-unstable/conf/local-builds.inc ] || ( \
-			echo "SRC_URI_pn-libframeworkd-phonegui-efl = \"file:///path/to/source/shr\"" > shr-unstable/conf/local-builds.inc ; \
-			echo "SRCREV_pn-libframeworkd-phonegui-efl = \"LOCAL\"" >> shr-unstable/conf/local-builds.inc ; \
-			echo "SRCPV_pn-libframeworkd-phonegui-efl = \"LOCAL\"" >> shr-unstable/conf/local-builds.inc ; \
-			echo "S_pn-libframeworkd-phonegui-efl = \"\$${WORKDIR}/shr/\$${PN}\"" >> shr-unstable/conf/local-builds.inc ; \
+			echo "SRC_URI_pn-libphone-ui-shr = \"file:///path/to/source/shr\"" > shr-unstable/conf/local-builds.inc ; \
+			echo "SRCREV_pn-libphone-ui-shr = \"LOCAL\"" >> shr-unstable/conf/local-builds.inc ; \
+			echo "SRCPV_pn-libphone-ui-shr = \"LOCAL\"" >> shr-unstable/conf/local-builds.inc ; \
+			echo "S_pn-libphone-ui-shr = \"\$${WORKDIR}/shr/\$${PN}\"" >> shr-unstable/conf/local-builds.inc ; \
 	)
 	[ -e shr-unstable/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-unstable'" > shr-unstable/conf/topdir.conf
 	rm -rf shr-unstable/tmp/cache
