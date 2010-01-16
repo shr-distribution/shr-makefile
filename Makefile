@@ -253,14 +253,18 @@ update-shr-testing: shr-testing/.configured
 	@echo "updating shr-testing tree"
 	( cd shr-testing/openembedded ; \
 	  git clean -d -f ; git reset --hard ; git fetch ; \
-	  git checkout ${SHR_TESTING_BRANCH_OE} ; git reset --hard origin/${SHR_TESTING_BRANCH_OE} )
+	  git checkout ${SHR_TESTING_BRANCH_OE} 2>/dev/null || \
+	  git checkout --no-track -b ${SHR_TESTING_BRANCH_OE} origin/${SHR_TESTING_BRANCH_OE} ; \
+	  git reset --hard origin/${SHR_TESTING_BRANCH_OE} )
 
 .PHONY: update-shr-unstable
 update-shr-unstable: shr-unstable/.configured
 	@echo "updating shr-unstable tree"
 	( cd shr-unstable/openembedded ; \
 	  git clean -d -f ; git reset --hard ; git fetch ; \
-	  git checkout ${SHR_UNSTABLE_BRANCH_OE} ; git reset --hard origin/${SHR_UNSTABLE_BRANCH_OE} )
+	  git checkout ${SHR_UNSTABLE_BRANCH_OE} 2>/dev/null || \
+	  git checkout --no-track -b ${SHR_UNSTABLE_BRANCH_OE} origin/${SHR_UNSTABLE_BRANCH_OE} ; \
+	  git reset --hard origin/${SHR_UNSTABLE_BRANCH_OE} )
 
 .PHONY: status-common
 status-common: common/.git/config
