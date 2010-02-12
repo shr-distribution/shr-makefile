@@ -5,7 +5,7 @@ MAKEFLAGS = -swr
 
 BITBAKE_VERSION = 1.8
 
-SHR_TESTING_BRANCH_OE = shr/testing2009
+SHR_TESTING_BRANCH_OE = shr/testing2010
 SHR_UNSTABLE_BRANCH_OE = shr/unstable
 
 SHR_MAKEFILE_URL = "http://git.shr-project.org/repo/shr-makefile.git"
