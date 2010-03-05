@@ -102,7 +102,10 @@ setup-bitbake bitbake/.git/config:
 	[ -e bitbake/.git/config ] || \
 	( echo "setting up bitbake ..."; \
 	  git clone git://git.openembedded.net/bitbake bitbake; \
-	  cd bitbake; git checkout -b ${BITBAKE_VERSION} --track origin/${BITBAKE_VERSION} )
+	  cd bitbake; \
+	  git checkout ${BITBAKE_VERSION} 2>/dev/null || \
+	  git checkout --no-track -b ${BITBAKE_VERSION} origin/${BITBAKE_VERSION} ; \
+	  git reset --hard origin/${BITBAKE_VERSION} )
 
 .PHONY: setup-openembedded
 .PRECIOUS: openembedded/.git/config
