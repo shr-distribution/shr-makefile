@@ -146,7 +146,6 @@ shr-testing/.configured: common/.git/config bitbake/.git/config openembedded/.gi
 	[ -e shr-testing/conf/site.conf ] || ( cd shr-testing/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
 	[ -e shr-testing/conf/auto.conf ] || ( \
 		echo "DISTRO = \"shr\"" > shr-testing/conf/auto.conf ; \
-		echo "DISTRO_TYPE = \"debug\"" >> shr-testing/conf/auto.conf ; \
 		echo "MACHINE = \"om-gta02\"" >> shr-testing/conf/auto.conf ; \
 		echo "IMAGE_TARGET = \"shr-lite-image\"" >> shr-testing/conf/auto.conf ; \
 		echo "DISTRO_TARGET = \"task-shr-feed\"" >> shr-testing/conf/auto.conf ; \
@@ -194,7 +193,6 @@ shr-unstable/.configured: common/.git/config bitbake/.git/config openembedded/.g
 	[ -e shr-unstable/conf/site.conf ] || ( cd shr-unstable/conf ; ln -sf ../../common/conf/site.conf . )
 	[ -e shr-unstable/conf/auto.conf ] || ( \
 		echo "DISTRO = \"shr\"" > shr-unstable/conf/auto.conf ; \
-		echo "DISTRO_TYPE = \"debug\"" >> shr-unstable/conf/auto.conf ; \
 		echo "MACHINE = \"om-gta02\"" >> shr-unstable/conf/auto.conf ; \
 		echo "IMAGE_TARGET = \"shr-lite-image\"" >> shr-unstable/conf/auto.conf ; \
 		echo "DISTRO_TARGET = \"task-shr-feed\"" >> shr-unstable/conf/auto.conf ; \
