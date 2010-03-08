@@ -235,7 +235,11 @@ update-common: common/.git/config
 .PHONY: update-bitbake
 update-bitbake: bitbake/.git/config
 	@echo "updating bitbake"
-	( cd bitbake ; git pull )
+	( cd bitbake ; \
+	  git clean -d -f ; git reset --hard ; git fetch ; \
+	  git checkout ${BITBAKE_VERSION} 2>/dev/null || \
+	  git checkout --no-track -b ${BITBAKE_VERSION} origin/${BITBAKE_VERSION} ; \
+	  git reset --hard origin/${BITBAKE_VERSION} )
 
 .PHONY: update-openembedded
 update-openembedded: openembedded/.git/config
