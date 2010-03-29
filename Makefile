@@ -7,6 +7,7 @@ BITBAKE_VERSION = 1.8
 
 SHR_TESTING_BRANCH_OE = shr/testing2010
 SHR_UNSTABLE_BRANCH_OE = shr/unstable
+SHR_STABLE_BRANCH_OE = shr/stable2009
 
 SHR_MAKEFILE_URL = "http://git.shr-project.org/repo/shr-makefile.git"
 
@@ -26,13 +27,16 @@ update:
 	[ ! -e openembedded ] || ${MAKE} update-openembedded 
 	[ ! -e shr-testing ] || ${MAKE} update-shr-testing 
 	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
+	[ ! -e shr-stable ] || ${MAKE} update-shr-stable
 
 .PHONY: build
 build:
 	[ ! -e shr-unstable ]                 || ${MAKE} shr-unstable-image
 	[ ! -e shr-testing ]                  || ${MAKE} shr-testing-image
+	[ ! -e shr-stable ]                   || ${MAKE} shr-stable-image
 	[ ! -e shr-unstable ]                 || ${MAKE} shr-unstable-recipes
 	[ ! -e shr-testing ]                  || ${MAKE} shr-testing-recipes
+	[ ! -e shr-stable ]                   || ${MAKE} shr-stable-recipes
 
 .PHONY: status
 status: status-common status-bitbake status-openembedded
@@ -131,6 +135,53 @@ patch-openembedded openembedded/.patched:
 setup-%:
 	${MAKE} $*/.configured
 
+
+.PRECIOUS: shr-stable/.configured
+shr-stable/.configured: common/.git/config bitbake/.git/config openembedded/.git/config
+	@echo "preparing shr-stable tree"
+	[ -d shr-stable ] || ( mkdir -p shr-stable )
+	[ -e downloads ] || ( mkdir -p downloads )
+	[ -e shr-stable/Makefile ] || ( cd shr-stable ; ln -sf ../common/openembedded.mk Makefile )
+	[ -e shr-stable/setup-env ] || ( cd shr-stable ; ln -sf ../common/setup-env . )
+	[ -e shr-stable/downloads ] || ( cd shr-stable ; ln -sf ../downloads . )
+	[ -e shr-stable/bitbake ] || ( cd shr-stable ; ln -sf ../bitbake . )
+	[ -e shr-stable/openembedded ] || ( cd shr-stable ; \
+	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
+	  cd openembedded ; \
+	  git checkout --no-track -b ${SHR_STABLE_BRANCH_OE} origin/${SHR_STABLE_BRANCH_OE} )
+	[ -d shr-stable/conf ] || ( mkdir -p shr-stable/conf )
+	[ -e shr-stable/conf/site.conf ] || ( cd shr-stable/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
+	[ -e shr-stable/conf/auto.conf ] || ( \
+		echo "DISTRO = \"shr\"" > shr-stable/conf/auto.conf ; \
+		echo "MACHINE = \"om-gta02\"" >> shr-stable/conf/auto.conf ; \
+		echo "IMAGE_TARGET = \"shr-lite-image\"" >> shr-stable/conf/auto.conf ; \
+		echo "DISTRO_TARGET = \"task-shr-feed\"" >> shr-stable/conf/auto.conf ; \
+		echo "INHERIT += \"rm_work\"" >> shr-stable/conf/auto.conf ; \
+		echo "DISTRO_FEED_PREFIX = \"shr\"" >> shr-stable/conf/auto.conf ; \
+		echo "DISTRO_FEED_URI = \"http://build.shr-project.org/shr-stable/ipk/\"" >> shr-stable/conf/auto.conf ; \
+	)
+	[ -e shr-stable/conf/local.conf ] || ( \
+		echo "# additionally build a tar.gz image file (as needed for installing on SD)" >> shr-stable/conf/local.conf ; \
+		echo "#IMAGE_FSTYPES = \"jffs2 tar.gz\"" >> shr-stable/conf/local.conf ; \
+		echo "# speed up build by parallel building - usefull for multicore cpus" >> shr-stable/conf/local.conf ; \
+		echo "#PARALLEL_MAKE = \"-j 4\"" >> shr-stable/conf/local.conf ; \
+		echo "#BB_NUMBER_THREADS = \"4\"" >> shr-stable/conf/local.conf ; \
+		echo "# avoid multiple locales generation to speedup the build and save space" >> shr-stable/conf/local.conf ; \
+		echo "#GLIBC_GENERATE_LOCALES = \"en_US.UTF-8\"" >> shr-stable/conf/local.conf ; \
+		echo "# completely disable generation of locales. If building qemu fails this might help" >> shr-stable/conf/local.conf ; \
+		echo "#ENABLE_BINARY_LOCALE_GENERATION = \"0\"" >> shr-stable/conf/local.conf ; \
+		echo "# enable local builds for SHR apps" >> shr-stable/conf/local.conf ; \
+		echo "#require local-builds.inc" >> shr-stable/conf/local.conf ; \
+	)
+	[ -e shr-stable/conf/local-builds.inc ] || ( \
+			echo "SRC_URI_pn-libphone-ui-shr = \"file:///path/to/source/shr\"" > shr-stable/conf/local-builds.inc ; \
+			echo "SRCREV_pn-libphone-ui-shr = \"LOCAL\"" >> shr-stable/conf/local-builds.inc ; \
+			echo "SRCPV_pn-libphone-ui-shr = \"LOCAL\"" >> shr-stable/conf/local-builds.inc ; \
+			echo "S_pn-libphone-ui-shr = \"\$${WORKDIR}/shr/\$${PN}\"" >> shr-stable/conf/local-builds.inc ; \
+	)
+	[ -e shr-stable/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-stable'" > shr-stable/conf/topdir.conf
+	rm -rf shr-stable/tmp/cache
+	touch shr-stable/.configured
 
 .PRECIOUS: shr-testing/.configured
 shr-testing/.configured: common/.git/config bitbake/.git/config openembedded/.git/config
@@ -252,6 +303,15 @@ update-openembedded: openembedded/.git/config
       echo "cd `pwd`; git reset --hard"; \
       echo ; \
       echo "ATTENTION: that will kill all eventual changes" ) )
+
+.PHONY: update-shr-stable
+update-shr-stable: shr-stable/.configured
+	@echo "updating shr-stable tree"
+	( cd shr-stable/openembedded ; \
+	  git clean -d -f ; git reset --hard ; git fetch ; \
+	  git checkout ${SHR_STABLE_BRANCH_OE} 2>/dev/null || \
+	  git checkout --no-track -b ${SHR_STABLE_BRANCH_OE} origin/${SHR_STABLE_BRANCH_OE} ; \
+	  git reset --hard origin/${SHR_STABLE_BRANCH_OE} )
 
 .PHONY: update-shr-testing
 update-shr-testing: shr-testing/.configured
