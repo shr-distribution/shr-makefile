@@ -123,14 +123,6 @@ setup-openembedded openembedded/.git/config:
 	( cd openembedded && git checkout org.openembedded.dev )
 	touch openembedded/.git/config
 
-.PHONY: patch-openembedded
-.PRECIOUS: openembedded/.patched
-patch-openembedded openembedded/.patched:
-	[ -e shr-testing/openembedded/.patched ] || \
-	( echo "patching openembedded"; \
-	  cd shr-testing/openembedded ; \
-	  ../shr/patches/do-patch )
-
 .PHONY: setup-%
 setup-%:
 	${MAKE} $*/.configured
