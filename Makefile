@@ -3,7 +3,7 @@
 
 MAKEFLAGS = -swr
 
-BITBAKE_VERSION = 1.8
+BITBAKE_VERSION = 1.10
 
 SHR_TESTING_BRANCH_OE = shr/testing2010
 SHR_UNSTABLE_BRANCH_OE = org.openembedded.org
