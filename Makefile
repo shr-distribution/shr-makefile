@@ -6,7 +6,7 @@ MAKEFLAGS = -swr
 BITBAKE_VERSION = 1.10
 
 SHR_TESTING_BRANCH_OE = shr/testing2010
-SHR_UNSTABLE_BRANCH_OE = org.openembedded.org
+SHR_UNSTABLE_BRANCH_OE = org.openembedded.dev
 SHR_STABLE_BRANCH_OE = shr/stable2009
 
 SHR_MAKEFILE_URL = "http://git.shr-project.org/repo/shr-makefile.git"
