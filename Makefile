@@ -140,6 +140,7 @@ shr-stable/.configured: common/.git/config bitbake/.git/config openembedded/.git
 	[ -e shr-stable/openembedded ] || ( cd shr-stable ; \
 	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
 	  cd openembedded ; \
+	  git checkout ${SHR_STABLE_BRANCH_OE} 2>/dev/null || \
 	  git checkout --no-track -b ${SHR_STABLE_BRANCH_OE} origin/${SHR_STABLE_BRANCH_OE} )
 	[ -d shr-stable/conf ] || ( mkdir -p shr-stable/conf )
 	[ -e shr-stable/conf/site.conf ] || ( cd shr-stable/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
@@ -187,6 +188,7 @@ shr-testing/.configured: common/.git/config bitbake/.git/config openembedded/.gi
 	[ -e shr-testing/openembedded ] || ( cd shr-testing ; \
 	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
 	  cd openembedded ; \
+	  git checkout ${SHR_TESTING_BRANCH_OE} 2>/dev/null || \
 	  git checkout --no-track -b ${SHR_TESTING_BRANCH_OE} origin/${SHR_TESTING_BRANCH_OE} )
 	[ -d shr-testing/conf ] || ( mkdir -p shr-testing/conf )
 	[ -e shr-testing/conf/site.conf ] || ( cd shr-testing/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
@@ -234,6 +236,7 @@ shr-unstable/.configured: common/.git/config bitbake/.git/config openembedded/.g
 	[ -e shr-unstable/openembedded ] || ( cd shr-unstable ; \
 	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
 	  cd openembedded ; \
+	  git checkout ${SHR_UNSTABLE_BRANCH_OE} 2>/dev/null || \
 	  git checkout --no-track -b ${SHR_UNSTABLE_BRANCH_OE} origin/${SHR_UNSTABLE_BRANCH_OE} )
 	[ -d shr-unstable/conf ] || ( mkdir -p shr-unstable/conf )
 	[ -e shr-unstable/conf/site.conf ] || ( cd shr-unstable/conf ; ln -sf ../../common/conf/site.conf . )
