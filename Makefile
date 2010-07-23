@@ -27,16 +27,16 @@ update:
 	[ ! -e openembedded ] || ${MAKE} update-openembedded 
 	[ ! -e shr-testing ] || ${MAKE} update-shr-testing 
 	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
-	[ ! -e shr-stable ] || ${MAKE} update-shr-stable
+##	[ ! -e shr-stable ] || ${MAKE} update-shr-stable
 
 .PHONY: build
 build:
 	[ ! -e shr-unstable ]                 || ${MAKE} shr-unstable-image
 	[ ! -e shr-testing ]                  || ${MAKE} shr-testing-image
-	[ ! -e shr-stable ]                   || ${MAKE} shr-stable-image
+##	[ ! -e shr-stable ]                   || ${MAKE} shr-stable-image
 	[ ! -e shr-unstable ]                 || ${MAKE} shr-unstable-recipes
 	[ ! -e shr-testing ]                  || ${MAKE} shr-testing-recipes
-	[ ! -e shr-stable ]                   || ${MAKE} shr-stable-recipes
+##	[ ! -e shr-stable ]                   || ${MAKE} shr-stable-recipes
 
 .PHONY: status
 status: status-common status-bitbake status-openembedded
@@ -128,7 +128,7 @@ setup-%:
 	${MAKE} $*/.configured
 
 
-.PRECIOUS: shr-stable/.configured
+##.PRECIOUS: shr-stable/.configured
 shr-stable/.configured: common/.git/config bitbake/.git/config openembedded/.git/config
 	@echo "preparing shr-stable tree"
 	[ -d shr-stable ] || ( mkdir -p shr-stable )
