@@ -167,10 +167,9 @@ shr-stable/.configured: common/.git/config bitbake/.git/config openembedded/.git
 		echo "#require local-builds.inc" >> shr-stable/conf/local.conf ; \
 	)
 	[ -e shr-stable/conf/local-builds.inc ] || ( \
-			echo "SRC_URI_pn-libphone-ui-shr = \"file:///path/to/source/shr\"" > shr-stable/conf/local-builds.inc ; \
-			echo "SRCREV_pn-libphone-ui-shr = \"LOCAL\"" >> shr-stable/conf/local-builds.inc ; \
-			echo "SRCPV_pn-libphone-ui-shr = \"LOCAL\"" >> shr-stable/conf/local-builds.inc ; \
-			echo "S_pn-libphone-ui-shr = \"\$${WORKDIR}/shr/\$${PN}\"" >> shr-stable/conf/local-builds.inc ; \
+			echo "INHERIT_append_pn-libphone-ui-shr = \"srctree gitpkgv\"" > shr-stable/conf/local-builds.inc ; \
+			echo "SRCREV_pn-libphone-ui-shr = \$${AUTOREV}" >> shr-stable/conf/local-builds.inc ; \
+			echo "S_pn-libphone-ui-shr = \"/path/to/source//\$${PN}\"" >> shr-stable/conf/local-builds.inc ; \
 	)
 	[ -e shr-stable/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-stable'" > shr-stable/conf/topdir.conf
 	rm -rf shr-stable/tmp/cache
@@ -215,10 +214,9 @@ shr-testing/.configured: common/.git/config bitbake/.git/config openembedded/.gi
 		echo "#require local-builds.inc" >> shr-testing/conf/local.conf ; \
 	)
 	[ -e shr-testing/conf/local-builds.inc ] || ( \
-			echo "SRC_URI_pn-libphone-ui-shr = \"file:///path/to/source/shr\"" > shr-testing/conf/local-builds.inc ; \
-			echo "SRCREV_pn-libphone-ui-shr = \"LOCAL\"" >> shr-testing/conf/local-builds.inc ; \
-			echo "SRCPV_pn-libphone-ui-shr = \"LOCAL\"" >> shr-testing/conf/local-builds.inc ; \
-			echo "S_pn-libphone-ui-shr = \"\$${WORKDIR}/shr/\$${PN}\"" >> shr-testing/conf/local-builds.inc ; \
+			echo "INHERIT_append_pn-libphone-ui-shr = \"srctree gitpkgv\"" > shr-stable/conf/local-builds.inc ; \
+			echo "SRCREV_pn-libphone-ui-shr = \$${AUTOREV}" >> shr-stable/conf/local-builds.inc ; \
+			echo "S_pn-libphone-ui-shr = \"/path/to/source//\$${PN}\"" >> shr-stable/conf/local-builds.inc ; \
 	)
 	[ -e shr-testing/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-testing'" > shr-testing/conf/topdir.conf
 	rm -rf shr-testing/tmp/cache
