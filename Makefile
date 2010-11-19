@@ -262,10 +262,9 @@ shr-unstable/.configured: common/.git/config bitbake/.git/config openembedded/.g
 		echo "require conf/distro/include/shr-autorev.inc" >> shr-unstable/conf/local.conf ; \
 	)
 	[ -e shr-unstable/conf/local-builds.inc ] || ( \
-			echo "SRC_URI_pn-libphone-ui-shr = \"file:///path/to/source/shr\"" > shr-unstable/conf/local-builds.inc ; \
-			echo "SRCREV_pn-libphone-ui-shr = \"LOCAL\"" >> shr-unstable/conf/local-builds.inc ; \
-			echo "SRCPV_pn-libphone-ui-shr = \"LOCAL\"" >> shr-unstable/conf/local-builds.inc ; \
-			echo "S_pn-libphone-ui-shr = \"\$${WORKDIR}/shr/\$${PN}\"" >> shr-unstable/conf/local-builds.inc ; \
+			echo "INHERIT_append_pn-libphone-ui-shr = \"srctree gitpkgv\"" > shr-unstable/conf/local-builds.inc ; \
+			echo "SRCREV_pn-libphone-ui-shr = \$${GITSHA}" >> shr-unstable/conf/local-builds.inc ; \
+			echo "S_pn-libphone-ui-shr = \"/path/to/source//\$${PN}\"" >> shr-unstable/conf/local-builds.inc ; \
 	)
 	[ -e shr-unstable/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-unstable'" > shr-unstable/conf/topdir.conf
 	rm -rf shr-unstable/tmp/cache
