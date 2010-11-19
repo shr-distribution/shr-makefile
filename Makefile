@@ -23,11 +23,11 @@ prefetch: prefetch-shr-unstable prefetch-shr-testing
 .PHONY: update
 update: 
 	[ ! -e common ] || ${MAKE} update-common 
-	[ ! -e bitbake ] || ${MAKE} update-bitbake 
 	[ ! -e openembedded ] || ${MAKE} update-openembedded 
-	[ ! -e shr-testing ] || ${MAKE} update-shr-testing 
 	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
+	[ ! -e shr-testing ] || ${MAKE} update-shr-testing 
 ##	[ ! -e shr-stable ] || ${MAKE} update-shr-stable
+	[ ! -e bitbake ] || ${MAKE} update-bitbake 
 
 .PHONY: build
 build:
