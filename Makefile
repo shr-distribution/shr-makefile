@@ -259,6 +259,7 @@ shr-unstable/.configured: common/.git/config bitbake/.git/config openembedded/.g
 		echo "#ENABLE_BINARY_LOCALE_GENERATION = \"0\"" >> shr-unstable/conf/local.conf ; \
 		echo "# enable local builds for SHR apps" >> shr-unstable/conf/local.conf ; \
 		echo "#require local-builds.inc" >> shr-unstable/conf/local.conf ; \
+		echo "require conf/distro/include/shr-autorev.inc" >> shr-unstable/conf/local.conf ; \
 	)
 	[ -e shr-unstable/conf/local-builds.inc ] || ( \
 			echo "SRC_URI_pn-libphone-ui-shr = \"file:///path/to/source/shr\"" > shr-unstable/conf/local-builds.inc ; \
