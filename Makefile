@@ -5,7 +5,7 @@ MAKEFLAGS = -swr
 
 BITBAKE_VERSION = 1.10
 
-SHR_TESTING_BRANCH_OE = shr/testing2010
+SHR_TESTING_BRANCH_OE = shr/testing2011.1
 SHR_UNSTABLE_BRANCH_OE = org.openembedded.dev
 SHR_STABLE_BRANCH_OE = shr/stable2009
 
