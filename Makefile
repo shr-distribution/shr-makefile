@@ -168,7 +168,7 @@ shr-stable/.configured: common/.git/config bitbake/.git/config openembedded/.git
 	)
 	[ -e shr-stable/conf/local-builds.inc ] || ( \
 			echo "INHERIT_append_pn-libphone-ui-shr = \"srctree gitpkgv\"" > shr-stable/conf/local-builds.inc ; \
-			echo "SRCREV_pn-libphone-ui-shr = \$${AUTOREV}" >> shr-stable/conf/local-builds.inc ; \
+			echo "SRCREV_pn-libphone-ui-shr = \$${GITSHA}" >> shr-stable/conf/local-builds.inc ; \
 			echo "S_pn-libphone-ui-shr = \"/path/to/source//\$${PN}\"" >> shr-stable/conf/local-builds.inc ; \
 	)
 	[ -e shr-stable/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-stable'" > shr-stable/conf/topdir.conf
@@ -215,7 +215,7 @@ shr-testing/.configured: common/.git/config bitbake/.git/config openembedded/.gi
 	)
 	[ -e shr-testing/conf/local-builds.inc ] || ( \
 			echo "INHERIT_append_pn-libphone-ui-shr = \"srctree gitpkgv\"" > shr-testing/conf/local-builds.inc ; \
-			echo "SRCREV_pn-libphone-ui-shr = \$${AUTOREV}" >> shr-testing/conf/local-builds.inc ; \
+			echo "SRCREV_pn-libphone-ui-shr = \$${GITSHA}" >> shr-testing/conf/local-builds.inc ; \
 			echo "S_pn-libphone-ui-shr = \"/path/to/source//\$${PN}\"" >> shr-testing/conf/local-builds.inc ; \
 	)
 	[ -e shr-testing/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-testing'" > shr-testing/conf/topdir.conf
