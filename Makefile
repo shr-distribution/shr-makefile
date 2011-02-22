@@ -16,71 +16,20 @@ SHR_CHROOT_URL = "http://git.shr-project.org/repo/shr-chroot.git"
 all: update build
 
 .PHONY: setup
-setup:  setup-common setup-shr-chroot setup-openembedded setup-shr-unstable setup-shr-testing
-
-.PHONY: prefetch
-prefetch: prefetch-shr-unstable prefetch-shr-testing
+setup: setup-shr-chroot setup-common setup-openembedded setup-shr-unstable setup-shr-testing 
+#setup-shr-stable
 
 .PHONY: update
 update: 
-	[ ! -e common ] || ${MAKE} update-common 
 	[ ! -e shr-chroot ] || ${MAKE} update-shr-chroot 
+	[ ! -e common ] || ${MAKE} update-common 
 	[ ! -e openembedded ] || ${MAKE} update-openembedded 
 	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
 	[ ! -e shr-testing ] || ${MAKE} update-shr-testing 
 ##	[ ! -e shr-stable ] || ${MAKE} update-shr-stable
 
-.PHONY: build
-build:
-	[ ! -e shr-unstable ]                 || ${MAKE} shr-unstable-image
-	[ ! -e shr-testing ]                  || ${MAKE} shr-testing-image
-##	[ ! -e shr-stable ]                   || ${MAKE} shr-stable-image
-	[ ! -e shr-unstable ]                 || ${MAKE} shr-unstable-recipes
-	[ ! -e shr-testing ]                  || ${MAKE} shr-testing-recipes
-##	[ ! -e shr-stable ]                   || ${MAKE} shr-stable-recipes
-
 .PHONY: status
-status: status-common status-openembedded
-
-.PHONY: clobber
-clobber: clobber-shr-unstable clobber-shr-testing
-
-.PHONY: distclean
-distclean: distclean-openembedded \
-	 distclean-shr-unstable distclean-shr-testing
-
-.PHONY: prefetch-%
-prefetch-%: %/.configured
-	( cd $* ; ${MAKE} prefetch )
-
-
-.PHONY: shr-%-image
-shr-%-image: shr-%/.configured
-	( cd shr-$* ; \
-	  ${MAKE} setup-image-shr-image ; \
-	  ${MAKE} setup-machine-om-gta01 ; \
-	  ${MAKE} -k image )
-	( cd shr-$* ; \
-	  ${MAKE} setup-image-shr-image ; \
-	  ${MAKE} setup-machine-om-gta02 ; \
-	  ${MAKE} -k image )
-
-.PHONY: shr-%-recipes
-shr-%-recipes: shr-%/.configured
-	( cd shr-$* ; \
-	  ${MAKE} setup-image-shr-image ; \
-	  ${MAKE} setup-machine-om-gta01 ; \
-	  ${MAKE} -k distro index )
-	( cd shr-$* ; \
-	  ${MAKE} setup-image-shr-image ; \
-	  ${MAKE} setup-machine-om-gta02 ; \
-	  ${MAKE} -k distro index )
-
-.PHONY: shr-%-index
-shr-%-index: shr-%/.configured
-	( cd shr-$* ; \
-	  ${MAKE} setup-image-shr-image ; \
-	  ${MAKE} -k index )
+status: status-chroot status-common status-openembedded
 
 .PHONY: setup-common
 .PRECIOUS: common/.git/config
@@ -138,6 +87,7 @@ setup-shr-chroot shr-chroot/.git/config:
 	  echo "#umount proc/bus/usb" >> shr-chroot.sh ; \
 	  echo "umount proc" >> shr-chroot.sh ; \
 	)
+	touch shr-chroot.sh/.git/config
 
 .PHONY: setup-openembedded
 .PRECIOUS: openembedded/.git/config
@@ -161,7 +111,6 @@ shr-stable/.configured: common/.git/config openembedded/.git/config
 	@echo "preparing shr-stable tree"
 	[ -d shr-stable ] || ( mkdir -p shr-stable )
 	[ -e downloads ] || ( mkdir -p downloads )
-	[ -e shr-stable/Makefile ] || ( cd shr-stable ; ln -sf ../common/openembedded.mk Makefile )
 	[ -e shr-stable/setup-env ] || ( cd shr-stable ; ln -sf ../common/setup-env . )
 	[ -e shr-stable/downloads ] || ( cd shr-stable ; ln -sf ../downloads . )
 	[ -e shr-stable/openembedded ] || ( cd shr-stable ; \
@@ -199,7 +148,6 @@ shr-stable/.configured: common/.git/config openembedded/.git/config
 			echo "S_pn-libphone-ui-shr = \"/path/to/source//\$${PN}\"" >> shr-stable/conf/local-builds.inc ; \
 	)
 	[ -e shr-stable/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-stable'" > shr-stable/conf/topdir.conf
-	rm -rf shr-stable/tmp/cache
 	touch shr-stable/.configured
 
 .PRECIOUS: shr-testing/.configured
@@ -207,7 +155,6 @@ shr-testing/.configured: common/.git/config openembedded/.git/config
 	@echo "preparing shr-testing tree"
 	[ -d shr-testing ] || ( mkdir -p shr-testing )
 	[ -e downloads ] || ( mkdir -p downloads )
-	[ -e shr-testing/Makefile ] || ( cd shr-testing ; ln -sf ../common/openembedded.mk Makefile )
 	[ -e shr-testing/setup-env ] || ( cd shr-testing ; ln -sf ../common/setup-env . )
 	[ -e shr-testing/downloads ] || ( cd shr-testing ; ln -sf ../downloads . )
 	[ -e shr-testing/openembedded ] || ( cd shr-testing ; \
@@ -245,7 +192,6 @@ shr-testing/.configured: common/.git/config openembedded/.git/config
 			echo "S_pn-libphone-ui-shr = \"/path/to/source//\$${PN}\"" >> shr-testing/conf/local-builds.inc ; \
 	)
 	[ -e shr-testing/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-testing'" > shr-testing/conf/topdir.conf
-	rm -rf shr-testing/tmp/cache
 	touch shr-testing/.configured
 
 .PRECIOUS: shr-unstable/.configured
@@ -253,7 +199,6 @@ shr-unstable/.configured: common/.git/config openembedded/.git/config
 	@echo "preparing shr-unstable tree"
 	[ -d shr-unstable ] || ( mkdir -p shr-unstable )
 	[ -e downloads ] || ( mkdir -p downloads )
-	[ -e shr-unstable/Makefile ] || ( cd shr-unstable ; ln -sf ../common/openembedded.mk Makefile )
 	[ -e shr-unstable/setup-env ] || ( cd shr-unstable ; ln -sf ../common/setup-env . )
 	[ -e shr-unstable/downloads ] || ( cd shr-unstable ; ln -sf ../downloads . )
 	[ -e shr-unstable/openembedded ] || ( cd shr-unstable ; \
@@ -292,7 +237,6 @@ shr-unstable/.configured: common/.git/config openembedded/.git/config
 			echo "S_pn-libphone-ui-shr = \"/path/to/source//\$${PN}\"" >> shr-unstable/conf/local-builds.inc ; \
 	)
 	[ -e shr-unstable/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-unstable'" > shr-unstable/conf/topdir.conf
-	rm -rf shr-unstable/tmp/cache
 	touch shr-unstable/.configured
 
 
@@ -360,23 +304,8 @@ status-common: common/.git/config
 status-openembedded: openembedded/.git/config
 	( cd openembedded ; git diff --stat )
 
-.PHONY: clobber-%
-clobber-%:
-	[ ! -e $*/Makefile ] || ( cd $* ; ${MAKE} clobber )
-
-.PHONY: distclean-openembedded
-distclean-openembedded:
-	rm -rf openembedded
-
-.PHONY: distclean-%
-distclean-%:
-	rm -rf $*
-
-#.PHONY: push
-#push: push-common
-
-#.PHONY: push-common
-#push-common: update-common
-#	( cd common ; git push --all ssh://git@git.freesmartphone.org/fso-makefile.git )
+.PHONY: status-shr-chroot
+status-openembedded: openembedded/.git/config
+	( cd shr-chroot ; git diff --stat )
 
 # End of Makefile
