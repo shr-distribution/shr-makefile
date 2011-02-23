@@ -110,7 +110,7 @@ setup-%:
 	[ -d /OE/shr-stable/conf ] || ( mkdir -p /OE/shr-stable/conf )
 	[ -e /OE/shr-stable/conf/site.conf ] || ( cd /OE/shr-stable/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
 	[ -e /OE/shr-stable/conf/auto.conf ] || ( cp /OE/common/conf/auto.conf /OE/shr-stable/conf/auto.conf; \
-		echo "DISTRO_FEED_URI = \"http://build.shr-project.org/shr-stable/ipk/\"" >> /OE/shr-stable/conf/auto.conf ; \
+		echo "DISTRO_FEED_URI=\"http://build.shr-project.org/shr-stable/ipk/\"" >> /OE/shr-stable/conf/auto.conf ; \
 	)
 	[ -e /OE/shr-stable/conf/local.conf ] || ( cp /OE/common/conf/local.conf /OE/shr-stable/conf/local.conf )
 	[ -e /OE/shr-stable/conf/local-builds.inc ] || ( cp /OE/common/conf/local-builds.inc /OE/shr-stable/conf/local-builds.inc )
@@ -136,7 +136,7 @@ setup-%:
 	[ -d /OE/shr-testing/conf ] || ( mkdir -p /OE/shr-testing/conf )
 	[ -e /OE/shr-testing/conf/site.conf ] || ( cd /OE/shr-testing/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
 	[ -e /OE/shr-testing/conf/auto.conf ] || ( cp /OE/common/conf/auto.conf /OE/shr-testing/conf/auto.conf; \
-	  echo "DISTRO_FEED_URI = \"http://build.shr-project.org/shr-testing/ipk/\"" >> /OE/shr-testing/conf/auto.conf ; \
+	  echo "DISTRO_FEED_URI=\"http://build.shr-project.org/shr-testing/ipk/\"" >> /OE/shr-testing/conf/auto.conf ; \
 	)
 	[ -e /OE/shr-testing/conf/local.conf ] || ( cp /OE/common/conf/local.conf /OE/shr-testing/conf/local.conf )
 	[ -e /OE/shr-testing/conf/local-builds.inc ] || ( cp /OE/common/conf/local-builds.inc /OE/shr-testing/conf/local-builds.inc )
@@ -162,7 +162,7 @@ setup-%:
 	[ -d /OE/shr-unstable/conf ] || ( mkdir -p /OE/shr-unstable/conf )
 	[ -e /OE/shr-unstable/conf/site.conf ] || ( cd /OE/shr-unstable/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
 	[ -e /OE/shr-unstable/conf/auto.conf ] || ( cp /OE/common/conf/auto.conf /OE/shr-unstable/conf/auto.conf; \
-	  echo "DISTRO_FEED_URI = \"http://build.shr-project.org/shr-unstable/ipk/\"" >> /OE/shr-unstable/conf/auto.conf ; \
+	  echo "DISTRO_FEED_URI=\"http://build.shr-project.org/shr-unstable/ipk/\"" >> /OE/shr-unstable/conf/auto.conf ; \
 	)
 	[ -e /OE/shr-unstable/conf/local.conf ] || ( cp /OE/common/conf/local.conf /OE/shr-unstable/conf/local.conf; \
 	  echo "require conf/distro/include/shr-autorev.inc" >> shr-unstable/conf/local.conf ; \
