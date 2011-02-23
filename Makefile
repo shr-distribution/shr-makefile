@@ -16,22 +16,17 @@ SHR_CHROOT_URL = "http://git.shr-project.org/repo/shr-chroot.git"
 .PHONY: all
 all: update build
 
-.PHONY: setup
-setup: setup-shr-chroot setup-common setup-openembedded setup-shr-unstable setup-shr-testing 
-#setup-shr-stable
-
 .PHONY: update
 update: 
 	[ -e /OE/.keep ] || \
 	( echo "You're not in shr-chroot, use shr-chroot.sh first."; \
 	  exit 1; \
 	)
-	${MAKE} update-shr-chroot 
 	[ ! -e /OE/common ]       || ${MAKE} update-common 
 	[ ! -e /OE/openembedded ] || ${MAKE} update-openembedded 
 	[ ! -e /OE/shr-unstable ] || ${MAKE} update-shr-unstable
 	[ ! -e /OE/shr-testing ]  || ${MAKE} update-shr-testing 
-##	[ ! -e /OE/shr-stable ]   || ${MAKE} update-shr-stable
+	[ ! -e /OE/shr-stable ]   || ${MAKE} update-shr-stable
 
 .PHONY: status
 status: status-chroot status-common status-openembedded
@@ -181,14 +176,14 @@ update-common: /OE/common/.git/config
 	( cd /OE/common ; git pull )
 
 .PHONY: update-shr-chroot
-update-shr-chroot: /.git/config
-	[ -e /OE/.keep ] || \
-	( echo "You're not in shr-chroot, use shr-chroot.sh first."; \
+update-shr-chroot: ../../shr-chroot/.git/config
+	[ ! -e /OE/.keep ] || \
+	( echo "You're already in shr-chroot (/OE/.keep exists)"; \
 	  exit 1; \
 	)
 	@echo "updating shr-chroot"
-	( cd /; \
-	  git clean -d -f ; git reset --hard ; git fetch ; \
+	( cd ../../shr-chroot && \
+	  git fetch ; \
 	  git checkout ${CHROOT_BRANCH} 2>/dev/null || \
 	  git checkout --no-track -b ${CHROOT_BRANCH} origin/${CHROOT_BRANCH} ; \
 	  git reset --hard origin/${CHROOT_BRANCH}; \
