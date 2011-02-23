@@ -7,6 +7,7 @@
 # topdir must exist in the directory and define TOPDIR to
 # the full path name of the working directory
 . ./conf/topdir.conf
+. ./conf/auto.conf
 test -n "$TOPDIR" -a -d "$TOPDIR" || {
 	echo "environment: TOPDIR not defined" >&2
 	return
@@ -14,9 +15,8 @@ test -n "$TOPDIR" -a -d "$TOPDIR" || {
 
 #
 # the following must match the definitions in common/conf/site.conf
-export PYTHONPATH="${TOPDIR}/bitbake/lib"
-export BBPATH="${TOPDIR}:${TOPDIR}/openembedded:${TOPDIR}/bitbake"
-export PATH="${TOPDIR}/bitbake/bin:${PATH}"
+export BBPATH="${TOPDIR}:${TOPDIR}/openembedded"
+export BB_ENV_EXTRAWHITE="MACHINE DISTRO"
 export LD_LIBRARY_PATH=
 export LANG=C
 #NOTE: if you add export definitions here add them below too!
@@ -27,8 +27,6 @@ unset CC
 unset CXX
 unset MFLAGS
 unset MAKEFLAGS
-unset DISTRO
-unset MACHINE
 unset MAKE_TARGET
 #
 # make bb into a 'safe' bitbake
@@ -40,7 +38,9 @@ alias bb-safe="env -i \
 	LD_LIBRARY_PATH='${LD_LIBRARY_PATH}' \
 	LANG='${LANG}' \
 	'${TOPDIR}/bitbake/bin/bitbake'"
-alias bb="'${TOPDIR}/bitbake/bin/bitbake'"
+alias bb="bitbake"
 #
 # remove TOPDIR - not required
 unset TOPDIR
+
+echo "Altered environment for SHR Development"
