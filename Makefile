@@ -3,6 +3,7 @@
 
 MAKEFLAGS = -swr
 
+BITBAKE_VERSION = 1.10
 CHROOT_BRANCH = master
 
 BRANCH_OE = master
@@ -23,6 +24,7 @@ update:
 	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
 	[ ! -e shr-testing ]  || ${MAKE} update-shr-testing 
 	[ ! -e shr-stable ]   || ${MAKE} update-shr-stable
+	[ ! -e bitbake ]      || ${MAKE} update-bitbake
 
 .PHONY: status
 status: status-chroot status-common status-openembedded
@@ -43,6 +45,17 @@ setup-shr-chroot shr-chroot/.git/config:
 	mv Makefile shr-chroot/OE/Makefile
 	touch shr-chroot/.git/config
 	echo "Now run shr-chroot.sh in shr-chroot as ROOT to switch to new SHR chroot environment"
+
+.PHONY: setup-bitbake
+.PRECIOUS: bitbake/.git/config
+setup-bitbake bitbake/.git/config:
+	[ -e bitbake/.git/config ] || \
+	( echo "setting up bitbake ..."; \
+	  git clone git://git.openembedded.net/bitbake bitbake; \
+	  cd bitbake; \
+	  git checkout ${BITBAKE_VERSION} 2>/dev/null || \
+	  git checkout --no-track -b ${BITBAKE_VERSION} origin/${BITBAKE_VERSION} ; \
+	  git reset --hard origin/${BITBAKE_VERSION} )
 
 .PHONY: setup-common
 .PRECIOUS: common/.git/config
@@ -154,6 +167,15 @@ update-shr-chroot: ../.git/config
 	  sed -i "s#bitbake:x:1026:1026::/OE:/bin/bash/#bitbake:x:`id -u`:`id -g`::/OE:/bin/bash/#g" etc/passwd; \
 	  sed -i "s#bitbake:x:1026:bitbake#bitbake:x:`id -g`:bitbake#g" etc/group; \
 	)
+
+.PHONY: update-bitbake
+update-bitbake: bitbake/.git/config
+	@echo "updating bitbake"
+	( cd bitbake ; \
+	  git clean -d -f ; git reset --hard ; git fetch ; \
+	  git checkout ${BITBAKE_VERSION} 2>/dev/null || \
+	  git checkout --no-track -b ${BITBAKE_VERSION} origin/${BITBAKE_VERSION} ; \
+	  git reset --hard origin/${BITBAKE_VERSION} )
 
 .PHONY: update-openembedded
 update-openembedded: openembedded/.git/config
