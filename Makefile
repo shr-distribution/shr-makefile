@@ -19,6 +19,7 @@ all: update build
 
 .PHONY: update
 update: 
+	[ ! -e ../OE ]        || ${MAKE} update-shr-chroot 
 	[ ! -e common ]       || ${MAKE} update-common 
 	[ ! -e openembedded ] || ${MAKE} update-openembedded 
 	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
@@ -27,7 +28,7 @@ update:
 	[ ! -e bitbake ]      || ${MAKE} update-bitbake
 
 .PHONY: status
-status: status-chroot status-common status-openembedded
+status: status-common status-openembedded
 
 .PHONY: setup-shr-chroot
 .PRECIOUS: shr-chroot/.git/config
@@ -159,7 +160,8 @@ update-common: common/.git/config
 .PHONY: update-shr-chroot
 update-shr-chroot: ../.git/config
 	@echo "updating shr-chroot"
-	( cd .. && \
+	[ -d ../OE ] || ( echo "There should be ../OE if you have shr-chroot" && exit 1 )
+	( cd .. ; \
 	  git fetch ; \
 	  git checkout ${CHROOT_BRANCH} 2>/dev/null || \
 	  git checkout --no-track -b ${CHROOT_BRANCH} origin/${CHROOT_BRANCH} ; \
@@ -223,9 +225,5 @@ status-common: common/.git/config
 .PHONY: status-openembedded
 status-openembedded: openembedded/.git/config
 	( cd openembedded ; git diff --stat )
-
-.PHONY: status-shr-chroot
-status-shr-chroot: /.git/config
-	( cd /; git diff --stat )
 
 # End of Makefile
