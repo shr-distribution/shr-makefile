@@ -18,15 +18,11 @@ all: update build
 
 .PHONY: update
 update: 
-	[ -e /OE/.keep ] || \
-	( echo "You're not in shr-chroot, use shr-chroot.sh first."; \
-	  exit 1; \
-	)
-	[ ! -e /OE/common ]       || ${MAKE} update-common 
-	[ ! -e /OE/openembedded ] || ${MAKE} update-openembedded 
-	[ ! -e /OE/shr-unstable ] || ${MAKE} update-shr-unstable
-	[ ! -e /OE/shr-testing ]  || ${MAKE} update-shr-testing 
-	[ ! -e /OE/shr-stable ]   || ${MAKE} update-shr-stable
+	[ ! -e common ]       || ${MAKE} update-common 
+	[ ! -e openembedded ] || ${MAKE} update-openembedded 
+	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
+	[ ! -e shr-testing ]  || ${MAKE} update-shr-testing 
+	[ ! -e shr-stable ]   || ${MAKE} update-shr-stable
 
 .PHONY: status
 status: status-chroot status-common status-openembedded
@@ -34,10 +30,6 @@ status: status-chroot status-common status-openembedded
 .PHONY: setup-shr-chroot
 .PRECIOUS: shr-chroot/.git/config
 setup-shr-chroot shr-chroot/.git/config:
-	[ ! -e /OE/.keep ] || \
-	( echo "You're already in shr-chroot (/OE/.keep exists)"; \
-	  exit 1; \
-	)
 	[ -e shr-chroot/.git/config ] || \
 	( echo "setting up shr-chroot ..."; \
 	  git clone ${SHR_CHROOT_URL} shr-chroot; \
@@ -53,136 +45,108 @@ setup-shr-chroot shr-chroot/.git/config:
 	echo "Now run shr-chroot.sh in shr-chroot as ROOT to switch to new SHR chroot environment"
 
 .PHONY: setup-common
-.PRECIOUS: /OE/common/.git/config
-setup-common /OE/common/.git/config:
-	[ -e /OE/.keep ] || \
-	( echo "You're not in shr-chroot, use shr-chroot.sh first."; \
-	  exit 1; \
-	)
-	[ -e /OE/common/.git/config ] || \
-	( echo "setting up /OE/common (Makefile)"; \
-	  git clone ${SHR_MAKEFILE_URL} /OE/common && \
+.PRECIOUS: common/.git/config
+setup-common common/.git/config:
+	[ -e common/.git/config ] || \
+	( echo "setting up common (Makefile)"; \
+	  git clone ${SHR_MAKEFILE_URL} common && \
 	  rm -f Makefile && \
-	  ln -s /OE/common/Makefile Makefile )
-	touch /OE/common/.git/config
+	  ln -s common/Makefile Makefile )
+	touch common/.git/config
 
 .PHONY: setup-openembedded
-.PRECIOUS: /OE/openembedded/.git/config
-setup-openembedded /OE/openembedded/.git/config:
-	[ -e /OE/.keep ] || \
-	( echo "You're not in shr-chroot, use shr-chroot.sh first."; \
-	  exit 1; \
-	)
-	[ -e /OE/openembedded/.git/config ] || \
-	( echo "setting up /OE/openembedded"; \
-	  git clone git://git.openembedded.net/openembedded /OE/openembedded )
-	( cd /OE/openembedded && \
+.PRECIOUS: openembedded/.git/config
+setup-openembedded openembedded/.git/config:
+	[ -e openembedded/.git/config ] || \
+	( echo "setting up openembedded"; \
+	  git clone git://git.openembedded.net/openembedded openembedded )
+	( cd openembedded && \
 	  git checkout ${OE_BRANCH} 2>/dev/null || \
 	  git checkout --no-track -b ${OE_BRANCH} origin/${OE_BRANCH} )
-	touch /OE/openembedded/.git/config
+	touch openembedded/.git/config
 
 .PHONY: setup-%
 setup-%:
-	${MAKE} /OE/$*/.configured
+	${MAKE} $*/.configured
 
 
-##.PRECIOUS: /OE/shr-stable/.configured
-/OE/shr-stable/.configured: /OE/common/.git/config /OE/openembedded/.git/config
-	[ -e /OE/.keep ] || \
-	( echo "You're not in shr-chroot, use shr-chroot.sh first."; \
-	  exit 1; \
-	)
-	@echo "preparing /OE/shr-stable tree"
-	[ -d /OE/shr-stable ] || ( mkdir -p /OE/shr-stable )
-	[ -e /OE/downloads ] || ( mkdir -p /OE/downloads )
-	[ -e /OE/shr-stable/setup-env ] || ( cd /OE/shr-stable ; ln -sf ../common/setup-env . )
-	[ -e /OE/shr-stable/downloads ] || ( cd /OE/shr-stable ; ln -sf ../downloads . )
-	[ -e /OE/shr-stable/openembedded ] || ( cd /OE/shr-stable ; \
+##.PRECIOUS: shr-stable/.configured
+shr-stable/.configured: common/.git/config openembedded/.git/config
+	@echo "preparing shr-stable tree"
+	[ -d shr-stable ] || ( mkdir -p shr-stable )
+	[ -e downloads ] || ( mkdir -p downloads )
+	[ -e shr-stable/setup-env ] || ( cd shr-stable ; ln -sf ../common/setup-env . )
+	[ -e shr-stable/downloads ] || ( cd shr-stable ; ln -sf ../downloads . )
+	[ -e shr-stable/openembedded ] || ( cd shr-stable ; \
 	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
 	  cd openembedded ; \
 	  git checkout ${SHR_STABLE_BRANCH_OE} 2>/dev/null || \
 	  git checkout --no-track -b ${SHR_STABLE_BRANCH_OE} origin/${SHR_STABLE_BRANCH_OE} )
-	[ -d /OE/shr-stable/conf ] || ( mkdir -p /OE/shr-stable/conf )
-	[ -e /OE/shr-stable/conf/site.conf ] || ( cd /OE/shr-stable/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
-	[ -e /OE/shr-stable/conf/auto.conf ] || ( cp /OE/common/conf/auto.conf /OE/shr-stable/conf/auto.conf; \
-		echo "DISTRO_FEED_URI=\"http://build.shr-project.org/shr-stable/ipk/\"" >> /OE/shr-stable/conf/auto.conf ; \
+	[ -d shr-stable/conf ] || ( mkdir -p shr-stable/conf )
+	[ -e shr-stable/conf/site.conf ] || ( cd shr-stable/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
+	[ -e shr-stable/conf/auto.conf ] || ( cp common/conf/auto.conf shr-stable/conf/auto.conf; \
+		echo "DISTRO_FEED_URI=\"http://build.shr-project.org/shr-stable/ipk/\"" >> shr-stable/conf/auto.conf ; \
 	)
-	[ -e /OE/shr-stable/conf/local.conf ] || ( cp /OE/common/conf/local.conf /OE/shr-stable/conf/local.conf )
-	[ -e /OE/shr-stable/conf/local-builds.inc ] || ( cp /OE/common/conf/local-builds.inc /OE/shr-stable/conf/local-builds.inc )
-	[ -e /OE/shr-stable/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-stable'" > shr-stable/conf/topdir.conf
+	[ -e shr-stable/conf/local.conf ] || ( cp common/conf/local.conf shr-stable/conf/local.conf )
+	[ -e shr-stable/conf/local-builds.inc ] || ( cp common/conf/local-builds.inc shr-stable/conf/local-builds.inc )
+	[ -e shr-stable/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-stable'" > shr-stable/conf/topdir.conf
 	touch shr-stable/.configured
 
-.PRECIOUS: /OE/shr-testing/.configured
-/OE/shr-testing/.configured: /OE/common/.git/config /OE/openembedded/.git/config
-	[ -e /OE/.keep ] || \
-	( echo "You're not in shr-chroot, use shr-chroot.sh first."; \
-	  exit 1; \
-	)
-	@echo "preparing /OE/shr-testing tree"
-	[ -d /OE/shr-testing ] || ( mkdir -p /OE/shr-testing )
-	[ -e /OE/downloads ] || ( mkdir -p /OE/downloads )
-	[ -e /OE/shr-testing/setup-env ] || ( cd /OE/shr-testing ; ln -sf ../common/setup-env . )
-	[ -e /OE/shr-testing/downloads ] || ( cd /OE/shr-testing ; ln -sf ../downloads . )
-	[ -e /OE/shr-testing/openembedded ] || ( cd /OE/shr-testing ; \
+.PRECIOUS: shr-testing/.configured
+shr-testing/.configured: common/.git/config openembedded/.git/config
+	@echo "preparing shr-testing tree"
+	[ -d shr-testing ] || ( mkdir -p shr-testing )
+	[ -e downloads ] || ( mkdir -p downloads )
+	[ -e shr-testing/setup-env ] || ( cd shr-testing ; ln -sf ../common/setup-env . )
+	[ -e shr-testing/downloads ] || ( cd shr-testing ; ln -sf ../downloads . )
+	[ -e shr-testing/openembedded ] || ( cd shr-testing ; \
 	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
 	  cd openembedded ; \
 	  git checkout ${SHR_TESTING_BRANCH_OE} 2>/dev/null || \
 	  git checkout --no-track -b ${SHR_TESTING_BRANCH_OE} origin/${SHR_TESTING_BRANCH_OE} )
-	[ -d /OE/shr-testing/conf ] || ( mkdir -p /OE/shr-testing/conf )
-	[ -e /OE/shr-testing/conf/site.conf ] || ( cd /OE/shr-testing/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
-	[ -e /OE/shr-testing/conf/auto.conf ] || ( cp /OE/common/conf/auto.conf /OE/shr-testing/conf/auto.conf; \
-	  echo "DISTRO_FEED_URI=\"http://build.shr-project.org/shr-testing/ipk/\"" >> /OE/shr-testing/conf/auto.conf ; \
+	[ -d shr-testing/conf ] || ( mkdir -p shr-testing/conf )
+	[ -e shr-testing/conf/site.conf ] || ( cd shr-testing/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
+	[ -e shr-testing/conf/auto.conf ] || ( cp common/conf/auto.conf shr-testing/conf/auto.conf; \
+	  echo "DISTRO_FEED_URI=\"http://build.shr-project.org/shr-testing/ipk/\"" >> shr-testing/conf/auto.conf ; \
 	)
-	[ -e /OE/shr-testing/conf/local.conf ] || ( cp /OE/common/conf/local.conf /OE/shr-testing/conf/local.conf )
-	[ -e /OE/shr-testing/conf/local-builds.inc ] || ( cp /OE/common/conf/local-builds.inc /OE/shr-testing/conf/local-builds.inc )
-	[ -e /OE/shr-testing/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-testing'" > shr-testing/conf/topdir.conf
+	[ -e shr-testing/conf/local.conf ] || ( cp common/conf/local.conf shr-testing/conf/local.conf )
+	[ -e shr-testing/conf/local-builds.inc ] || ( cp common/conf/local-builds.inc shr-testing/conf/local-builds.inc )
+	[ -e shr-testing/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-testing'" > shr-testing/conf/topdir.conf
 	touch shr-testing/.configured
 	
-.PRECIOUS: /OE/shr-unstable/.configured
-/OE/shr-unstable/.configured: /OE/common/.git/config /OE/openembedded/.git/config
-	[ -e /OE/.keep ] || \
-	( echo "You're not in shr-chroot, use shr-chroot.sh first."; \
-	  exit 1; \
-	)
+.PRECIOUS: shr-unstable/.configured
+shr-unstable/.configured: common/.git/config openembedded/.git/config
 	@echo "preparing shr-unstable tree"
-	[ -d /OE/shr-unstable ] || ( mkdir -p /OE/shr-unstable )
-	[ -e /OE/downloads ] || ( mkdir -p /OE/downloads )
-	[ -e /OE/shr-unstable/setup-env ] || ( cd /OE/shr-unstable ; ln -sf ../common/setup-env . )
-	[ -e /OE/shr-unstable/downloads ] || ( cd /OE/shr-unstable ; ln -sf ../downloads . )
-	[ -e /OE/shr-unstable/openembedded ] || ( cd /OE/shr-unstable ; \
+	[ -d shr-unstable ] || ( mkdir -p shr-unstable )
+	[ -e downloads ] || ( mkdir -p downloads )
+	[ -e shr-unstable/setup-env ] || ( cd shr-unstable ; ln -sf ../common/setup-env . )
+	[ -e shr-unstable/downloads ] || ( cd shr-unstable ; ln -sf ../downloads . )
+	[ -e shr-unstable/openembedded ] || ( cd shr-unstable ; \
 	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
 	  cd openembedded ; \
 	  git checkout ${SHR_UNSTABLE_BRANCH_OE} 2>/dev/null || \
 	  git checkout --no-track -b ${SHR_UNSTABLE_BRANCH_OE} origin/${SHR_UNSTABLE_BRANCH_OE} )
-	[ -d /OE/shr-unstable/conf ] || ( mkdir -p /OE/shr-unstable/conf )
-	[ -e /OE/shr-unstable/conf/site.conf ] || ( cd /OE/shr-unstable/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
-	[ -e /OE/shr-unstable/conf/auto.conf ] || ( cp /OE/common/conf/auto.conf /OE/shr-unstable/conf/auto.conf; \
-	  echo "DISTRO_FEED_URI=\"http://build.shr-project.org/shr-unstable/ipk/\"" >> /OE/shr-unstable/conf/auto.conf ; \
+	[ -d shr-unstable/conf ] || ( mkdir -p shr-unstable/conf )
+	[ -e shr-unstable/conf/site.conf ] || ( cd shr-unstable/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
+	[ -e shr-unstable/conf/auto.conf ] || ( cp common/conf/auto.conf shr-unstable/conf/auto.conf; \
+	  echo "DISTRO_FEED_URI=\"http://build.shr-project.org/shr-unstable/ipk/\"" >> shr-unstable/conf/auto.conf ; \
 	)
-	[ -e /OE/shr-unstable/conf/local.conf ] || ( cp /OE/common/conf/local.conf /OE/shr-unstable/conf/local.conf; \
+	[ -e shr-unstable/conf/local.conf ] || ( cp common/conf/local.conf shr-unstable/conf/local.conf; \
 	  echo "require conf/distro/include/shr-autorev.inc" >> shr-unstable/conf/local.conf ; \
 	)
-	[ -e /OE/shr-unstable/conf/local-builds.inc ] || ( cp /OE/common/conf/local-builds.inc /OE/shr-unstable/conf/local-builds.inc; )
-	[ -e /OE/shr-unstable/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-unstable'" > shr-unstable/conf/topdir.conf
+	[ -e shr-unstable/conf/local-builds.inc ] || ( cp common/conf/local-builds.inc shr-unstable/conf/local-builds.inc; )
+	[ -e shr-unstable/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-unstable'" > shr-unstable/conf/topdir.conf
 	touch shr-unstable/.configured
 	
 .PHONY: update-common
-update-common: /OE/common/.git/config
-	[ -e /OE/.keep ] || \
-	( echo "You're not in shr-chroot, use shr-chroot.sh first."; \
-	  exit 1; \
-	)
-	@echo "updating /OE/common (Makefile)"
-	( cd /OE/common ; git pull )
+update-common: common/.git/config
+	@echo "updating common (Makefile)"
+	( cd common ; git pull )
 
 .PHONY: update-shr-chroot
-update-shr-chroot: ../../shr-chroot/.git/config
-	[ ! -e /OE/.keep ] || \
-	( echo "You're already in shr-chroot (/OE/.keep exists)"; \
-	  exit 1; \
-	)
+update-shr-chroot: ../.git/config
 	@echo "updating shr-chroot"
-	( cd ../../shr-chroot && \
+	( cd .. && \
 	  git fetch ; \
 	  git checkout ${CHROOT_BRANCH} 2>/dev/null || \
 	  git checkout --no-track -b ${CHROOT_BRANCH} origin/${CHROOT_BRANCH} ; \
@@ -192,13 +156,9 @@ update-shr-chroot: ../../shr-chroot/.git/config
 	)
 
 .PHONY: update-openembedded
-update-openembedded: /OE/openembedded/.git/config
-	[ -e /OE/.keep ] || \
-	( echo "You're not in shr-chroot, use shr-chroot.sh first."; \
-	  exit 1; \
-	)
-	@echo "updating /OE/openembedded"
-	( cd /OE/openembedded ; git pull || ( \
+update-openembedded: openembedded/.git/config
+	@echo "updating openembedded"
+	( cd openembedded ; git pull || ( \
 	  echo ; \
 	  echo "!!! looks like either the OE git server has problems"; \
 	  echo "or you have a dirty OE tree ;)"; \
@@ -209,12 +169,8 @@ update-openembedded: /OE/openembedded/.git/config
 
 .PHONY: update-shr-stable
 update-shr-stable: shr-stable/.configured
-	[ -e /OE/.keep ] || \
-	( echo "You're not in shr-chroot, use shr-chroot.sh first."; \
-	  exit 1; \
-	)
-	@echo "updating /OE/shr-stable tree"
-	( cd /OE/shr-stable/openembedded ; \
+	@echo "updating shr-stable tree"
+	( cd shr-stable/openembedded ; \
 	  git clean -d -f ; git reset --hard ; git fetch ; \
 	  git checkout ${SHR_STABLE_BRANCH_OE} 2>/dev/null || \
 	  git checkout --no-track -b ${SHR_STABLE_BRANCH_OE} origin/${SHR_STABLE_BRANCH_OE} ; \
@@ -222,52 +178,32 @@ update-shr-stable: shr-stable/.configured
 
 .PHONY: update-shr-testing
 update-shr-testing: shr-testing/.configured
-	[ -e /OE/.keep ] || \
-	( echo "You're not in shr-chroot, use shr-chroot.sh first."; \
-	  exit 1; \
-	)
-	@echo "updating /OE/shr-testing tree"
-	( cd /OE/shr-testing/openembedded ; \
+	@echo "updating shr-testing tree"
+	( cd shr-testing/openembedded ; \
 	  git clean -d -f ; git reset --hard ; git fetch ; \
 	  git checkout ${SHR_TESTING_BRANCH_OE} 2>/dev/null || \
 	  git checkout --no-track -b ${SHR_TESTING_BRANCH_OE} origin/${SHR_TESTING_BRANCH_OE} ; \
 	  git reset --hard origin/${SHR_TESTING_BRANCH_OE} )
 
 .PHONY: update-shr-unstable
-update-shr-unstable: /OE/shr-unstable/.configured
-	[ -e /OE/.keep ] || \
-	( echo "You're not in shr-chroot, use shr-chroot.sh first."; \
-	  exit 1; \
-	)
-	@echo "updating /OE/shr-unstable tree"
-	( cd /OE/shr-unstable/openembedded ; \
+update-shr-unstable: shr-unstable/.configured
+	@echo "updating shr-unstable tree"
+	( cd shr-unstable/openembedded ; \
 	  git clean -d -f ; git reset --hard ; git fetch ; \
 	  git checkout ${SHR_UNSTABLE_BRANCH_OE} 2>/dev/null || \
 	  git checkout --no-track -b ${SHR_UNSTABLE_BRANCH_OE} origin/${SHR_UNSTABLE_BRANCH_OE} ; \
 	  git reset --hard origin/${SHR_UNSTABLE_BRANCH_OE} )
 
 .PHONY: status-common
-status-common: /OE/common/.git/config
-	[ -e /OE/.keep ] || \
-	( echo "You're not in shr-chroot, use shr-chroot.sh first."; \
-	  exit 1; \
-	)
-	( cd /OE/common ; git diff --stat )
+status-common: common/.git/config
+	( cd common ; git diff --stat )
 
 .PHONY: status-openembedded
-status-openembedded: /OE/openembedded/.git/config
-	[ -e /OE/.keep ] || \
-	( echo "You're not in shr-chroot, use shr-chroot.sh first."; \
-	  exit 1; \
-	)
-	( cd /OE/openembedded ; git diff --stat )
+status-openembedded: openembedded/.git/config
+	( cd openembedded ; git diff --stat )
 
 .PHONY: status-shr-chroot
 status-shr-chroot: /.git/config
-	[ -e /OE/.keep ] || \
-	( echo "You're not in shr-chroot, use shr-chroot.sh first."; \
-	  exit 1; \
-	)
 	( cd /; git diff --stat )
 
 # End of Makefile
