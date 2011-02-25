@@ -6,6 +6,7 @@ MAKEFLAGS = -swr
 BITBAKE_VERSION = 1.10
 CHROOT_BRANCH = master
 CHROOT_BRANCH_32BIT = 32bit
+COMMON_BRANCH = master
 
 BRANCH_OE = master
 SHR_UNSTABLE_BRANCH_OE = master
@@ -85,6 +86,9 @@ setup-common common/.git/config:
 	  git clone ${SHR_MAKEFILE_URL} common && \
 	  rm -f Makefile && \
 	  ln -s common/Makefile Makefile )
+	( cd common && \
+	  git checkout ${COMMON_BRANCH} 2>/dev/null || \
+	  git checkout --no-track -b ${COMMON_BRANCH} origin/${COMMON_BRANCH} )
 	touch common/.git/config
 
 .PHONY: setup-openembedded
@@ -174,7 +178,12 @@ shr-unstable/.configured: common/.git/config openembedded/.git/config
 .PHONY: update-common
 update-common: common/.git/config
 	@echo "updating common (Makefile)"
-	( cd common ; git pull )
+	( cd common ; \
+	  git clean -d -f ; git reset --hard ; git fetch ; \
+	  git checkout ${COMMON_BRANCH} 2>/dev/null || \
+	  git checkout --no-track -b ${COMMON_BRANCH} origin/${COMMON_BRANCH} ; \
+	  git reset --hard origin/${COMMON_BRANCH}
+	)
 
 .PHONY: update-shr-chroot
 update-shr-chroot: ../.git/config
@@ -209,7 +218,8 @@ update-bitbake: bitbake/.git/config
 	  git clean -d -f ; git reset --hard ; git fetch ; \
 	  git checkout ${BITBAKE_VERSION} 2>/dev/null || \
 	  git checkout --no-track -b ${BITBAKE_VERSION} origin/${BITBAKE_VERSION} ; \
-	  git reset --hard origin/${BITBAKE_VERSION} )
+	  git reset --hard origin/${BITBAKE_VERSION}
+	)
 
 .PHONY: update-openembedded
 update-openembedded: openembedded/.git/config
