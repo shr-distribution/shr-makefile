@@ -5,6 +5,7 @@ MAKEFLAGS = -swr
 
 BITBAKE_VERSION = 1.10
 CHROOT_BRANCH = master
+CHROOT_BRANCH_32BIT = 32bit
 
 BRANCH_OE = master
 SHR_UNSTABLE_BRANCH_OE = master
@@ -19,7 +20,8 @@ all: update build
 
 .PHONY: update
 update: 
-	[ ! -e ../OE ]        || ${MAKE} update-shr-chroot 
+	[ ! -e ../OE/lib64 ]  || ${MAKE} update-shr-chroot 
+	[ ! -e ../OE ]        || ${MAKE} update-shr-chroot-32bit 
 	[ ! -e common ]       || ${MAKE} update-common 
 	[ ! -e openembedded ] || ${MAKE} update-openembedded 
 	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
@@ -40,7 +42,24 @@ setup-shr-chroot shr-chroot/.git/config:
 	  git checkout ${CHROOT_BRANCH} 2>/dev/null || \
 	  git checkout --no-track -b ${CHROOT_BRANCH} origin/${CHROOT_BRANCH} ; \
 	  git reset --hard origin/${CHROOT_BRANCH}; \
-	  sed -i "s#bitbake:x:1026:1026::/OE:/bin/bash/#bitbake:x:`id -u`:`id -g`::/OE:/bin/bash/#g" etc/passwd; \
+	  sed -i "s#bitbake:x:1026:1026::/OE:/bin/bash#bitbake:x:`id -u`:`id -g`::/OE:/bin/bash#g" etc/passwd; \
+	  sed -i "s#bitbake:x:1026:bitbake#bitbake:x:`id -g`:bitbake#g" etc/group; \
+	)
+	mv Makefile shr-chroot/OE/Makefile
+	touch shr-chroot/.git/config
+	echo "Now run shr-chroot.sh in shr-chroot as ROOT to switch to new SHR chroot environment"
+
+.PHONY: setup-shr-chroot-32bit
+.PRECIOUS: shr-chroot/.git/config
+setup-shr-chroot-32bit shr-chroot/.git/config:
+	[ -e shr-chroot/.git/config ] || \
+	( echo "setting up 32bit shr-chroot ..."; \
+	  git clone --depth 1 ${SHR_CHROOT_URL} shr-chroot; \
+	  cd shr-chroot; \
+	  git checkout ${CHROOT_BRANCH_32BIT} 2>/dev/null || \
+	  git checkout --no-track -b ${CHROOT_BRANCH_32BIT} origin/${CHROOT_BRANCH_32BIT} ; \
+	  git reset --hard origin/${CHROOT_BRANCH_32BIT}; \
+	  sed -i "s#bitbake:x:1026:1026::/OE:/bin/bash#bitbake:x:`id -u`:`id -g`::/OE:/bin/bash#g" etc/passwd; \
 	  sed -i "s#bitbake:x:1026:bitbake#bitbake:x:`id -g`:bitbake#g" etc/group; \
 	)
 	mv Makefile shr-chroot/OE/Makefile
@@ -166,7 +185,20 @@ update-shr-chroot: ../.git/config
 	  git checkout ${CHROOT_BRANCH} 2>/dev/null || \
 	  git checkout --no-track -b ${CHROOT_BRANCH} origin/${CHROOT_BRANCH} ; \
 	  git reset --hard origin/${CHROOT_BRANCH}; \
-	  sed -i "s#bitbake:x:1026:1026::/OE:/bin/bash/#bitbake:x:`id -u`:`id -g`::/OE:/bin/bash/#g" etc/passwd; \
+	  sed -i "s#bitbake:x:1026:1026::/OE:/bin/bash#bitbake:x:`id -u`:`id -g`::/OE:/bin/bash#g" etc/passwd; \
+	  sed -i "s#bitbake:x:1026:bitbake#bitbake:x:`id -g`:bitbake#g" etc/group; \
+	)
+
+.PHONY: update-shr-chroot-32bit
+update-shr-chroot-32bit: ../.git/config
+	@echo "updating 32bit shr-chroot"
+	[ -d ../OE ] || ( echo "There should be ../OE if you have shr-chroot" && exit 1 )
+	( cd .. ; \
+	  git fetch ; \
+	  git checkout ${CHROOT_BRANCH_32BIT} 2>/dev/null || \
+	  git checkout --no-track -b ${CHROOT_BRANCH_32BIT} origin/${CHROOT_BRANCH_32BIT} ; \
+	  git reset --hard origin/${CHROOT_BRANCH_32BIT}; \
+	  sed -i "s#bitbake:x:1026:1026::/OE:/bin/bash#bitbake:x:`id -u`:`id -g`::/OE:/bin/bash#g" etc/passwd; \
 	  sed -i "s#bitbake:x:1026:bitbake#bitbake:x:`id -g`:bitbake#g" etc/group; \
 	)
 
