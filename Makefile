@@ -182,7 +182,7 @@ update-common: common/.git/config
 	  git clean -d -f ; git reset --hard ; git fetch ; \
 	  git checkout ${COMMON_BRANCH} 2>/dev/null || \
 	  git checkout --no-track -b ${COMMON_BRANCH} origin/${COMMON_BRANCH} ; \
-	  git reset --hard origin/${COMMON_BRANCH}
+	  git reset --hard origin/${COMMON_BRANCH}; \
 	)
 
 .PHONY: update-shr-chroot
