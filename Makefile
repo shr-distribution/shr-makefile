@@ -218,7 +218,7 @@ update-bitbake: bitbake/.git/config
 	  git clean -d -f ; git reset --hard ; git fetch ; \
 	  git checkout ${BITBAKE_VERSION} 2>/dev/null || \
 	  git checkout --no-track -b ${BITBAKE_VERSION} origin/${BITBAKE_VERSION} ; \
-	  git reset --hard origin/${BITBAKE_VERSION}
+	  git reset --hard origin/${BITBAKE_VERSION}; \
 	)
 
 .PHONY: update-openembedded
