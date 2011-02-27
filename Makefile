@@ -189,7 +189,7 @@ update-common: common/.git/config
 	  ln -s common/Makefile Makefile )
 
 .PHONY: update-shr-chroot
-update-shr-chroot: ../.git/config
+update-shr-chroot: ../.git/config-64bit
 	@echo "updating shr-chroot"
 	[ -e ../.git/config-64bit ] || ( echo "There should be ../.git/config-64bit if you have shr-chroot" && exit 1 )
 	( cd .. ; \
