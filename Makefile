@@ -14,7 +14,8 @@ SHR_TESTING_BRANCH_OE = shr/testing2011.1
 SHR_STABLE_BRANCH_OE = shr/stable2009
 
 SHR_MAKEFILE_URL = "http://git.shr-project.org/repo/shr-makefile.git"
-SHR_CHROOT_URL = "http://git.shr-project.org/repo/shr-chroot.git"
+# use git://, because http:// transport doesn't support --depth
+SHR_CHROOT_URL = "git://git.shr-project.org/shr-chroot.git"
 
 .PHONY: all
 all: update build
@@ -38,7 +39,7 @@ status: status-common status-openembedded
 setup-shr-chroot shr-chroot/.git/config-64bit:
 	[ -e shr-chroot/.git/config-64bit ] || \
 	( echo "setting up shr-chroot ..."; \
-	  git clone --bare ${SHR_CHROOT_URL} shr-chroot; \
+	  git clone --depth 1 ${SHR_CHROOT_URL} shr-chroot; \
 	  cd shr-chroot; \
 	  git checkout ${CHROOT_BRANCH} 2>/dev/null || \
 	  git checkout --no-track -b ${CHROOT_BRANCH} origin/${CHROOT_BRANCH} ; \
@@ -55,7 +56,7 @@ setup-shr-chroot shr-chroot/.git/config-64bit:
 setup-shr-chroot-32bit shr-chroot-32bit/.git/config-32bit:
 	[ -e shr-chroot-32bit/.git/config-32bit ] || \
 	( echo "setting up shr-chroot-32bit ..."; \
-	  git clone --bare ${SHR_CHROOT_URL} shr-chroot-32bit; \
+	  git clone --depth 1 ${SHR_CHROOT_URL} shr-chroot-32bit; \
 	  cd shr-chroot-32bit; \
 	  git checkout ${CHROOT_BRANCH_32BIT} 2>/dev/null || \
 	  git checkout --no-track -b ${CHROOT_BRANCH_32BIT} origin/${CHROOT_BRANCH_32BIT} ; \
