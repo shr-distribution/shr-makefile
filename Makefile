@@ -21,8 +21,8 @@ all: update build
 
 .PHONY: update
 update: 
-	[ ! -e ../OE/lib64 ]  || ${MAKE} update-shr-chroot 
-	[ ! -e ../OE ]        || ${MAKE} update-shr-chroot-32bit 
+	[ ! -e ../.git/config-32bit ] || ${MAKE} update-shr-chroot-32bit 
+	[ ! -e ../.git/config-64bit ] || ${MAKE} update-shr-chroot 
 	[ ! -e common ]       || ${MAKE} update-common 
 	[ ! -e openembedded ] || ${MAKE} update-openembedded 
 	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
@@ -34,9 +34,9 @@ update:
 status: status-common status-openembedded
 
 .PHONY: setup-shr-chroot
-.PRECIOUS: shr-chroot/.git/config
-setup-shr-chroot shr-chroot/.git/config:
-	[ -e shr-chroot/.git/config ] || \
+.PRECIOUS: shr-chroot/.git/config-64bit
+setup-shr-chroot shr-chroot/.git/config-64bit:
+	[ -e shr-chroot/.git/config-64bit ] || \
 	( echo "setting up shr-chroot ..."; \
 	  git clone --bare ${SHR_CHROOT_URL} shr-chroot; \
 	  cd shr-chroot; \
@@ -47,13 +47,13 @@ setup-shr-chroot shr-chroot/.git/config:
 	  sed -i "s#bitbake:x:1026:bitbake#bitbake:x:`id -g`:bitbake#g" etc/group; \
 	)
 	mv Makefile shr-chroot/OE/Makefile
-	touch shr-chroot/.git/config
+	touch shr-chroot/.git/config-64bit
 	echo "Now run shr-chroot.sh in shr-chroot as ROOT to switch to new SHR chroot environment"
 
 .PHONY: setup-shr-chroot-32bit
-.PRECIOUS: shr-chroot-32bit/.git/config
-setup-shr-chroot-32bit shr-chroot-32bit/.git/config:
-	[ -e shr-chroot-32bit/.git/config ] || \
+.PRECIOUS: shr-chroot-32bit/.git/config-32bit
+setup-shr-chroot-32bit shr-chroot-32bit/.git/config-32bit:
+	[ -e shr-chroot-32bit/.git/config-32bit ] || \
 	( echo "setting up shr-chroot-32bit ..."; \
 	  git clone --bare ${SHR_CHROOT_URL} shr-chroot-32bit; \
 	  cd shr-chroot-32bit; \
@@ -64,7 +64,7 @@ setup-shr-chroot-32bit shr-chroot-32bit/.git/config:
 	  sed -i "s#bitbake:x:1026:bitbake#bitbake:x:`id -g`:bitbake#g" etc/group; \
 	)
 	mv Makefile shr-chroot-32bit/OE/Makefile
-	touch shr-chroot-32bit/.git/config
+	touch shr-chroot-32bit/.git/config-32bit
 	echo "Now run shr-chroot.sh in shr-chroot-32bit as ROOT to switch to new SHR chroot environment"
 
 .PHONY: setup-bitbake
@@ -189,9 +189,9 @@ update-common: common/.git/config
 	  ln -s common/Makefile Makefile )
 
 .PHONY: update-shr-chroot
-update-shr-chroot: ../lib64/../.git/config
+update-shr-chroot: ../.git/config
 	@echo "updating shr-chroot"
-	[ -d ../OE ] || ( echo "There should be ../OE if you have shr-chroot" && exit 1 )
+	[ -e ../.git/config-64bit ] || ( echo "There should be ../.git/config-64bit if you have shr-chroot" && exit 1 )
 	( cd .. ; \
 	  git fetch ; \
 	  git checkout ${CHROOT_BRANCH} 2>/dev/null || \
@@ -202,9 +202,9 @@ update-shr-chroot: ../lib64/../.git/config
 	)
 
 .PHONY: update-shr-chroot-32bit
-update-shr-chroot-32bit: ../.git/config
+update-shr-chroot-32bit: ../.git/config-32bit
 	@echo "updating shr-chroot-32bit"
-	[ -d ../OE ] || ( echo "There should be ../OE if you have shr-chroot-32bit" && exit 1 )
+	[ -e ../.git/config-32bit ] || ( echo "There should be ../.git/config-32bit if you have shr-chroot-32bit" && exit 1 )
 	( cd .. ; \
 	  git fetch ; \
 	  git checkout ${CHROOT_BRANCH_32BIT} 2>/dev/null || \
