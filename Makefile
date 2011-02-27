@@ -51,21 +51,21 @@ setup-shr-chroot shr-chroot/.git/config:
 	echo "Now run shr-chroot.sh in shr-chroot as ROOT to switch to new SHR chroot environment"
 
 .PHONY: setup-shr-chroot-32bit
-.PRECIOUS: shr-chroot/.git/config
-setup-shr-chroot-32bit shr-chroot/.git/config:
-	[ -e shr-chroot/.git/config ] || \
-	( echo "setting up 32bit shr-chroot ..."; \
-	  git clone --bare 1 ${SHR_CHROOT_URL} shr-chroot; \
-	  cd shr-chroot; \
+.PRECIOUS: shr-chroot-32bit/.git/config
+setup-shr-chroot-32bit shr-chroot-32bit/.git/config:
+	[ -e shr-chroot-32bit/.git/config ] || \
+	( echo "setting up shr-chroot-32bit ..."; \
+	  git clone --bare ${SHR_CHROOT_URL} shr-chroot-32bit; \
+	  cd shr-chroot-32bit; \
 	  git checkout ${CHROOT_BRANCH_32BIT} 2>/dev/null || \
 	  git checkout --no-track -b ${CHROOT_BRANCH_32BIT} origin/${CHROOT_BRANCH_32BIT} ; \
 	  git reset --hard origin/${CHROOT_BRANCH_32BIT}; \
 	  sed -i "s#bitbake:x:1026:1026::/OE:/bin/bash#bitbake:x:`id -u`:`id -g`::/OE:/bin/bash#g" etc/passwd; \
 	  sed -i "s#bitbake:x:1026:bitbake#bitbake:x:`id -g`:bitbake#g" etc/group; \
 	)
-	mv Makefile shr-chroot/OE/Makefile
-	touch shr-chroot/.git/config
-	echo "Now run shr-chroot.sh in shr-chroot as ROOT to switch to new SHR chroot environment"
+	mv Makefile shr-chroot-32bit/OE/Makefile
+	touch shr-chroot-32bit/.git/config
+	echo "Now run shr-chroot.sh in shr-chroot-32bit as ROOT to switch to new SHR chroot environment"
 
 .PHONY: setup-bitbake
 .PRECIOUS: bitbake/.git/config
@@ -186,7 +186,7 @@ update-common: common/.git/config
 	)
 
 .PHONY: update-shr-chroot
-update-shr-chroot: ../.git/config
+update-shr-chroot: ../lib64/../.git/config
 	@echo "updating shr-chroot"
 	[ -d ../OE ] || ( echo "There should be ../OE if you have shr-chroot" && exit 1 )
 	( cd .. ; \
@@ -200,8 +200,8 @@ update-shr-chroot: ../.git/config
 
 .PHONY: update-shr-chroot-32bit
 update-shr-chroot-32bit: ../.git/config
-	@echo "updating 32bit shr-chroot"
-	[ -d ../OE ] || ( echo "There should be ../OE if you have shr-chroot" && exit 1 )
+	@echo "updating shr-chroot-32bit"
+	[ -d ../OE ] || ( echo "There should be ../OE if you have shr-chroot-32bit" && exit 1 )
 	( cd .. ; \
 	  git fetch ; \
 	  git checkout ${CHROOT_BRANCH_32BIT} 2>/dev/null || \
