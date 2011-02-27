@@ -184,6 +184,9 @@ update-common: common/.git/config
 	  git checkout --no-track -b ${COMMON_BRANCH} origin/${COMMON_BRANCH} ; \
 	  git reset --hard origin/${COMMON_BRANCH}; \
 	)
+	( echo "replacing Makefile with link to common/Makefile"; \
+	  rm -f Makefile && \
+	  ln -s common/Makefile Makefile )
 
 .PHONY: update-shr-chroot
 update-shr-chroot: ../lib64/../.git/config
