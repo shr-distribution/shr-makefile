@@ -39,7 +39,7 @@ status: status-common status-openembedded
 setup-shr-chroot shr-chroot/.git/config-64bit:
 	[ -e shr-chroot/.git/config-64bit ] || \
 	( echo "setting up shr-chroot ..."; \
-	  git clone --depth 1 ${SHR_CHROOT_URL} shr-chroot; \
+	  git clone --no-checkout --depth 1 ${SHR_CHROOT_URL} shr-chroot; \
 	  cd shr-chroot; \
 	  git checkout ${CHROOT_BRANCH} 2>/dev/null || \
 	  git checkout --no-track -b ${CHROOT_BRANCH} origin/${CHROOT_BRANCH} ; \
@@ -56,7 +56,7 @@ setup-shr-chroot shr-chroot/.git/config-64bit:
 setup-shr-chroot-32bit shr-chroot-32bit/.git/config-32bit:
 	[ -e shr-chroot-32bit/.git/config-32bit ] || \
 	( echo "setting up shr-chroot-32bit ..."; \
-	  git clone --depth 1 ${SHR_CHROOT_URL} shr-chroot-32bit; \
+	  git clone --no-checkout --depth 1 ${SHR_CHROOT_URL} shr-chroot-32bit; \
 	  cd shr-chroot-32bit; \
 	  git checkout ${CHROOT_BRANCH_32BIT} 2>/dev/null || \
 	  git checkout --no-track -b ${CHROOT_BRANCH_32BIT} origin/${CHROOT_BRANCH_32BIT} ; \
