@@ -15,6 +15,7 @@ test -n "$TOPDIR" -a -d "$TOPDIR" || {
 
 #
 # the following must match the definitions in common/conf/site.conf
+test ! -d "${TOPDIR}/bitbake/bin" || export PATH="${TOPDIR}/bitbake/bin:${PATH}"
 export BBPATH="${TOPDIR}:${TOPDIR}/openembedded"
 export BB_ENV_EXTRAWHITE="MACHINE DISTRO"
 export LD_LIBRARY_PATH=
@@ -43,4 +44,5 @@ alias bb="bitbake"
 # remove TOPDIR - not required
 unset TOPDIR
 
+export PS1='\[\033[01;32m\]OE $MACHINE@$DISTRO\[\033[01;34m\] \w \$\[\033[00m\] '
 echo "Altered environment for SHR Development"
