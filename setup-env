@@ -7,7 +7,8 @@
 # topdir must exist in the directory and define TOPDIR to
 # the full path name of the working directory
 . ./conf/topdir.conf
-. ./conf/auto.conf
+test -e ./setup-local || echo "setup-local does not exist, please update your conf/auto.conf and copy setup-local from common directory"
+. ./setup-local
 test -n "$TOPDIR" -a -d "$TOPDIR" || {
 	echo "environment: TOPDIR not defined" >&2
 	return

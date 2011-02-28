@@ -114,6 +114,7 @@ shr-stable/.configured: common/.git/config openembedded/.git/config
 	[ -d shr-stable ] || ( mkdir -p shr-stable )
 	[ -e downloads ] || ( mkdir -p downloads )
 	[ -e shr-stable/setup-env ] || ( cd shr-stable ; ln -sf ../common/setup-env . )
+	[ -e shr-stable/setup-local ] || ( cd shr-stable ; cp ../common/setup-local . )
 	[ -e shr-stable/downloads ] || ( cd shr-stable ; ln -sf ../downloads . )
 	[ -e shr-stable/openembedded ] || ( cd shr-stable ; \
 	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
@@ -136,6 +137,7 @@ shr-testing/.configured: common/.git/config openembedded/.git/config
 	[ -d shr-testing ] || ( mkdir -p shr-testing )
 	[ -e downloads ] || ( mkdir -p downloads )
 	[ -e shr-testing/setup-env ] || ( cd shr-testing ; ln -sf ../common/setup-env . )
+	[ -e shr-testing/setup-local ] || ( cd shr-testing ; cp ../common/setup-local . )
 	[ -e shr-testing/downloads ] || ( cd shr-testing ; ln -sf ../downloads . )
 	[ -e shr-testing/openembedded ] || ( cd shr-testing ; \
 	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
@@ -158,6 +160,7 @@ shr-unstable/.configured: common/.git/config openembedded/.git/config
 	[ -d shr-unstable ] || ( mkdir -p shr-unstable )
 	[ -e downloads ] || ( mkdir -p downloads )
 	[ -e shr-unstable/setup-env ] || ( cd shr-unstable ; ln -sf ../common/setup-env . )
+	[ -e shr-unstable/setup-local ] || ( cd shr-unstable ; cp ../common/setup-local . )
 	[ -e shr-unstable/downloads ] || ( cd shr-unstable ; ln -sf ../downloads . )
 	[ -e shr-unstable/openembedded ] || ( cd shr-unstable ; \
 	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \

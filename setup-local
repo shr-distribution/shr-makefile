@@ -1,0 +1,3 @@
+# keep this file compatible with sh (it's read from setup-env)
+DISTRO="shr"
+MACHINE="om-gta02"
