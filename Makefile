@@ -147,7 +147,7 @@ shr-testing/.configured: common/.git/config openembedded/.git/config
 	[ -d shr-testing/conf ] || ( mkdir -p shr-testing/conf )
 	[ -e shr-testing/conf/site.conf ] || ( cd shr-testing/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
 	[ -e shr-testing/conf/auto.conf ] || ( cp common/conf/auto.conf shr-testing/conf/auto.conf; \
-	  echo "DISTRO_FEED_URI=\"http://build.shr-project.org/shr-testing/ipk/\"" >> shr-testing/conf/auto.conf ; \
+	  echo "DISTRO_FEED_URI=\"http://build.shr-project.org/shr-testing2011.1/ipk/\"" >> shr-testing/conf/auto.conf ; \
 	)
 	[ -e shr-testing/conf/local.conf ] || ( cp common/conf/local.conf shr-testing/conf/local.conf )
 	[ -e shr-testing/conf/local-builds.inc ] || ( cp common/conf/local-builds.inc shr-testing/conf/local-builds.inc )
