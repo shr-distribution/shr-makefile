@@ -21,6 +21,8 @@ export BBPATH="${TOPDIR}:${TOPDIR}/openembedded"
 export BB_ENV_EXTRAWHITE="MACHINE DISTRO"
 export LD_LIBRARY_PATH=
 export LANG=C
+export MACHINE
+export DISTRO
 #NOTE: if you add export definitions here add them below too!
 #
 # unset the following (unnecessary for the makefile, but safe)
@@ -46,4 +48,4 @@ alias bb="bitbake"
 unset TOPDIR
 
 export PS1='\[\033[01;32m\]OE $MACHINE@$DISTRO\[\033[01;34m\] \w \$\[\033[00m\] '
-echo "Altered environment for SHR Development"
+echo "Altered environment for ${MACHINE}@${DISTRO} development"
