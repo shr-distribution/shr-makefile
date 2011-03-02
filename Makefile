@@ -13,6 +13,10 @@ BRANCH_OE_SHR_UNSTABLE = master
 BRANCH_OE_SHR_TESTING = shr/testing2011.1
 BRANCH_OE_SHR_STABLE = shr/stable2009
 
+BRANCH_OE_CORE = master
+BRANCH_META_OE = master
+BRANCH_META_SHR = master
+
 SHR_MAKEFILE_URL = "http://git.shr-project.org/repo/shr-makefile.git"
 # use git://, because http:// transport doesn't support --depth
 SHR_CHROOT_URL = "git://git.shr-project.org/shr-chroot.git"
@@ -26,6 +30,9 @@ update:
 	[ ! -e ../.git/config-64bit ] || ${MAKE} update-shr-chroot 
 	[ ! -e common ]       || ${MAKE} update-common 
 	[ ! -e openembedded ] || ${MAKE} update-openembedded 
+	[ ! -e shr-core/openembedded-core ] || ${MAKE} update-shr-core-openembedded-core
+	[ ! -e shr-core/meta-openembedded ] || ${MAKE} update-shr-meta-openembedded
+	[ ! -e shr-core/meta-shr ]          || ${MAKE} update-shr-meta-shr
 	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
 	[ ! -e shr-testing ]  || ${MAKE} update-shr-testing 
 	[ ! -e shr-stable ]   || ${MAKE} update-shr-stable
@@ -103,6 +110,18 @@ setup-openembedded openembedded/.git/config:
 	  git checkout --no-track -b ${BRANCH_OE} origin/${BRANCH_OE} )
 	touch openembedded/.git/config
 
+.PHONY: setup-shr-core-openembedded-core
+.PRECIOUS: shr-core/openembedded-core/.git/config
+etup-shr-core-openembedded-core shr-core/openembedded-core/.git/config
+	[ -e shr-core/openembedded-core/.git/config ] || \
+	( echo "setting up openembedded-core"; \
+	  git clone git://git.openembedded.net/openembedded-core shr-core/openembedded-core )
+	( cd shr-core/openembedded-core && \
+	  git checkout ${OE_CORE_BRANCH} 2>/dev/null || \
+	  git checkout --no-track -b ${OE_CORE_BRANCH} origin/${OE_CORE_BRANCH} )
+	touch shr-core/openembedded-core/.git/config
+
+
 .PHONY: setup-%
 setup-%:
 	${MAKE} $*/.configured
@@ -179,6 +198,26 @@ shr-unstable/.configured: common/.git/config openembedded/.git/config
 	[ -e shr-unstable/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-unstable'" > shr-unstable/conf/topdir.conf
 	touch shr-unstable/.configured
 	
+.PRECIOUS: shr-core/.configured
+shr-core/.configured: common/.git/config shr-core/openembedded-core/.git/config shr-core/meta-openembedded/.git/config shr-core/meta-shr/.git/config
+	@echo "preparing shr-core tree"
+	[ -d shr-core ] || ( mkdir -p shr-core )
+	[ -e downloads ] || ( mkdir -p downloads )
+	[ -e shr-core/setup-env ] || ( cd shr-core ; ln -sf ../common/setup-env . )
+	[ -e shr-core/setup-local ] || ( cd shr-core ; cp ../common/setup-local . )
+	[ -e shr-core/downloads ] || ( cd shr-core ; ln -sf ../downloads . )
+	[ -d shr-core/conf ] || ( mkdir -p shr-core/conf )
+	[ -e shr-core/conf/site.conf ] || ( cd shr-core/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
+	[ -e shr-core/conf/auto.conf ] || ( cp common/conf/auto.conf shr-core/conf/auto.conf; \
+	  echo "DISTRO_FEED_URI=\"http://build.shr-project.org/shr-core/ipk/\"" >> shr-core/conf/auto.conf ; \
+	)
+	[ -e shr-core/conf/local.conf ] || ( cp common/conf/local.conf shr-core/conf/local.conf; \
+	  echo "require conf/distro/include/shr-autorev.inc" >> shr-core/conf/local.conf ; \
+	)
+	[ -e shr-core/conf/local-builds.inc ] || ( cp common/conf/local-builds.inc shr-core/conf/local-builds.inc; )
+	[ -e shr-core/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-core'" > shr-core/conf/topdir.conf
+	touch shr-core/.configured
+
 .PHONY: update-common
 update-common: common/.git/config
 	@echo "updating common (Makefile)"
