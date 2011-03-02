@@ -99,8 +99,8 @@ setup-openembedded openembedded/.git/config:
 	( echo "setting up openembedded"; \
 	  git clone git://git.openembedded.net/openembedded openembedded )
 	( cd openembedded && \
-	  git checkout ${OE_BRANCH} 2>/dev/null || \
-	  git checkout --no-track -b ${OE_BRANCH} origin/${OE_BRANCH} )
+	  git checkout ${BRANCH_OE} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_OE} origin/${BRANCH_OE} )
 	touch openembedded/.git/config
 
 .PHONY: setup-%
