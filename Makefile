@@ -9,9 +9,9 @@ CHROOT_BRANCH_32BIT = 32bit
 COMMON_BRANCH = master
 
 BRANCH_OE = master
-SHR_UNSTABLE_BRANCH_OE = master
-SHR_TESTING_BRANCH_OE = shr/testing2011.1
-SHR_STABLE_BRANCH_OE = shr/stable2009
+BRANCH_OE_SHR_UNSTABLE = master
+BRANCH_OE_SHR_TESTING = shr/testing2011.1
+BRANCH_OE_SHR_STABLE = shr/stable2009
 
 SHR_MAKEFILE_URL = "http://git.shr-project.org/repo/shr-makefile.git"
 # use git://, because http:// transport doesn't support --depth
@@ -119,8 +119,8 @@ shr-stable/.configured: common/.git/config openembedded/.git/config
 	[ -e shr-stable/openembedded ] || ( cd shr-stable ; \
 	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
 	  cd openembedded ; \
-	  git checkout ${SHR_STABLE_BRANCH_OE} 2>/dev/null || \
-	  git checkout --no-track -b ${SHR_STABLE_BRANCH_OE} origin/${SHR_STABLE_BRANCH_OE} )
+	  git checkout ${BRANCH_OE_SHR_STABLE} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_OE_SHR_STABLE} origin/${BRANCH_OE_SHR_STABLE} )
 	[ -d shr-stable/conf ] || ( mkdir -p shr-stable/conf )
 	[ -e shr-stable/conf/site.conf ] || ( cd shr-stable/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
 	[ -e shr-stable/conf/auto.conf ] || ( cp common/conf/auto.conf shr-stable/conf/auto.conf; \
@@ -142,8 +142,8 @@ shr-testing/.configured: common/.git/config openembedded/.git/config
 	[ -e shr-testing/openembedded ] || ( cd shr-testing ; \
 	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
 	  cd openembedded ; \
-	  git checkout ${SHR_TESTING_BRANCH_OE} 2>/dev/null || \
-	  git checkout --no-track -b ${SHR_TESTING_BRANCH_OE} origin/${SHR_TESTING_BRANCH_OE} )
+	  git checkout ${BRANCH_OE_SHR_TESTING} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_OE_SHR_TESTING} origin/${BRANCH_OE_SHR_TESTING} )
 	[ -d shr-testing/conf ] || ( mkdir -p shr-testing/conf )
 	[ -e shr-testing/conf/site.conf ] || ( cd shr-testing/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
 	[ -e shr-testing/conf/auto.conf ] || ( cp common/conf/auto.conf shr-testing/conf/auto.conf; \
@@ -165,8 +165,8 @@ shr-unstable/.configured: common/.git/config openembedded/.git/config
 	[ -e shr-unstable/openembedded ] || ( cd shr-unstable ; \
 	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
 	  cd openembedded ; \
-	  git checkout ${SHR_UNSTABLE_BRANCH_OE} 2>/dev/null || \
-	  git checkout --no-track -b ${SHR_UNSTABLE_BRANCH_OE} origin/${SHR_UNSTABLE_BRANCH_OE} )
+	  git checkout ${BRANCH_OE_SHR_UNSTABLE} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_OE_SHR_UNSTABLE} origin/${BRANCH_OE_SHR_UNSTABLE} )
 	[ -d shr-unstable/conf ] || ( mkdir -p shr-unstable/conf )
 	[ -e shr-unstable/conf/site.conf ] || ( cd shr-unstable/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
 	[ -e shr-unstable/conf/auto.conf ] || ( cp common/conf/auto.conf shr-unstable/conf/auto.conf; \
@@ -245,27 +245,27 @@ update-shr-stable: shr-stable/.configured
 	@echo "updating shr-stable tree"
 	( cd shr-stable/openembedded ; \
 	  git clean -d -f ; git reset --hard ; git fetch ; \
-	  git checkout ${SHR_STABLE_BRANCH_OE} 2>/dev/null || \
-	  git checkout --no-track -b ${SHR_STABLE_BRANCH_OE} origin/${SHR_STABLE_BRANCH_OE} ; \
-	  git reset --hard origin/${SHR_STABLE_BRANCH_OE} )
+	  git checkout ${BRANCH_OE_SHR_STABLE} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_OE_SHR_STABLE} origin/${BRANCH_OE_SHR_STABLE} ; \
+	  git reset --hard origin/${BRANCH_OE_SHR_STABLE} )
 
 .PHONY: update-shr-testing
 update-shr-testing: shr-testing/.configured
 	@echo "updating shr-testing tree"
 	( cd shr-testing/openembedded ; \
 	  git clean -d -f ; git reset --hard ; git fetch ; \
-	  git checkout ${SHR_TESTING_BRANCH_OE} 2>/dev/null || \
-	  git checkout --no-track -b ${SHR_TESTING_BRANCH_OE} origin/${SHR_TESTING_BRANCH_OE} ; \
-	  git reset --hard origin/${SHR_TESTING_BRANCH_OE} )
+	  git checkout ${BRANCH_OE_SHR_TESTING} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_OE_SHR_TESTING} origin/${BRANCH_OE_SHR_TESTING} ; \
+	  git reset --hard origin/${BRANCH_OE_SHR_TESTING} )
 
 .PHONY: update-shr-unstable
 update-shr-unstable: shr-unstable/.configured
 	@echo "updating shr-unstable tree"
 	( cd shr-unstable/openembedded ; \
 	  git clean -d -f ; git reset --hard ; git fetch ; \
-	  git checkout ${SHR_UNSTABLE_BRANCH_OE} 2>/dev/null || \
-	  git checkout --no-track -b ${SHR_UNSTABLE_BRANCH_OE} origin/${SHR_UNSTABLE_BRANCH_OE} ; \
-	  git reset --hard origin/${SHR_UNSTABLE_BRANCH_OE} )
+	  git checkout ${BRANCH_OE_SHR_UNSTABLE} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_OE_SHR_UNSTABLE} origin/${BRANCH_OE_SHR_UNSTABLE} ; \
+	  git reset --hard origin/${BRANCH_OE_SHR_UNSTABLE} )
 
 .PHONY: status-common
 status-common: common/.git/config
