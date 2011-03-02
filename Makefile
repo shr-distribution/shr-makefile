@@ -4,9 +4,9 @@
 MAKEFLAGS = -swr
 
 BITBAKE_VERSION = 1.10
-CHROOT_BRANCH = master
-CHROOT_BRANCH_32BIT = 32bit
-COMMON_BRANCH = master
+BRANCH_CHROOT = master
+BRANCH_CHROOT_32BIT = 32bit
+BRANCH_COMMON = master
 
 BRANCH_OE = master
 BRANCH_OE_SHR_UNSTABLE = master
@@ -41,9 +41,9 @@ setup-shr-chroot shr-chroot/.git/config-64bit:
 	( echo "setting up shr-chroot ..."; \
 	  git clone --no-checkout --depth 1 ${SHR_CHROOT_URL} shr-chroot; \
 	  cd shr-chroot; \
-	  git checkout ${CHROOT_BRANCH} 2>/dev/null || \
-	  git checkout --no-track -b ${CHROOT_BRANCH} origin/${CHROOT_BRANCH} ; \
-	  git reset --hard origin/${CHROOT_BRANCH}; \
+	  git checkout ${BRANCH_CHROOT} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_CHROOT} origin/${BRANCH_CHROOT} ; \
+	  git reset --hard origin/${BRANCH_CHROOT}; \
 	  sed -i "s#bitbake:x:1026:1026::/OE:/bin/bash#bitbake:x:`id -u`:`id -g`::/OE:/bin/bash#g" etc/passwd; \
 	  sed -i "s#bitbake:x:1026:bitbake#bitbake:x:`id -g`:bitbake#g" etc/group; \
 	)
@@ -58,9 +58,9 @@ setup-shr-chroot-32bit shr-chroot-32bit/.git/config-32bit:
 	( echo "setting up shr-chroot-32bit ..."; \
 	  git clone --no-checkout --depth 1 ${SHR_CHROOT_URL} shr-chroot-32bit; \
 	  cd shr-chroot-32bit; \
-	  git checkout ${CHROOT_BRANCH_32BIT} 2>/dev/null || \
-	  git checkout --no-track -b ${CHROOT_BRANCH_32BIT} origin/${CHROOT_BRANCH_32BIT} ; \
-	  git reset --hard origin/${CHROOT_BRANCH_32BIT}; \
+	  git checkout ${BRANCH_CHROOT_32BIT} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_CHROOT_32BIT} origin/${BRANCH_CHROOT_32BIT} ; \
+	  git reset --hard origin/${BRANCH_CHROOT_32BIT}; \
 	  sed -i "s#bitbake:x:1026:1026::/OE:/bin/bash#bitbake:x:`id -u`:`id -g`::/OE:/bin/bash#g" etc/passwd; \
 	  sed -i "s#bitbake:x:1026:bitbake#bitbake:x:`id -g`:bitbake#g" etc/group; \
 	)
@@ -88,8 +88,8 @@ setup-common common/.git/config:
 	  rm -f Makefile && \
 	  ln -s common/Makefile Makefile )
 	( cd common && \
-	  git checkout ${COMMON_BRANCH} 2>/dev/null || \
-	  git checkout --no-track -b ${COMMON_BRANCH} origin/${COMMON_BRANCH} )
+	  git checkout ${BRANCH_COMMON} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_COMMON} origin/${BRANCH_COMMON} )
 	touch common/.git/config
 
 .PHONY: setup-openembedded
@@ -184,9 +184,9 @@ update-common: common/.git/config
 	@echo "updating common (Makefile)"
 	( cd common ; \
 	  git clean -d -f ; git reset --hard ; git fetch ; \
-	  git checkout ${COMMON_BRANCH} 2>/dev/null || \
-	  git checkout --no-track -b ${COMMON_BRANCH} origin/${COMMON_BRANCH} ; \
-	  git reset --hard origin/${COMMON_BRANCH}; \
+	  git checkout ${BRANCH_COMMON} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_COMMON} origin/${BRANCH_COMMON} ; \
+	  git reset --hard origin/${BRANCH_COMMON}; \
 	)
 	( echo "replacing Makefile with link to common/Makefile"; \
 	  rm -f Makefile && \
@@ -198,9 +198,9 @@ update-shr-chroot: ../.git/config-64bit
 	[ -e ../.git/config-64bit ] || ( echo "There should be ../.git/config-64bit if you have shr-chroot" && exit 1 )
 	( cd .. ; \
 	  git fetch ; \
-	  git checkout ${CHROOT_BRANCH} 2>/dev/null || \
-	  git checkout --no-track -b ${CHROOT_BRANCH} origin/${CHROOT_BRANCH} ; \
-	  git reset --hard origin/${CHROOT_BRANCH}; \
+	  git checkout ${BRANCH_CHROOT} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_CHROOT} origin/${BRANCH_CHROOT} ; \
+	  git reset --hard origin/${BRANCH_CHROOT}; \
 	  sed -i "s#bitbake:x:1026:1026::/OE:/bin/bash#bitbake:x:`id -u`:`id -g`::/OE:/bin/bash#g" etc/passwd; \
 	  sed -i "s#bitbake:x:1026:bitbake#bitbake:x:`id -g`:bitbake#g" etc/group; \
 	)
@@ -211,9 +211,9 @@ update-shr-chroot-32bit: ../.git/config-32bit
 	[ -e ../.git/config-32bit ] || ( echo "There should be ../.git/config-32bit if you have shr-chroot-32bit" && exit 1 )
 	( cd .. ; \
 	  git fetch ; \
-	  git checkout ${CHROOT_BRANCH_32BIT} 2>/dev/null || \
-	  git checkout --no-track -b ${CHROOT_BRANCH_32BIT} origin/${CHROOT_BRANCH_32BIT} ; \
-	  git reset --hard origin/${CHROOT_BRANCH_32BIT}; \
+	  git checkout ${BRANCH_CHROOT_32BIT} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_CHROOT_32BIT} origin/${BRANCH_CHROOT_32BIT} ; \
+	  git reset --hard origin/${BRANCH_CHROOT_32BIT}; \
 	  sed -i "s#bitbake:x:1026:1026::/OE:/bin/bash#bitbake:x:`id -u`:`id -g`::/OE:/bin/bash#g" etc/passwd; \
 	  sed -i "s#bitbake:x:1026:bitbake#bitbake:x:`id -g`:bitbake#g" etc/group; \
 	)
