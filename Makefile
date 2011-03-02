@@ -116,7 +116,7 @@ setup-openembedded openembedded/.git/config:
 
 .PHONY: setup-shr-core-openembedded-core
 .PRECIOUS: shr-core/openembedded-core/.git/config
-etup-shr-core-openembedded-core shr-core/openembedded-core/.git/config
+setup-shr-core-openembedded-core shr-core/openembedded-core/.git/config:
 	[ -e shr-core/openembedded-core/.git/config ] || \
 	( echo "setting up openembedded-core"; \
 	  git clone ${URL_OE_CORE} shr-core/openembedded-core )
@@ -127,7 +127,7 @@ etup-shr-core-openembedded-core shr-core/openembedded-core/.git/config
 
 .PHONY: setup-shr-core-meta-openembedded
 .PRECIOUS: shr-core/meta-openembedded/.git/config
-etup-shr-core-meta-openembedded shr-core/meta-openembedded/.git/config
+setup-shr-core-meta-openembedded shr-core/meta-openembedded/.git/config:
 	[ -e shr-core/meta-openembedded/.git/config ] || \
 	( echo "setting up meta-openembedded"; \
 	  git clone ${URL_META_OE} shr-core/meta-openembedded )
@@ -138,7 +138,7 @@ etup-shr-core-meta-openembedded shr-core/meta-openembedded/.git/config
 
 .PHONY: setup-shr-core-meta-shr
 .PRECIOUS: shr-core/meta-shr/.git/config
-etup-shr-core-meta-shr shr-core/meta-shr/.git/config
+setup-shr-core-meta-shr shr-core/meta-shr/.git/config:
 	[ -e shr-core/meta-shr/.git/config ] || \
 	( echo "setting up meta-shr"; \
 	  git clone ${URL_META_SHR} shr-core/meta-shr )
