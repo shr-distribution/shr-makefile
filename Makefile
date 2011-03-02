@@ -17,9 +17,13 @@ BRANCH_OE_CORE = master
 BRANCH_META_OE = master
 BRANCH_META_SHR = master
 
-SHR_MAKEFILE_URL = "http://git.shr-project.org/repo/shr-makefile.git"
+URL_OE = "git://git.openembedded.net/openembedded"
+URL_OE_CORE = "git://git.openembedded.net/openembedded-core"
+URL_SHR_MAKEFILE = "http://git.shr-project.org/repo/shr-makefile.git"
 # use git://, because http:// transport doesn't support --depth
-SHR_CHROOT_URL = "git://git.shr-project.org/shr-chroot.git"
+URL_SHR_CHROOT = "git://git.shr-project.org/shr-chroot.git"
+URL_META_SHR = "git://git.shr-project.org/meta-shr.git"
+URL_META_OE = "git://git.openembedded.net/meta-openembedded"
 
 .PHONY: all
 all: update build
@@ -46,7 +50,7 @@ status: status-common status-openembedded
 setup-shr-chroot shr-chroot/.git/config-64bit:
 	[ -e shr-chroot/.git/config-64bit ] || \
 	( echo "setting up shr-chroot ..."; \
-	  git clone --no-checkout --depth 1 ${SHR_CHROOT_URL} shr-chroot; \
+	  git clone --no-checkout --depth 1 ${URL_SHR_CHROOT} shr-chroot; \
 	  cd shr-chroot; \
 	  git checkout ${BRANCH_CHROOT} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_CHROOT} origin/${BRANCH_CHROOT} ; \
@@ -63,7 +67,7 @@ setup-shr-chroot shr-chroot/.git/config-64bit:
 setup-shr-chroot-32bit shr-chroot-32bit/.git/config-32bit:
 	[ -e shr-chroot-32bit/.git/config-32bit ] || \
 	( echo "setting up shr-chroot-32bit ..."; \
-	  git clone --no-checkout --depth 1 ${SHR_CHROOT_URL} shr-chroot-32bit; \
+	  git clone --no-checkout --depth 1 ${URL_SHR_CHROOT} shr-chroot-32bit; \
 	  cd shr-chroot-32bit; \
 	  git checkout ${BRANCH_CHROOT_32BIT} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_CHROOT_32BIT} origin/${BRANCH_CHROOT_32BIT} ; \
@@ -91,7 +95,7 @@ setup-bitbake bitbake/.git/config:
 setup-common common/.git/config:
 	[ -e common/.git/config ] || \
 	( echo "setting up common (Makefile)"; \
-	  git clone ${SHR_MAKEFILE_URL} common && \
+	  git clone ${URL_SHR_MAKEFILE} common && \
 	  rm -f Makefile && \
 	  ln -s common/Makefile Makefile )
 	( cd common && \
@@ -104,7 +108,7 @@ setup-common common/.git/config:
 setup-openembedded openembedded/.git/config:
 	[ -e openembedded/.git/config ] || \
 	( echo "setting up openembedded"; \
-	  git clone git://git.openembedded.net/openembedded openembedded )
+	  git clone ${URL_OE} openembedded )
 	( cd openembedded && \
 	  git checkout ${BRANCH_OE} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_OE} origin/${BRANCH_OE} )
@@ -115,11 +119,33 @@ setup-openembedded openembedded/.git/config:
 etup-shr-core-openembedded-core shr-core/openembedded-core/.git/config
 	[ -e shr-core/openembedded-core/.git/config ] || \
 	( echo "setting up openembedded-core"; \
-	  git clone git://git.openembedded.net/openembedded-core shr-core/openembedded-core )
+	  git clone ${URL_OE_CORE} shr-core/openembedded-core )
 	( cd shr-core/openembedded-core && \
-	  git checkout ${OE_CORE_BRANCH} 2>/dev/null || \
-	  git checkout --no-track -b ${OE_CORE_BRANCH} origin/${OE_CORE_BRANCH} )
+	  git checkout ${BRANCH_OE_CORE} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_OE_CORE} origin/${BRANCH_OE_CORE} )
 	touch shr-core/openembedded-core/.git/config
+
+.PHONY: setup-shr-core-meta-openembedded
+.PRECIOUS: shr-core/meta-openembedded/.git/config
+etup-shr-core-meta-openembedded shr-core/meta-openembedded/.git/config
+	[ -e shr-core/meta-openembedded/.git/config ] || \
+	( echo "setting up meta-openembedded"; \
+	  git clone ${URL_META_OE} shr-core/meta-openembedded )
+	( cd shr-core/meta-openembedded && \
+	  git checkout ${BRANCH_META_OE} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_META_OE} origin/${BRANCH_META_OE} )
+	touch shr-core/meta-openembedded/.git/config
+
+.PHONY: setup-shr-core-meta-shr
+.PRECIOUS: shr-core/meta-shr/.git/config
+etup-shr-core-meta-shr shr-core/meta-shr/.git/config
+	[ -e shr-core/meta-shr/.git/config ] || \
+	( echo "setting up meta-shr"; \
+	  git clone ${URL_META_SHR} shr-core/meta-shr )
+	( cd shr-core/meta-shr && \
+	  git checkout ${BRANCH_META_SHR} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_META_SHR} origin/${BRANCH_META_SHR} )
+	touch shr-core/meta-shr/.git/config
 
 
 .PHONY: setup-%
@@ -136,7 +162,7 @@ shr-stable/.configured: common/.git/config openembedded/.git/config
 	[ -e shr-stable/setup-local ] || ( cd shr-stable ; cp ../common/setup-local . )
 	[ -e shr-stable/downloads ] || ( cd shr-stable ; ln -sf ../downloads . )
 	[ -e shr-stable/openembedded ] || ( cd shr-stable ; \
-	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
+	  git clone --reference ../openembedded ${URL_OE} openembedded; \
 	  cd openembedded ; \
 	  git checkout ${BRANCH_OE_SHR_STABLE} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_OE_SHR_STABLE} origin/${BRANCH_OE_SHR_STABLE} )
@@ -159,7 +185,7 @@ shr-testing/.configured: common/.git/config openembedded/.git/config
 	[ -e shr-testing/setup-local ] || ( cd shr-testing ; cp ../common/setup-local . )
 	[ -e shr-testing/downloads ] || ( cd shr-testing ; ln -sf ../downloads . )
 	[ -e shr-testing/openembedded ] || ( cd shr-testing ; \
-	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
+	  git clone --reference ../openembedded ${URL_OE} openembedded; \
 	  cd openembedded ; \
 	  git checkout ${BRANCH_OE_SHR_TESTING} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_OE_SHR_TESTING} origin/${BRANCH_OE_SHR_TESTING} )
@@ -182,7 +208,7 @@ shr-unstable/.configured: common/.git/config openembedded/.git/config
 	[ -e shr-unstable/setup-local ] || ( cd shr-unstable ; cp ../common/setup-local . )
 	[ -e shr-unstable/downloads ] || ( cd shr-unstable ; ln -sf ../downloads . )
 	[ -e shr-unstable/openembedded ] || ( cd shr-unstable ; \
-	  git clone --reference ../openembedded git://git.openembedded.net/openembedded openembedded; \
+	  git clone --reference ../openembedded ${URL_OE} openembedded; \
 	  cd openembedded ; \
 	  git checkout ${BRANCH_OE_SHR_UNSTABLE} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_OE_SHR_UNSTABLE} origin/${BRANCH_OE_SHR_UNSTABLE} )
@@ -305,6 +331,33 @@ update-shr-unstable: shr-unstable/.configured
 	  git checkout ${BRANCH_OE_SHR_UNSTABLE} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_OE_SHR_UNSTABLE} origin/${BRANCH_OE_SHR_UNSTABLE} ; \
 	  git reset --hard origin/${BRANCH_OE_SHR_UNSTABLE} )
+
+.PHONY: update-shr-core-openembedded-core
+update-shr-core-openembedded-core: shr-core/openembedded-core/.git/config
+	@echo "updating shr-core/openembedded-core tree"
+	( cd shr-core/openembedded-core ; \
+	  git clean -d -f ; git reset --hard ; git fetch ; \
+	  git checkout ${BRANCH_OE_CORE} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_OE_CORE} origin/${BRANCH_OE_CORE} ; \
+	  git reset --hard origin/${BRANCH_OE_CORE} )
+
+.PHONY: update-shr-core-meta-openembedded
+update-shr-core-meta-openembedded: shr-core/meta-openembedded/.git/config
+	@echo "updating shr-core/meta-openembedded tree"
+	( cd shr-core/meta-openembedded ; \
+	  git clean -d -f ; git reset --hard ; git fetch ; \
+	  git checkout ${BRANCH_META_OE} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_META_OE} origin/${BRANCH_META_OE} ; \
+	  git reset --hard origin/${BRANCH_META_OE} )
+
+.PHONY: update-shr-core-meta-shr
+update-shr-core-meta-shr: shr-core/meta-shr/.git/config
+	@echo "updating shr-core/meta-shr tree"
+	( cd shr-core/meta-shr ; \
+	  git clean -d -f ; git reset --hard ; git fetch ; \
+	  git checkout ${BRANCH_META_SHR} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_META_SHR} origin/${BRANCH_META_SHR} ; \
+	  git reset --hard origin/${BRANCH_META_SHR} )
 
 .PHONY: status-common
 status-common: common/.git/config
