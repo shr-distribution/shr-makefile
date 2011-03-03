@@ -35,8 +35,8 @@ update:
 	[ ! -e common ]       || ${MAKE} update-common 
 	[ ! -e openembedded ] || ${MAKE} update-openembedded 
 	[ ! -e shr-core/openembedded-core ] || ${MAKE} update-shr-core-openembedded-core
-	[ ! -e shr-core/meta-openembedded ] || ${MAKE} update-shr-meta-openembedded
-	[ ! -e shr-core/meta-shr ]          || ${MAKE} update-shr-meta-shr
+	[ ! -e shr-core/meta-openembedded ] || ${MAKE} update-shr-core-meta-openembedded
+	[ ! -e shr-core/meta-shr ]          || ${MAKE} update-shr-core-meta-shr
 	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
 	[ ! -e shr-testing ]  || ${MAKE} update-shr-testing 
 	[ ! -e shr-stable ]   || ${MAKE} update-shr-stable
