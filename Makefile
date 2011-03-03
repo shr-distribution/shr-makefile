@@ -230,17 +230,9 @@ shr-core/.configured: common/.git/config shr-core/openembedded-core/.git/config 
 	[ -d shr-core ] || ( mkdir -p shr-core )
 	[ -e downloads ] || ( mkdir -p downloads )
 	[ -e shr-core/setup-env ] || ( cd shr-core ; ln -sf ../common/setup-env . )
-	[ -e shr-core/setup-local ] || ( cd shr-core ; cp ../common/setup-local . )
+	[ -e shr-core/setup-local ] || ( cd shr-core ; cp ../common/setup-local .; echo 'export BBFETCH2=True' >> setup-local )
 	[ -e shr-core/downloads ] || ( cd shr-core ; ln -sf ../downloads . )
-	[ -d shr-core/conf ] || ( mkdir -p shr-core/conf )
-	[ -e shr-core/conf/site.conf ] || ( cd shr-core/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
-	[ -e shr-core/conf/auto.conf ] || ( cp common/conf/auto.conf shr-core/conf/auto.conf; \
-	  echo "DISTRO_FEED_URI=\"http://build.shr-project.org/shr-core/ipk/\"" >> shr-core/conf/auto.conf ; \
-	)
-	[ -e shr-core/conf/local.conf ] || ( cp common/conf/local.conf shr-core/conf/local.conf; \
-	  echo "require conf/distro/include/shr-autorev.inc" >> shr-core/conf/local.conf ; \
-	)
-	[ -e shr-core/conf/local-builds.inc ] || ( cp common/conf/local-builds.inc shr-core/conf/local-builds.inc; )
+	[ -d shr-core/conf ] || ( cp -ra ../common/conf/shr-core shr-core/conf )
 	[ -e shr-core/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-core'" > shr-core/conf/topdir.conf
 	touch shr-core/.configured
 
