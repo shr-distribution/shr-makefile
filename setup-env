@@ -49,5 +49,9 @@ alias bb="bitbake"
 # remove TOPDIR - not required
 unset TOPDIR
 
-export PS1='\[\033[01;32m\]OE $MACHINE@$DISTRO\[\033[01;34m\] \w \$\[\033[00m\] '
+if [ ${TERM:-dumb} = dumb ]; then
+   export PS1='OE $MACHINE@$DISTRO \w \$ '
+else
+   export PS1='\[\033[01;32m\]OE $MACHINE@$DISTRO\[\033[01;34m\] \w \$\[\033[00m\] '
+fi
 echo "Altered environment for ${MACHINE}@${DISTRO} development"
