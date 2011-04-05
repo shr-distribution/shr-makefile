@@ -232,7 +232,7 @@ shr-core/.configured: common/.git/config shr-core/openembedded-core/.git/config 
 	[ -e shr-core/setup-env ] || ( cd shr-core ; ln -sf ../common/setup-env . )
 	[ -e shr-core/setup-local ] || ( cd shr-core ; cp ../common/setup-local .; echo 'export BBFETCH2=True' >> setup-local )
 	[ -e shr-core/downloads ] || ( cd shr-core ; ln -sf ../downloads . )
-	[ -d shr-core/conf ] || ( cp -ra ../common/conf/shr-core shr-core/conf )
+	[ -d shr-core/conf ] || ( cp -ra common/conf/shr-core shr-core/conf )
 	[ -e shr-core/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-core'" > shr-core/conf/topdir.conf
 	touch shr-core/.configured
 
