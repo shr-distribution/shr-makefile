@@ -13,17 +13,17 @@ BRANCH_OE_SHR_UNSTABLE = master
 BRANCH_OE_SHR_TESTING = shr/testing2011.1
 BRANCH_OE_SHR_STABLE = shr/stable2009
 
-BRANCH_OE_CORE = master
-BRANCH_META_OE = master
+BRANCH_OE_CORE = shr
+BRANCH_META_OE = shr
 BRANCH_META_SHR = master
 
 URL_OE = "git://git.openembedded.net/openembedded"
-URL_OE_CORE = "git://git.openembedded.net/openembedded-core"
+URL_OE_CORE = "git://git.openembedded.net/openembedded-core-core"
 URL_SHR_MAKEFILE = "http://git.shr-project.org/repo/shr-makefile.git"
 # use git://, because http:// transport doesn't support --depth
 URL_SHR_CHROOT = "git://git.shr-project.org/shr-chroot.git"
 URL_META_SHR = "git://git.shr-project.org/meta-shr.git"
-URL_META_OE = "git://git.openembedded.net/meta-openembedded"
+URL_META_OE = "git://git.openembedded.net/meta-openembedded-contrib"
 
 .PHONY: all
 all: update build
