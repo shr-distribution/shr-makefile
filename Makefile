@@ -30,8 +30,9 @@ all: update build
 
 .PHONY: update
 update: 
-	[ ! -e ../.git/config-32bit ] || ${MAKE} update-shr-chroot-32bit 
-	[ ! -e ../.git/config-64bit ] || ${MAKE} update-shr-chroot 
+#       don't update shr-chroot automatically, let user to umount all binds
+#	[ ! -e ../.git/config-32bit ] || ${MAKE} update-shr-chroot-32bit 
+#	[ ! -e ../.git/config-64bit ] || ${MAKE} update-shr-chroot 
 	[ ! -e common ]       || ${MAKE} update-common 
 	[ ! -e openembedded ] || ${MAKE} update-openembedded 
 	[ ! -e shr-core/openembedded-core ] || ${MAKE} update-shr-core-openembedded-core
