@@ -165,6 +165,8 @@ shr-stable/.configured: common/.git/config openembedded/.git/config
 	[ -e shr-stable/openembedded ] || ( cd shr-stable ; \
 	  git clone --reference ../openembedded ${URL_OE} openembedded; \
 	  cd openembedded ; \
+	  echo "replace git object reference with relative path" \
+	  echo "../../../../openembedded/.git/objects/" > .git/objects/info/alternates \
 	  git checkout ${BRANCH_OE_SHR_STABLE} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_OE_SHR_STABLE} origin/${BRANCH_OE_SHR_STABLE} )
 	[ -d shr-stable/conf ] || ( mkdir -p shr-stable/conf )
@@ -188,6 +190,8 @@ shr-testing/.configured: common/.git/config openembedded/.git/config
 	[ -e shr-testing/openembedded ] || ( cd shr-testing ; \
 	  git clone --reference ../openembedded ${URL_OE} openembedded; \
 	  cd openembedded ; \
+	  echo "replace git object reference with relative path" \
+	  echo "../../../../openembedded/.git/objects/" > .git/objects/info/alternates \
 	  git checkout ${BRANCH_OE_SHR_TESTING} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_OE_SHR_TESTING} origin/${BRANCH_OE_SHR_TESTING} )
 	[ -d shr-testing/conf ] || ( mkdir -p shr-testing/conf )
@@ -211,6 +215,8 @@ shr-unstable/.configured: common/.git/config openembedded/.git/config
 	[ -e shr-unstable/openembedded ] || ( cd shr-unstable ; \
 	  git clone --reference ../openembedded ${URL_OE} openembedded; \
 	  cd openembedded ; \
+	  echo "replace git object reference with relative path" \
+	  echo "../../../../openembedded/.git/objects/" > .git/objects/info/alternates \
 	  git checkout ${BRANCH_OE_SHR_UNSTABLE} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_OE_SHR_UNSTABLE} origin/${BRANCH_OE_SHR_UNSTABLE} )
 	[ -d shr-unstable/conf ] || ( mkdir -p shr-unstable/conf )
