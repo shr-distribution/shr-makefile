@@ -17,7 +17,7 @@ BRANCH_OE_CORE = shr
 BRANCH_META_OE = shr
 BRANCH_META_SHR = master
 
-URL_OE = "git://git.openembedded.net/openembedded"
+URL_OE = "git://github.com/openembedded/openembedded.git"
 URL_OE_CORE = "git://git.openembedded.net/openembedded-core-contrib"
 URL_SHR_MAKEFILE = "http://git.shr-project.org/repo/shr-makefile.git"
 # use git://, because http:// transport doesn't support --depth
