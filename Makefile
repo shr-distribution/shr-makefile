@@ -15,14 +15,14 @@ BRANCH_OE_SHR_STABLE = shr/stable2009
 
 BRANCH_OE_CORE = shr
 BRANCH_META_OE = shr
-BRANCH_META_SHR = master
+BRANCH_META_SMARTPHONE = master
 
 URL_OE = "git://github.com/openembedded/openembedded.git"
 URL_OE_CORE = "git://git.openembedded.net/openembedded-core-contrib"
 URL_SHR_MAKEFILE = "http://git.shr-project.org/repo/shr-makefile.git"
 # use git://, because http:// transport doesn't support --depth
 URL_SHR_CHROOT = "git://git.shr-project.org/shr-chroot.git"
-URL_META_SHR = "git://git.shr-project.org/meta-shr.git"
+URL_META_SMARTPHONE = "git://git.shr-project.org/meta-smartphone.git"
 URL_META_OE = "git://git.openembedded.net/meta-openembedded-contrib"
 
 .PHONY: all
@@ -37,7 +37,7 @@ update:
 	[ ! -e openembedded ] || ${MAKE} update-openembedded 
 	[ ! -e shr-core/openembedded-core ] || ${MAKE} update-shr-core-openembedded-core
 	[ ! -e shr-core/meta-openembedded ] || ${MAKE} update-shr-core-meta-openembedded
-	[ ! -e shr-core/meta-shr ]          || ${MAKE} update-shr-core-meta-shr
+	[ ! -e shr-core/meta-smartphone ]   || ${MAKE} update-shr-core-meta-smartphone
 	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
 	[ ! -e shr-testing ]  || ${MAKE} update-shr-testing 
 	[ ! -e shr-stable ]   || ${MAKE} update-shr-stable
@@ -137,16 +137,16 @@ setup-shr-core-meta-openembedded shr-core/meta-openembedded/.git/config:
 	  git checkout --no-track -b ${BRANCH_META_OE} origin/${BRANCH_META_OE} )
 	touch shr-core/meta-openembedded/.git/config
 
-.PHONY: setup-shr-core-meta-shr
-.PRECIOUS: shr-core/meta-shr/.git/config
-setup-shr-core-meta-shr shr-core/meta-shr/.git/config:
-	[ -e shr-core/meta-shr/.git/config ] || \
-	( echo "setting up meta-shr"; \
-	  git clone ${URL_META_SHR} shr-core/meta-shr )
-	( cd shr-core/meta-shr && \
-	  git checkout ${BRANCH_META_SHR} 2>/dev/null || \
-	  git checkout --no-track -b ${BRANCH_META_SHR} origin/${BRANCH_META_SHR} )
-	touch shr-core/meta-shr/.git/config
+.PHONY: setup-shr-core-meta-smartphone
+.PRECIOUS: shr-core/meta-smartphone/.git/config
+setup-shr-core-meta-smartphone shr-core/meta-smartphone/.git/config:
+	[ -e shr-core/meta-smartphone/.git/config ] || \
+	( echo "setting up meta-smartphone"; \
+	  git clone ${URL_META_SMARTPHONE} shr-core/meta-smartphone )
+	( cd shr-core/meta-smartphone && \
+	  git checkout ${BRANCH_META_SMARTPHONE} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_META_SMARTPHONE} origin/${BRANCH_META_SMARTPHONE} )
+	touch shr-core/meta-smartphone/.git/config
 
 
 .PHONY: setup-%
@@ -232,7 +232,7 @@ shr-unstable/.configured: common/.git/config openembedded/.git/config
 	touch shr-unstable/.configured
 	
 .PRECIOUS: shr-core/.configured
-shr-core/.configured: common/.git/config shr-core/openembedded-core/.git/config shr-core/meta-openembedded/.git/config shr-core/meta-shr/.git/config
+shr-core/.configured: common/.git/config shr-core/openembedded-core/.git/config shr-core/meta-openembedded/.git/config shr-core/meta-smartphone/.git/config
 	@echo "preparing shr-core tree"
 	[ -d shr-core ] || ( mkdir -p shr-core )
 	[ -e downloads ] || ( mkdir -p downloads )
@@ -350,14 +350,14 @@ update-shr-core-meta-openembedded: shr-core/meta-openembedded/.git/config
 	  git checkout --no-track -b ${BRANCH_META_OE} origin/${BRANCH_META_OE} ; \
 	  git reset --hard origin/${BRANCH_META_OE} )
 
-.PHONY: update-shr-core-meta-shr
-update-shr-core-meta-shr: shr-core/meta-shr/.git/config
-	@echo "updating shr-core/meta-shr tree"
-	( cd shr-core/meta-shr ; \
+.PHONY: update-shr-core-meta-smartphone
+update-shr-core-meta-smartphone: shr-core/meta-smartphone/.git/config
+	@echo "updating shr-core/meta-smartphone tree"
+	( cd shr-core/meta-smartphone ; \
 	  git clean -d -f ; git reset --hard ; git fetch ; \
-	  git checkout ${BRANCH_META_SHR} 2>/dev/null || \
-	  git checkout --no-track -b ${BRANCH_META_SHR} origin/${BRANCH_META_SHR} ; \
-	  git reset --hard origin/${BRANCH_META_SHR} )
+	  git checkout ${BRANCH_META_SMARTPHONE} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_META_SMARTPHONE} origin/${BRANCH_META_SMARTPHONE} ; \
+	  git reset --hard origin/${BRANCH_META_SMARTPHONE} )
 
 .PHONY: status-common
 status-common: common/.git/config
