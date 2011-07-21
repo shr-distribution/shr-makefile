@@ -18,12 +18,12 @@ BRANCH_META_OE = shr
 BRANCH_META_SMARTPHONE = master
 
 URL_OE = "git://github.com/openembedded/openembedded.git"
-URL_OE_CORE = "git://git.openembedded.net/openembedded-core-contrib"
+URL_OE_CORE = "git://git.openembedded.org/openembedded-core-contrib"
 URL_SHR_MAKEFILE = "http://git.shr-project.org/repo/shr-makefile.git"
 # use git://, because http:// transport doesn't support --depth
 URL_SHR_CHROOT = "git://git.shr-project.org/shr-chroot.git"
 URL_META_SMARTPHONE = "git://git.shr-project.org/meta-smartphone.git"
-URL_META_OE = "git://git.openembedded.net/meta-openembedded-contrib"
+URL_META_OE = "git://git.openembedded.org/meta-openembedded-contrib"
 
 .PHONY: all
 all: update build
@@ -85,7 +85,7 @@ setup-shr-chroot-32bit shr-chroot-32bit/.git/config-32bit:
 setup-bitbake bitbake/.git/config:
 	[ -e bitbake/.git/config ] || \
 	( echo "setting up bitbake ..."; \
-	  git clone git://git.openembedded.net/bitbake bitbake; \
+	  git clone git://git.openembedded.org/bitbake bitbake; \
 	  cd bitbake; \
 	  git checkout ${BITBAKE_VERSION} 2>/dev/null || \
 	  git checkout --no-track -b ${BITBAKE_VERSION} origin/${BITBAKE_VERSION} ; \
