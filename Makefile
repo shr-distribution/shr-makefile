@@ -225,7 +225,10 @@ shr-unstable/.configured: common/.git/config openembedded/.git/config
 	  echo "DISTRO_FEED_URI=\"http://build.shr-project.org/shr-unstable/ipk/\"" >> shr-unstable/conf/auto.conf ; \
 	)
 	[ -e shr-unstable/conf/local.conf ] || ( cp common/conf/local.conf shr-unstable/conf/local.conf; \
-	  echo "require conf/distro/include/shr-autorev.inc" >> shr-unstable/conf/local.conf ; \
+	  echo "# shr-autorev.inc is no longer supported by SHR devs for shr-unstable" >> shr-unstable/conf/local.conf ; \
+	  echo "# so it's possible that newer revisions will need also newer EFL then what's available in shr-unstable" >> shr-unstable/conf/local.conf ; \
+	  echo "# if you need newer SHR apps or EFL, use shr-core" >> shr-unstable/conf/local.conf ; \
+	  echo "#require conf/distro/include/shr-autorev.inc" >> shr-unstable/conf/local.conf ; \
 	)
 	[ -e shr-unstable/conf/local-builds.inc ] || ( cp common/conf/local-builds.inc shr-unstable/conf/local-builds.inc; )
 	[ -e shr-unstable/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-unstable'" > shr-unstable/conf/topdir.conf
