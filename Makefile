@@ -40,7 +40,6 @@ update:
 	[ ! -e shr-core/meta-smartphone ]   || ${MAKE} update-shr-core-meta-smartphone
 	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
 	[ ! -e shr-testing ]  || ${MAKE} update-shr-testing 
-	[ ! -e shr-stable ]   || ${MAKE} update-shr-stable
 	[ ! -e bitbake ]      || ${MAKE} update-bitbake
 
 .PHONY: status
@@ -153,31 +152,6 @@ setup-shr-core-meta-smartphone shr-core/meta-smartphone/.git/config:
 setup-%:
 	${MAKE} $*/.configured
 
-
-##.PRECIOUS: shr-stable/.configured
-shr-stable/.configured: common/.git/config openembedded/.git/config
-	@echo "preparing shr-stable tree"
-	[ -d shr-stable ] || ( mkdir -p shr-stable )
-	[ -e downloads ] || ( mkdir -p downloads )
-	[ -e shr-stable/setup-env ] || ( cd shr-stable ; ln -sf ../common/setup-env . )
-	[ -e shr-stable/setup-local ] || ( cd shr-stable ; cp ../common/setup-local . )
-	[ -e shr-stable/downloads ] || ( cd shr-stable ; ln -sf ../downloads . )
-	[ -e shr-stable/openembedded ] || ( cd shr-stable ; \
-	  git clone --reference ../openembedded ${URL_OE} openembedded; \
-	  cd openembedded ; \
-	  echo "replace git object reference with relative path" ; \
-	  echo "../../../../openembedded/.git/objects/" > .git/objects/info/alternates ; \
-	  git checkout ${BRANCH_OE_SHR_STABLE} 2>/dev/null || \
-	  git checkout --no-track -b ${BRANCH_OE_SHR_STABLE} origin/${BRANCH_OE_SHR_STABLE} )
-	[ -d shr-stable/conf ] || ( mkdir -p shr-stable/conf )
-	[ -e shr-stable/conf/site.conf ] || ( cd shr-stable/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
-	[ -e shr-stable/conf/auto.conf ] || ( cp common/conf/auto.conf shr-stable/conf/auto.conf; \
-		echo "DISTRO_FEED_URI=\"http://build.shr-project.org/shr-stable/ipk/\"" >> shr-stable/conf/auto.conf ; \
-	)
-	[ -e shr-stable/conf/local.conf ] || ( cp common/conf/local.conf shr-stable/conf/local.conf )
-	[ -e shr-stable/conf/local-builds.inc ] || ( cp common/conf/local-builds.inc shr-stable/conf/local-builds.inc )
-	[ -e shr-stable/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-stable'" > shr-stable/conf/topdir.conf
-	touch shr-stable/.configured
 
 .PRECIOUS: shr-testing/.configured
 shr-testing/.configured: common/.git/config openembedded/.git/config
@@ -307,15 +281,6 @@ update-openembedded: openembedded/.git/config
 	  echo "cd `pwd`; git reset --hard"; \
 	  echo ; \
 	  echo "ATTENTION: that will kill all eventual changes" ) )
-
-.PHONY: update-shr-stable
-update-shr-stable: shr-stable/.configured
-	@echo "updating shr-stable tree"
-	( cd shr-stable/openembedded ; \
-	  git clean -d -f ; git reset --hard ; git fetch ; \
-	  git checkout ${BRANCH_OE_SHR_STABLE} 2>/dev/null || \
-	  git checkout --no-track -b ${BRANCH_OE_SHR_STABLE} origin/${BRANCH_OE_SHR_STABLE} ; \
-	  git reset --hard origin/${BRANCH_OE_SHR_STABLE} )
 
 .PHONY: update-shr-testing
 update-shr-testing: shr-testing/.configured
