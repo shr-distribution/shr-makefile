@@ -264,6 +264,7 @@ update-shr-chroot-32bit: ../.git/config-32bit
 update-bitbake: bitbake/.git/config
 	@echo "updating bitbake"
 	( cd bitbake ; \
+	  sed -e s/git.openembedded.net/git.openembedded.org/ -i .git/config ; \
 	  git clean -d -f ; git reset --hard ; git fetch ; \
 	  git checkout ${BITBAKE_VERSION} 2>/dev/null || \
 	  git checkout --no-track -b ${BITBAKE_VERSION} origin/${BITBAKE_VERSION} ; \
@@ -273,7 +274,9 @@ update-bitbake: bitbake/.git/config
 .PHONY: update-openembedded
 update-openembedded: openembedded/.git/config
 	@echo "updating openembedded"
-	( cd openembedded ; git pull || ( \
+	( cd openembedded ; \
+	  sed -e s/git.openembedded.net/git.openembedded.org/ -i .git/config ; \
+	  git pull || ( \
 	  echo ; \
 	  echo "!!! looks like either the OE git server has problems"; \
 	  echo "or you have a dirty OE tree ;)"; \
@@ -286,6 +289,7 @@ update-openembedded: openembedded/.git/config
 update-shr-testing: shr-testing/.configured
 	@echo "updating shr-testing tree"
 	( cd shr-testing/openembedded ; \
+	  sed -e s/git.openembedded.net/git.openembedded.org/ -i .git/config ; \
 	  git clean -d -f ; git reset --hard ; git fetch ; \
 	  git checkout ${BRANCH_OE_SHR_TESTING} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_OE_SHR_TESTING} origin/${BRANCH_OE_SHR_TESTING} ; \
@@ -295,6 +299,7 @@ update-shr-testing: shr-testing/.configured
 update-shr-unstable: shr-unstable/.configured
 	@echo "updating shr-unstable tree"
 	( cd shr-unstable/openembedded ; \
+	  sed -e s/git.openembedded.net/git.openembedded.org/ -i .git/config ; \
 	  git clean -d -f ; git reset --hard ; git fetch ; \
 	  git checkout ${BRANCH_OE_SHR_UNSTABLE} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_OE_SHR_UNSTABLE} origin/${BRANCH_OE_SHR_UNSTABLE} ; \
@@ -304,6 +309,7 @@ update-shr-unstable: shr-unstable/.configured
 update-shr-core-openembedded-core: shr-core/openembedded-core/.git/config
 	@echo "updating shr-core/openembedded-core tree"
 	( cd shr-core/openembedded-core ; \
+	  sed -e s/git.openembedded.net/git.openembedded.org/ -i .git/config ; \
 	  git clean -d -f ; git reset --hard ; git fetch ; \
 	  git checkout ${BRANCH_OE_CORE} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_OE_CORE} origin/${BRANCH_OE_CORE} ; \
@@ -313,6 +319,7 @@ update-shr-core-openembedded-core: shr-core/openembedded-core/.git/config
 update-shr-core-meta-openembedded: shr-core/meta-openembedded/.git/config
 	@echo "updating shr-core/meta-openembedded tree"
 	( cd shr-core/meta-openembedded ; \
+	  sed -e s/git.openembedded.net/git.openembedded.org/ -i .git/config ; \
 	  git clean -d -f ; git reset --hard ; git fetch ; \
 	  git checkout ${BRANCH_META_OE} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_META_OE} origin/${BRANCH_META_OE} ; \
