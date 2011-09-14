@@ -35,9 +35,9 @@ update:
 #	[ ! -e ../.git/config-64bit ] || ${MAKE} update-shr-chroot 
 	[ ! -e common ]       || ${MAKE} update-common 
 	[ ! -e openembedded ] || ${MAKE} update-openembedded 
-	[ ! -e shr-core/openembedded-core ] || ${MAKE} update-shr-core-openembedded-core
-	[ ! -e shr-core/meta-openembedded ] || ${MAKE} update-shr-core-meta-openembedded
-	[ ! -e shr-core/meta-smartphone ]   || ${MAKE} update-shr-core-meta-smartphone
+	[ ! -e openembedded-core ] || ${MAKE} update-openembedded-core
+	[ ! -e meta-openembedded ] || ${MAKE} update-meta-openembedded
+	[ ! -e meta-smartphone ]   || ${MAKE} update-meta-smartphone
 	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
 	[ ! -e shr-testing ]  || ${MAKE} update-shr-testing 
 	[ ! -e bitbake ]      || ${MAKE} update-bitbake
@@ -114,38 +114,38 @@ setup-openembedded openembedded/.git/config:
 	  git checkout --no-track -b ${BRANCH_OE} origin/${BRANCH_OE} )
 	touch openembedded/.git/config
 
-.PHONY: setup-shr-core-openembedded-core
-.PRECIOUS: shr-core/openembedded-core/.git/config
-setup-shr-core-openembedded-core shr-core/openembedded-core/.git/config:
-	[ -e shr-core/openembedded-core/.git/config ] || \
+.PHONY: setup-openembedded-core
+.PRECIOUS: openembedded-core/.git/config
+setup-openembedded-core openembedded-core/.git/config:
+	[ -e openembedded-core/.git/config ] || \
 	( echo "setting up openembedded-core"; \
-	  git clone ${URL_OE_CORE} shr-core/openembedded-core )
-	( cd shr-core/openembedded-core && \
+	  git clone ${URL_OE_CORE} openembedded-core )
+	( cd openembedded-core && \
 	  git checkout ${BRANCH_OE_CORE} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_OE_CORE} origin/${BRANCH_OE_CORE} )
-	touch shr-core/openembedded-core/.git/config
+	touch openembedded-core/.git/config
 
-.PHONY: setup-shr-core-meta-openembedded
-.PRECIOUS: shr-core/meta-openembedded/.git/config
-setup-shr-core-meta-openembedded shr-core/meta-openembedded/.git/config:
-	[ -e shr-core/meta-openembedded/.git/config ] || \
+.PHONY: setup-meta-openembedded
+.PRECIOUS: meta-openembedded/.git/config
+setup-meta-openembedded meta-openembedded/.git/config:
+	[ -e meta-openembedded/.git/config ] || \
 	( echo "setting up meta-openembedded"; \
-	  git clone ${URL_META_OE} shr-core/meta-openembedded )
-	( cd shr-core/meta-openembedded && \
+	  git clone ${URL_META_OE} meta-openembedded )
+	( cd meta-openembedded && \
 	  git checkout ${BRANCH_META_OE} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_META_OE} origin/${BRANCH_META_OE} )
-	touch shr-core/meta-openembedded/.git/config
+	touch meta-openembedded/.git/config
 
-.PHONY: setup-shr-core-meta-smartphone
-.PRECIOUS: shr-core/meta-smartphone/.git/config
-setup-shr-core-meta-smartphone shr-core/meta-smartphone/.git/config:
-	[ -e shr-core/meta-smartphone/.git/config ] || \
+.PHONY: setup-meta-smartphone
+.PRECIOUS: meta-smartphone/.git/config
+setup-meta-smartphone meta-smartphone/.git/config:
+	[ -e meta-smartphone/.git/config ] || \
 	( echo "setting up meta-smartphone"; \
-	  git clone ${URL_META_SMARTPHONE} shr-core/meta-smartphone )
-	( cd shr-core/meta-smartphone && \
+	  git clone ${URL_META_SMARTPHONE} meta-smartphone )
+	( cd meta-smartphone && \
 	  git checkout ${BRANCH_META_SMARTPHONE} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_META_SMARTPHONE} origin/${BRANCH_META_SMARTPHONE} )
-	touch shr-core/meta-smartphone/.git/config
+	touch meta-smartphone/.git/config
 
 
 .PHONY: setup-%
@@ -209,10 +209,13 @@ shr-unstable/.configured: common/.git/config openembedded/.git/config
 	touch shr-unstable/.configured
 	
 .PRECIOUS: shr-core/.configured
-shr-core/.configured: common/.git/config shr-core/openembedded-core/.git/config shr-core/meta-openembedded/.git/config shr-core/meta-smartphone/.git/config
+shr-core/.configured: common/.git/config openembedded-core/.git/config meta-openembedded/.git/config meta-smartphone/.git/config
 	@echo "preparing shr-core tree"
 	[ -d shr-core ] || ( mkdir -p shr-core )
 	[ -e downloads ] || ( mkdir -p downloads )
+	[ -e shr-core/openembedded-core ] || ( cd shr-core ; ln -sf ../openembedded-core . )
+	[ -e shr-core/meta-openembedded ] || ( cd shr-core ; ln -sf ../meta-openembedded . )
+	[ -e shr-core/meta-smartphone ] || ( cd shr-core ; ln -sf ../meta-smartphone . )
 	[ -e shr-core/setup-env ] || ( cd shr-core ; ln -sf ../common/setup-env . )
 	[ -e shr-core/setup-local ] || ( cd shr-core ; cp ../common/setup-local .; echo 'export BBFETCH2=True' >> setup-local )
 	[ -e shr-core/downloads ] || ( cd shr-core ; ln -sf ../downloads . )
@@ -220,6 +223,26 @@ shr-core/.configured: common/.git/config shr-core/openembedded-core/.git/config 
 	[ -d shr-core/conf ] || ( cp -ra common/conf/shr-core shr-core/conf )
 	[ -e shr-core/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-core'" > shr-core/conf/topdir.conf
 	touch shr-core/.configured
+
+.PRECIOUS: aurora/.configured
+aurora/.configured: common/.git/config openembedded-core/.git/config meta-openembedded/.git/config meta-smartphone/.git/config
+	@echo "preparing aurora tree"
+	[ -d aurora ] || ( mkdir -p aurora )
+	[ -e downloads ] || ( mkdir -p downloads )
+	[ -e aurora/openembedded-core ] || ( cd aurora ; ln -sf ../openembedded-core . )
+	[ -e aurora/meta-openembedded ] || ( cd aurora ; ln -sf ../meta-openembedded . )
+	[ -e aurora/meta-smartphone ] || ( cd aurora ; ln -sf ../meta-smartphone . )
+	[ -e aurora/setup-env ] || ( cd aurora ; ln -sf ../common/setup-env . )
+	[ -e aurora/setup-local ] || ( cd aurora ; \
+	  echo "# keep this file compatible with sh (it's read from setup-env)" > setup-local; \
+	  echo "DISTRO="aurora"" >> setup-local; \
+	  echo "MACHINE="palmpre2"" >> setup-local; \
+	  echo "export BBFETCH2=True" >> setup-local; )
+	[ -e aurora/downloads ] || ( cd aurora ; ln -sf ../downloads . )
+	[ -e aurora/bitbake ] || ( cd aurora ; ln -sf ../bitbake . )
+	[ -d aurora/conf ] || ( cp -ra common/conf/aurora aurora/conf )
+	[ -e aurora/conf/topdir.conf ] || echo "TOPDIR='`pwd`/aurora'" > aurora/conf/topdir.conf
+	touch aurora/.configured
 
 .PHONY: update-common
 update-common: common/.git/config
@@ -305,30 +328,30 @@ update-shr-unstable: shr-unstable/.configured
 	  git checkout --no-track -b ${BRANCH_OE_SHR_UNSTABLE} origin/${BRANCH_OE_SHR_UNSTABLE} ; \
 	  git reset --hard origin/${BRANCH_OE_SHR_UNSTABLE} )
 
-.PHONY: update-shr-core-openembedded-core
-update-shr-core-openembedded-core: shr-core/openembedded-core/.git/config
-	@echo "updating shr-core/openembedded-core tree"
-	( cd shr-core/openembedded-core ; \
+.PHONY: update-openembedded-core
+update-openembedded-core: openembedded-core/.git/config
+	@echo "updating openembedded-core tree"
+	( cd openembedded-core ; \
 	  sed -e s/git.openembedded.net/git.openembedded.org/ -i .git/config ; \
 	  git clean -d -f ; git reset --hard ; git fetch ; \
 	  git checkout ${BRANCH_OE_CORE} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_OE_CORE} origin/${BRANCH_OE_CORE} ; \
 	  git reset --hard origin/${BRANCH_OE_CORE} )
 
-.PHONY: update-shr-core-meta-openembedded
-update-shr-core-meta-openembedded: shr-core/meta-openembedded/.git/config
-	@echo "updating shr-core/meta-openembedded tree"
-	( cd shr-core/meta-openembedded ; \
+.PHONY: update-meta-openembedded
+update-meta-openembedded: meta-openembedded/.git/config
+	@echo "updating meta-openembedded tree"
+	( cd meta-openembedded ; \
 	  sed -e s/git.openembedded.net/git.openembedded.org/ -i .git/config ; \
 	  git clean -d -f ; git reset --hard ; git fetch ; \
 	  git checkout ${BRANCH_META_OE} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_META_OE} origin/${BRANCH_META_OE} ; \
 	  git reset --hard origin/${BRANCH_META_OE} )
 
-.PHONY: update-shr-core-meta-smartphone
-update-shr-core-meta-smartphone: shr-core/meta-smartphone/.git/config
-	@echo "updating shr-core/meta-smartphone tree"
-	( cd shr-core/meta-smartphone ; \
+.PHONY: update-meta-smartphone
+update-meta-smartphone: meta-smartphone/.git/config
+	@echo "updating meta-smartphone tree"
+	( cd meta-smartphone ; \
 	  git clean -d -f ; git reset --hard ; git fetch ; \
 	  git checkout ${BRANCH_META_SMARTPHONE} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_META_SMARTPHONE} origin/${BRANCH_META_SMARTPHONE} ; \
