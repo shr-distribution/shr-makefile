@@ -41,6 +41,9 @@ update:
 	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
 	[ ! -e shr-testing ]  || ${MAKE} update-shr-testing 
 	[ ! -e bitbake ]      || ${MAKE} update-bitbake
+	if [ -d shr-core/openembedded-core ] && [ ! -d openembedded-core ] ; then mv shr-core/openembedded-core openembedded-core ; ln -s ../openembedded-core shr-core/openembedded-core ; fi 
+	if [ -d shr-core/meta-openembedded ] && [ ! -d meta-openembedded ] ; then mv shr-core/meta-openembedded meta-openembedded ; ln -s ../meta-openembedded shr-core/meta-openembedded ; fi 
+	if [ -d shr-core/meta-smartphone ] && [! -d meta-smartphone ] ; then mv shr-core/meta-smartphone meta-smartphone ; ln -s ../meta-smartphone shr-core/meta-smartphone ; fi 
 
 .PHONY: status
 status: status-common status-openembedded
