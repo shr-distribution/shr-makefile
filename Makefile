@@ -34,20 +34,20 @@ update:
 #	[ ! -e ../.git/config-32bit ] || ${MAKE} update-shr-chroot-32bit 
 #	[ ! -e ../.git/config-64bit ] || ${MAKE} update-shr-chroot 
 	[ ! -e common ]       || ${MAKE} update-common 
-	if [ -d shr-core/openembedded-core ] && [ ! -d openembedded-core ] ; then 
-		echo "Moving openembedded-core checkout from shr-core" ;
-		mv shr-core/openembedded-core openembedded-core ; 
-		ln -s ../openembedded-core shr-core/openembedded-core ; 
+	if [ -d shr-core/openembedded-core ] && [ ! -d openembedded-core ] ; then \
+		echo "Moving openembedded-core checkout from shr-core" ; \
+		mv shr-core/openembedded-core openembedded-core ; \
+		ln -s ../openembedded-core shr-core/openembedded-core ; \
 	fi
-	if [ -d shr-core/meta-openembedded ] && [ ! -d meta-openembedded ] ; then 
-		echo "Moving meta-openembedded checkout from shr-core" ;
-		mv shr-core/meta-openembedded meta-openembedded ;
-		ln -s ../meta-openembedded shr-core/meta-openembedded ;
+	if [ -d shr-core/meta-openembedded ] && [ ! -d meta-openembedded ] ; then \
+		echo "Moving meta-openembedded checkout from shr-core" ; \
+		mv shr-core/meta-openembedded meta-openembedded ; \
+		ln -s ../meta-openembedded shr-core/meta-openembedded ; \
 	fi 
-	if [ -d shr-core/meta-smartphone ] && [ ! -d meta-smartphone ] ; then 
-		echo "Moving meta-smartphone checkout from shr-core" ;
-		mv shr-core/meta-smartphone meta-smartphone ; 
-		ln -s ../meta-smartphone shr-core/meta-smartphone ; 
+	if [ -d shr-core/meta-smartphone ] && [ ! -d meta-smartphone ] ; then \
+		echo "Moving meta-smartphone checkout from shr-core" ; \
+		mv shr-core/meta-smartphone meta-smartphone ; \
+		ln -s ../meta-smartphone shr-core/meta-smartphone ; \
 	fi 
 	[ ! -e openembedded ] || ${MAKE} update-openembedded 
 	[ ! -e openembedded-core ] || ${MAKE} update-openembedded-core
