@@ -54,8 +54,20 @@ update:
 	[ ! -e meta-openembedded ] || ${MAKE} update-meta-openembedded
 	[ ! -e meta-smartphone ]   || ${MAKE} update-meta-smartphone
 	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
-	[ ! -e shr-testing ]  || ${MAKE} update-shr-testing 
+	[ ! -e shr-testing ]  || ${MAKE} update-shr-testing
 	[ ! -e bitbake ]      || ${MAKE} update-bitbake
+	if [ -d shr-core ] ; then \
+		if ! diff -q shr-core/conf/bblayers.conf common/conf/shr-core/bblayers.conf ; then \
+			echo -e "\\033[1;31m" "WARNING: you have different bblayers.conf, please sync it from common directory or call update-shr-core-conffiles to replace all config files with new versions" ; \
+			echo -e "\\e[0m" ; \
+		fi ; \
+	fi
+	if [ -d aurora ] ; then \
+		if ! diff -q aurora/conf/bblayers.conf common/conf/aurora/bblayers.conf ; then \
+			echo -e "\\033[1;31m" "WARNING: you have different bblayers.conf, please sync it from common directory or call update-aurora-conffiles to replace all config files with new versions" ; \
+			echo -e "\\e[0m" ; \
+		fi ; \
+	fi
 
 .PHONY: status
 status: status-common status-openembedded
@@ -371,6 +383,18 @@ update-meta-smartphone: meta-smartphone/.git/config
 	  git checkout ${BRANCH_META_SMARTPHONE} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_META_SMARTPHONE} origin/${BRANCH_META_SMARTPHONE} ; \
 	  git reset --hard origin/${BRANCH_META_SMARTPHONE} )
+
+update-shr-core-conffiles: shr-core/.configured
+	@echo "syncing shr-core config files up to date"
+	cp common/conf/shr-core/auto.conf shr-core/conf/auto.conf
+	cp common/conf/shr-core/bblayers.conf shr-core/conf/bblayers.conf
+	cp common/conf/shr-core/site.conf shr-core/conf/site.conf
+
+update-aurora-conffiles: aurora/.configured
+	@echo "syncing aurora config files up to date"
+	cp common/conf/aurora/auto.conf aurora/conf/auto.conf
+	cp common/conf/aurora/bblayers.conf aurora/conf/bblayers.conf
+	cp common/conf/aurora/site.conf aurora/conf/site.conf
 
 .PHONY: status-common
 status-common: common/.git/config
