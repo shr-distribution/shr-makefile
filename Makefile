@@ -262,8 +262,8 @@ aurora/.configured: common/.git/config openembedded-core/.git/config meta-openem
 	[ -e aurora/setup-env ] || ( cd aurora ; ln -sf ../common/setup-env . )
 	[ -e aurora/setup-local ] || ( cd aurora ; \
 	  echo "# keep this file compatible with sh (it's read from setup-env)" > setup-local; \
-	  echo "DISTRO="aurora"" >> setup-local; \
-	  echo "MACHINE="palmpre2"" >> setup-local; \
+	  echo "DISTRO=\"aurora\"" >> setup-local; \
+	  echo "MACHINE=\"palmpre2\"" >> setup-local; \
 	  echo "export BBFETCH2=True" >> setup-local; )
 	[ -e aurora/downloads ] || ( cd aurora ; ln -sf ../downloads . )
 	[ -e aurora/bitbake ] || ( cd aurora ; ln -sf ../bitbake . )
