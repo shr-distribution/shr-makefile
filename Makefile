@@ -62,12 +62,6 @@ update:
 			echo -e "\\e[0m" ; \
 		fi ; \
 	fi
-	if [ -d aurora ] ; then \
-		if ! diff -q aurora/conf/bblayers.conf common/conf/aurora/bblayers.conf ; then \
-			echo -e "\\033[1;31m" "WARNING: you have different bblayers.conf, please sync it from common directory or call update-aurora-conffiles to replace all config files with new versions" ; \
-			echo -e "\\e[0m" ; \
-		fi ; \
-	fi
 
 .PHONY: status
 status: status-common status-openembedded
@@ -251,26 +245,6 @@ shr-core/.configured: common/.git/config openembedded-core/.git/config meta-open
 	[ -e shr-core/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-core'" > shr-core/conf/topdir.conf
 	touch shr-core/.configured
 
-.PRECIOUS: aurora/.configured
-aurora/.configured: common/.git/config openembedded-core/.git/config meta-openembedded/.git/config meta-smartphone/.git/config
-	@echo "preparing aurora tree"
-	[ -d aurora ] || ( mkdir -p aurora )
-	[ -e downloads ] || ( mkdir -p downloads )
-	[ -e aurora/openembedded-core ] || ( cd aurora ; ln -sf ../openembedded-core . )
-	[ -e aurora/meta-openembedded ] || ( cd aurora ; ln -sf ../meta-openembedded . )
-	[ -e aurora/meta-smartphone ] || ( cd aurora ; ln -sf ../meta-smartphone . )
-	[ -e aurora/setup-env ] || ( cd aurora ; ln -sf ../common/setup-env . )
-	[ -e aurora/setup-local ] || ( cd aurora ; \
-	  echo "# keep this file compatible with sh (it's read from setup-env)" > setup-local; \
-	  echo "DISTRO=\"aurora\"" >> setup-local; \
-	  echo "MACHINE=\"palmpre2\"" >> setup-local; \
-	  echo "export BBFETCH2=True" >> setup-local; )
-	[ -e aurora/downloads ] || ( cd aurora ; ln -sf ../downloads . )
-	[ -e aurora/bitbake ] || ( cd aurora ; ln -sf ../bitbake . )
-	[ -d aurora/conf ] || ( cp -ra common/conf/aurora aurora/conf )
-	[ -e aurora/conf/topdir.conf ] || echo "TOPDIR='`pwd`/aurora'" > aurora/conf/topdir.conf
-	touch aurora/.configured
-
 .PHONY: update-common
 update-common: common/.git/config
 	@echo "updating common (Makefile)"
@@ -389,12 +363,6 @@ update-shr-core-conffiles: shr-core/.configured
 	cp common/conf/shr-core/auto.conf shr-core/conf/auto.conf
 	cp common/conf/shr-core/bblayers.conf shr-core/conf/bblayers.conf
 	cp common/conf/shr-core/site.conf shr-core/conf/site.conf
-
-update-aurora-conffiles: aurora/.configured
-	@echo "syncing aurora config files up to date"
-	cp common/conf/aurora/auto.conf aurora/conf/auto.conf
-	cp common/conf/aurora/bblayers.conf aurora/conf/bblayers.conf
-	cp common/conf/aurora/site.conf aurora/conf/site.conf
 
 .PHONY: status-common
 status-common: common/.git/config
