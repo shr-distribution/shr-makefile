@@ -20,10 +20,39 @@ BRANCH_META_SMARTPHONE = master
 URL_OE = "git://github.com/openembedded/openembedded.git"
 URL_OE_CORE = "git://git.openembedded.org/openembedded-core-contrib"
 URL_SHR_MAKEFILE = "http://git.shr-project.org/repo/shr-makefile.git"
+
 # use git://, because http:// transport doesn't support --depth
 URL_SHR_CHROOT = "git://git.shr-project.org/shr-chroot.git"
 URL_META_SMARTPHONE = "git://git.shr-project.org/meta-smartphone.git"
 URL_META_OE = "git://git.openembedded.org/meta-openembedded-contrib"
+
+ifneq ($(wildcard config.mk),)
+include config.mk
+endif
+
+.PHONY: show-config
+show-config:
+	@echo "BITBAKE_VERSION        ${BITBAKE_VERSION}"
+	@echo "BRANCH_CHROOT          ${BRANCH_CHROOT}"
+	@echo "BRANCH_CHROOT_32BIT    ${BRANCH_CHROOT_32BIT}"
+	@echo "BRANCH_COMMON          ${BRANCH_COMMON}"
+	@echo ""
+	@echo "BRANCH_OE              ${BRANCH_OE}"
+	@echo "BRANCH_OE_SHR_UNSTABLE ${BRANCH_OE_SHR_UNSTABLE}"
+	@echo "BRANCH_OE_SHR_TESTING  ${BRANCH_OE_SHR_TESTING}"
+	@echo "BRANCH_OE_SHR_STABLE   ${BRANCH_OE_SHR_STABLE}"
+	@echo ""
+	@echo "BRANCH_OE_CORE         ${BRANCH_OE_CORE}"
+	@echo "BRANCH_META_OE         ${BRANCH_META_OE}"
+	@echo "BRANCH_META_SMARTPHONE ${BRANCH_META_SMARTPHONE}"
+	@echo ""
+	@echo "URL_OE                 ${URL_OE}"
+	@echo "URL_OE_CORE            ${URL_OE_CORE}"
+	@echo "URL_SHR_MAKEFILE       ${URL_SHR_MAKEFILE}"
+	@echo ""
+	@echo "URL_SHR_CHROOT         ${URL_SHR_CHROOT}"
+	@echo "URL_META_SMARTPHONE    ${URL_META_SMARTPHONE}"
+	@echo "URL_META_OE            ${URL_META_OE}"
 
 .PHONY: all
 all: update build
