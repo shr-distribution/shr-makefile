@@ -26,6 +26,8 @@ URL_SHR_CHROOT = "git://git.shr-project.org/shr-chroot.git"
 URL_META_SMARTPHONE = "git://git.shr-project.org/meta-smartphone.git"
 URL_META_OE = "git://git.openembedded.org/meta-openembedded-contrib"
 
+OE_CLASSIC_ENABLED = "1"
+
 ifneq ($(wildcard config.mk),)
 include config.mk
 endif
@@ -53,6 +55,8 @@ show-config:
 	@echo "URL_SHR_CHROOT         ${URL_SHR_CHROOT}"
 	@echo "URL_META_SMARTPHONE    ${URL_META_SMARTPHONE}"
 	@echo "URL_META_OE            ${URL_META_OE}"
+	@echo ""
+	@echo "OE_CLASSIC_ENABLED     ${OE_CLASSIC_ENABLED}"
 
 .PHONY: all
 all: update build
@@ -78,12 +82,14 @@ update:
 		mv shr-core/meta-smartphone meta-smartphone ; \
 		ln -s ../meta-smartphone shr-core/meta-smartphone ; \
 	fi 
-	[ ! -e openembedded ] || ${MAKE} update-openembedded 
 	[ ! -e openembedded-core ] || ${MAKE} update-openembedded-core
 	[ ! -e meta-openembedded ] || ${MAKE} update-meta-openembedded
 	[ ! -e meta-smartphone ]   || ${MAKE} update-meta-smartphone
-	[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable
-	[ ! -e shr-testing ]  || ${MAKE} update-shr-testing
+	if [ "${OE_CLASSIC_ENABLED}" = "1" ] ; then \
+		[ ! -e openembedded ] || ${MAKE} update-openembedded ; \
+		[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable ; \
+		[ ! -e shr-testing ]  || ${MAKE} update-shr-testing ; \
+	fi
 	[ ! -e bitbake ]      || ${MAKE} update-bitbake
 	if [ -d shr-core ] ; then \
 		if ! diff -q shr-core/conf/bblayers.conf common/conf/shr-core/bblayers.conf ; then \
