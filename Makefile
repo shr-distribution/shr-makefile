@@ -19,14 +19,19 @@ BRANCH_META_SMARTPHONE = master
 
 URL_OE = "git://github.com/openembedded/openembedded.git"
 URL_OE_CORE = "git://git.openembedded.org/openembedded-core-contrib"
+URL_OE_CORE_UP = "git://git.openembedded.org/openembedded-core"
 URL_SHR_MAKEFILE = "http://git.shr-project.org/repo/shr-makefile.git"
 
 # use git://, because http:// transport doesn't support --depth
 URL_SHR_CHROOT = "git://git.shr-project.org/shr-chroot.git"
 URL_META_SMARTPHONE = "git://git.shr-project.org/meta-smartphone.git"
 URL_META_OE = "git://git.openembedded.org/meta-openembedded-contrib"
+URL_META_OE_UP = "git://git.openembedded.org/meta-openembedded"
 
 OE_CLASSIC_ENABLED = "1"
+CHANGELOG_ENABLED = "0"
+CHANGELOG_FORMAT = "%h %ci %aN%n        %s%n"
+CHANGELOG_FORMAT_REBASE = "rebase: %h %ci %aN%n                %s%n"
 
 ifneq ($(wildcard config.mk),)
 include config.mk
@@ -61,11 +66,29 @@ show-config:
 .PHONY: all
 all: update build
 
+.PHONY: changelog
+changelog:
+	[ ! -e ../.git/config-32bit ] || ${MAKE} changelog-shr-chroot-32bit 
+	[ ! -e ../.git/config-64bit ] || ${MAKE} changelog-shr-chroot 
+	[ ! -e common ]            || ${MAKE} changelog-common 
+	[ ! -e openembedded-core ] || ${MAKE} changelog-openembedded-core
+	[ ! -e meta-openembedded ] || ${MAKE} changelog-meta-openembedded
+	[ ! -e meta-smartphone ]   || ${MAKE} changelog-meta-smartphone
+	if [ "${OE_CLASSIC_ENABLED}" = "1" ] ; then \
+		[ ! -e openembedded ] || ${MAKE} changelog-openembedded ; \
+		[ ! -e shr-unstable ] || ${MAKE} changelog-shr-unstable ; \
+		[ ! -e shr-testing ]  || ${MAKE} changelog-shr-testing ; \
+	fi
+	[ ! -e bitbake ]      || ${MAKE} changelog-bitbake
+
 .PHONY: update
 update: 
 #       don't update shr-chroot automatically, let user to umount all binds
 #	[ ! -e ../.git/config-32bit ] || ${MAKE} update-shr-chroot-32bit 
 #	[ ! -e ../.git/config-64bit ] || ${MAKE} update-shr-chroot 
+	if [ "${CHANGELOG_ENABLED}" = "1" ] ; then \
+		${MAKE} changelog \
+	fi
 	[ ! -e common ]       || ${MAKE} update-common 
 	if [ -d shr-core/openembedded-core ] && [ ! -d openembedded-core ] ; then \
 		echo "Moving openembedded-core checkout from shr-core" ; \
@@ -279,6 +302,81 @@ shr-core/.configured: common/.git/config openembedded-core/.git/config meta-open
 	[ -d shr-core/conf ] || ( cp -ra common/conf/shr-core shr-core/conf )
 	[ -e shr-core/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-core'" > shr-core/conf/topdir.conf
 	touch shr-core/.configured
+
+.PHONY: changelog-shr-chroot
+changelog-shr-chroot: ../.git/config-64bit
+	@echo "Changelog for shr-chroot (64bit)"
+	( cd .. ; \
+	  git remote update ; \
+	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_CHROOT} )
+
+.PHONY: changelog-shr-chroot-32bit
+changelog-shr-chroot-32bit: ../.git/config-32bit
+	@echo "Changelog for shr-chroot (32bit)"
+	( cd ,, ; \
+	  git remote update ; \
+	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_COMMON_32BIT} )
+
+.PHONY: changelog-common
+changelog-common: common/.git/config
+	@echo "Changelog for common (Makefile)"
+	( cd common ; \
+	  git remote update ; \
+	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_COMMON} )
+
+# shr branches in oe-core and meta-oe are rebased often
+# so use shr_rebased_git_changelog.sh script if available
+
+.PHONY: changelog-openembedded-core
+changelog-openembedded-core: openembedded-core/.git/config
+	@echo "Changelog for openembedded-core"
+	( cd openembedded-core ; \
+	  git remote update ; \
+	  shr_rebased_git_changelog.sh `pwd` origin/${BRANCH_OE_CORE} ${URL_OE_CORE_UP} ${CHANGELOG_FORMAT} ${CHANGELOG_FORMAT_REBASE} 2>/dev/null || \
+	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_OE_CORE} )
+
+.PHONY: changelog-meta-openembedded
+changelog-meta-openembedded: meta-openembedded/.git/config
+	@echo "Changelog for meta-openembedded"
+	( cd meta-openembedded ; \
+	  git remote update ; \
+	  shr_rebased_git_changelog.sh `pwd` origin/${BRANCH_META_OE} ${URL_META_OE_UP} ${CHANGELOG_FORMAT} ${CHANGELOG_FORMAT_REBASE} 2>/dev/null || \
+	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_META_OE} )
+
+.PHONY: changelog-meta-smartphone
+changelog-meta-smartphone: meta-smartphone/.git/config
+	@echo "Changelog for meta-smartphone"
+	( cd meta-smartphone ; \
+	  git remote update ; \
+	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_META_SMARTPHONE} )
+
+.PHONY: changelog-openembedded
+changelog-openembedded: openembedded/.git/config
+	@echo "Changelog for openembedded"
+	( cd openembedded ; \
+	  git remote update ; \
+	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_OE} )
+
+.PHONY: changelog-shr-unstable
+changelog-shr-unstable: shr-unstable/.git/config
+	@echo "Changelog for shr-unstable"
+	( cd shr-unstable ; \
+	  git remote update ; \
+	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_OE_SHR_UNSTABLE} )
+
+.PHONY: changelog-shr-testing
+changelog-shr-testing: shr-testing/.git/config
+	@echo "Changelog for shr-testing"
+	( cd shr-testing ; \
+	  git remote update ; \
+	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_OE_SHR_TESTING} )
+
+.PHONY: changelog-bitbake
+changelog-bitbake: bitbake/.git/config
+	@echo "Changelog bitbake"
+	( cd bitbake ; \
+	  git remote update ; \
+	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BITBAKE_VERSION} )
 
 .PHONY: update-common
 update-common: common/.git/config
