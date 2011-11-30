@@ -87,7 +87,7 @@ update:
 #	[ ! -e ../.git/config-32bit ] || ${MAKE} update-shr-chroot-32bit 
 #	[ ! -e ../.git/config-64bit ] || ${MAKE} update-shr-chroot 
 	if [ "${CHANGELOG_ENABLED}" = "1" ] ; then \
-		${MAKE} changelog \
+		${MAKE} changelog ; \
 	fi
 	[ ! -e common ]       || ${MAKE} update-common 
 	if [ -d shr-core/openembedded-core ] && [ ! -d openembedded-core ] ; then \
