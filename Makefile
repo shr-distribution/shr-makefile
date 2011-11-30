@@ -360,14 +360,14 @@ changelog-openembedded: openembedded/.git/config
 .PHONY: changelog-shr-unstable
 changelog-shr-unstable: shr-unstable/.configured
 	@echo "Changelog for shr-unstable"
-	( cd shr-unstable ; \
+	( cd shr-unstable/openembedded ; \
 	  git remote update ; \
 	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_OE_SHR_UNSTABLE} )
 
 .PHONY: changelog-shr-testing
 changelog-shr-testing: shr-testing/.configured
 	@echo "Changelog for shr-testing"
-	( cd shr-testing ; \
+	( cd shr-testing/openembedded ; \
 	  git remote update ; \
 	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_OE_SHR_TESTING} )
 
