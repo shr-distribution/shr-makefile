@@ -15,7 +15,7 @@ BRANCH_OE_SHR_STABLE = shr/stable2009
 
 BRANCH_OE_CORE = shr
 BRANCH_META_OE = shr
-BRANCH_META_SMARTPHONE = master
+BRANCH_META_SMARTPHONE = shr
 
 URL_OE = "git://github.com/openembedded/openembedded.git"
 URL_OE_CORE = "git://git.openembedded.org/openembedded-core-contrib"
