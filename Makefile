@@ -16,6 +16,7 @@ BRANCH_OE_SHR_STABLE = shr/stable2009
 BRANCH_OE_CORE = shr
 BRANCH_META_OE = shr
 BRANCH_META_SMARTPHONE = shr
+BRANCH_META_MOZILLA = master
 
 URL_OE = "git://github.com/openembedded/openembedded.git"
 URL_OE_CORE = "git://git.openembedded.org/openembedded-core-contrib"
@@ -27,6 +28,8 @@ URL_SHR_CHROOT = "git://git.shr-project.org/shr-chroot.git"
 URL_META_SMARTPHONE = "git://git.shr-project.org/meta-smartphone.git"
 URL_META_OE = "git://git.openembedded.org/meta-openembedded-contrib"
 URL_META_OE_UP = "git://git.openembedded.org/meta-openembedded"
+
+URL_META_MOZILLA = "git://github.com/OSSystems/meta-mozilla.git"
 
 OE_CLASSIC_ENABLED = "1"
 CHANGELOG_ENABLED = "0"
@@ -52,6 +55,7 @@ show-config:
 	@echo "BRANCH_OE_CORE         ${BRANCH_OE_CORE}"
 	@echo "BRANCH_META_OE         ${BRANCH_META_OE}"
 	@echo "BRANCH_META_SMARTPHONE ${BRANCH_META_SMARTPHONE}"
+	@echo "BRANCH_META_MOZILLA    ${BRANCH_META_MOZILLA}"
 	@echo ""
 	@echo "URL_OE                 ${URL_OE}"
 	@echo "URL_OE_CORE            ${URL_OE_CORE}"
@@ -60,6 +64,7 @@ show-config:
 	@echo "URL_SHR_CHROOT         ${URL_SHR_CHROOT}"
 	@echo "URL_META_SMARTPHONE    ${URL_META_SMARTPHONE}"
 	@echo "URL_META_OE            ${URL_META_OE}"
+	@echo "URL_META_MOZILLA       ${URL_META_MOZILLA}"
 	@echo ""
 	@echo "OE_CLASSIC_ENABLED     ${OE_CLASSIC_ENABLED}"
 
@@ -74,6 +79,7 @@ changelog:
 	[ ! -e openembedded-core ] || ${MAKE} changelog-openembedded-core
 	[ ! -e meta-openembedded ] || ${MAKE} changelog-meta-openembedded
 	[ ! -e meta-smartphone ]   || ${MAKE} changelog-meta-smartphone
+	[ ! -e meta-mozilla ]      || ${MAKE} changelog-meta-mozilla
 	if [ "${OE_CLASSIC_ENABLED}" = "1" ] ; then \
 		[ ! -e openembedded ] || ${MAKE} changelog-openembedded ; \
 		[ ! -e shr-unstable ] || ${MAKE} changelog-shr-unstable ; \
@@ -108,6 +114,7 @@ update:
 	[ ! -e openembedded-core ] || ${MAKE} update-openembedded-core
 	[ ! -e meta-openembedded ] || ${MAKE} update-meta-openembedded
 	[ ! -e meta-smartphone ]   || ${MAKE} update-meta-smartphone
+	[ ! -e meta-mozilla ]   || ${MAKE} update-meta-mozilla
 	if [ "${OE_CLASSIC_ENABLED}" = "1" ] ; then \
 		[ ! -e openembedded ] || ${MAKE} update-openembedded ; \
 		[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable ; \
@@ -226,6 +233,16 @@ setup-meta-smartphone meta-smartphone/.git/config:
 	  git checkout --no-track -b ${BRANCH_META_SMARTPHONE} origin/${BRANCH_META_SMARTPHONE} )
 	touch meta-smartphone/.git/config
 
+.PHONY: setup-meta-mozilla
+.PRECIOUS: meta-mozilla/.git/config
+setup-meta-mozilla meta-mozilla/.git/config:
+	[ -e meta-mozilla/.git/config ] || \
+	( echo "setting up meta-mozilla"; \
+	  git clone ${URL_META_MOZILLA} meta-mozilla )
+	( cd meta-mozilla && \
+	  git checkout ${BRANCH_META_MOZILLA} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_META_MOZILLA} origin/${BRANCH_META_MOZILLA} )
+	touch meta-mozilla/.git/config
 
 .PHONY: setup-%
 setup-%:
@@ -288,13 +305,14 @@ shr-unstable/.configured: common/.git/config openembedded/.git/config
 	touch shr-unstable/.configured
 	
 .PRECIOUS: shr-core/.configured
-shr-core/.configured: common/.git/config openembedded-core/.git/config meta-openembedded/.git/config meta-smartphone/.git/config
+shr-core/.configured: common/.git/config openembedded-core/.git/config meta-openembedded/.git/config meta-smartphone/.git/config meta-mozilla/.git/config
 	@echo "preparing shr-core tree"
 	[ -d shr-core ] || ( mkdir -p shr-core )
 	[ -e downloads ] || ( mkdir -p downloads )
 	[ -e shr-core/openembedded-core ] || ( cd shr-core ; ln -sf ../openembedded-core . )
 	[ -e shr-core/meta-openembedded ] || ( cd shr-core ; ln -sf ../meta-openembedded . )
 	[ -e shr-core/meta-smartphone ] || ( cd shr-core ; ln -sf ../meta-smartphone . )
+	[ -e shr-core/meta-mozilla ] || ( cd shr-core ; ln -sf ../meta-mozilla . )
 	[ -e shr-core/setup-env ] || ( cd shr-core ; ln -sf ../common/setup-env . )
 	[ -e shr-core/setup-local ] || ( cd shr-core ; cp ../common/setup-local .; echo 'export BBFETCH2=True' >> setup-local )
 	[ -e shr-core/downloads ] || ( cd shr-core ; ln -sf ../downloads . )
@@ -349,6 +367,13 @@ changelog-meta-smartphone: meta-smartphone/.git/config
 	( cd meta-smartphone ; \
 	  git remote update ; \
 	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_META_SMARTPHONE} )
+
+.PHONY: changelog-meta-mozilla
+changelog-meta-mozilla: meta-mozilla/.git/config
+	@echo "Changelog for meta-mozilla"
+	( cd meta-mozilla ; \
+	  git remote update ; \
+	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_META_MOZILLA} )
 
 .PHONY: changelog-openembedded
 changelog-openembedded: openembedded/.git/config
@@ -490,6 +515,15 @@ update-meta-smartphone: meta-smartphone/.git/config
 	  git checkout ${BRANCH_META_SMARTPHONE} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_META_SMARTPHONE} origin/${BRANCH_META_SMARTPHONE} ; \
 	  git reset --hard origin/${BRANCH_META_SMARTPHONE} )
+
+.PHONY: update-meta-mozilla
+update-meta-mozilla: meta-mozilla/.git/config
+	@echo "updating meta-mozilla tree"
+	( cd meta-mozilla ; \
+	  git clean -d -f ; git reset --hard ; git fetch ; \
+	  git checkout ${BRANCH_META_MOZILLA} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_META_MOZILLA} origin/${BRANCH_META_MOZILLA} ; \
+	  git reset --hard origin/${BRANCH_META_MOZILLA} )
 
 update-shr-core-conffiles: shr-core/.configured
 	@echo "syncing shr-core config files up to date"
