@@ -17,6 +17,7 @@ BRANCH_OE_CORE = shr
 BRANCH_META_OE = shr
 BRANCH_META_SMARTPHONE = shr
 BRANCH_META_MOZILLA = master
+BRANCH_META_CHROMIUM = master
 
 URL_OE = "git://github.com/openembedded/openembedded.git"
 URL_OE_CORE = "git://git.openembedded.org/openembedded-core-contrib"
@@ -30,6 +31,7 @@ URL_META_OE = "git://git.openembedded.org/meta-openembedded-contrib"
 URL_META_OE_UP = "git://git.openembedded.org/meta-openembedded"
 
 URL_META_MOZILLA = "git://github.com/OSSystems/meta-mozilla.git"
+URL_META_CHROMIUM = "git://github.com/eukrea/meta-chromium.git"
 
 OE_CLASSIC_ENABLED = "1"
 CHANGELOG_ENABLED = "0"
@@ -56,6 +58,7 @@ show-config:
 	@echo "BRANCH_META_OE         ${BRANCH_META_OE}"
 	@echo "BRANCH_META_SMARTPHONE ${BRANCH_META_SMARTPHONE}"
 	@echo "BRANCH_META_MOZILLA    ${BRANCH_META_MOZILLA}"
+	@echo "BRANCH_META_CHROMIUM   ${BRANCH_META_CHROMIUM}"
 	@echo ""
 	@echo "URL_OE                 ${URL_OE}"
 	@echo "URL_OE_CORE            ${URL_OE_CORE}"
@@ -65,6 +68,7 @@ show-config:
 	@echo "URL_META_SMARTPHONE    ${URL_META_SMARTPHONE}"
 	@echo "URL_META_OE            ${URL_META_OE}"
 	@echo "URL_META_MOZILLA       ${URL_META_MOZILLA}"
+	@echo "URL_META_CHROMIUM      ${URL_META_CHROMIUM}"
 	@echo ""
 	@echo "OE_CLASSIC_ENABLED     ${OE_CLASSIC_ENABLED}"
 
@@ -80,6 +84,7 @@ changelog:
 	[ ! -e meta-openembedded ] || ${MAKE} changelog-meta-openembedded
 	[ ! -e meta-smartphone ]   || ${MAKE} changelog-meta-smartphone
 	[ ! -e meta-mozilla ]      || ${MAKE} changelog-meta-mozilla
+	[ ! -e meta-chromium ]      || ${MAKE} changelog-meta-chromium
 	if [ "${OE_CLASSIC_ENABLED}" = "1" ] ; then \
 		[ ! -e openembedded ] || ${MAKE} changelog-openembedded ; \
 		[ ! -e shr-unstable ] || ${MAKE} changelog-shr-unstable ; \
@@ -115,6 +120,7 @@ update:
 	[ ! -e meta-openembedded ] || ${MAKE} update-meta-openembedded
 	[ ! -e meta-smartphone ]   || ${MAKE} update-meta-smartphone
 	[ ! -e meta-mozilla ]   || ${MAKE} update-meta-mozilla
+	[ ! -e meta-chromium ]   || ${MAKE} update-meta-chromium
 	if [ "${OE_CLASSIC_ENABLED}" = "1" ] ; then \
 		[ ! -e openembedded ] || ${MAKE} update-openembedded ; \
 		[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable ; \
@@ -244,6 +250,17 @@ setup-meta-mozilla meta-mozilla/.git/config:
 	  git checkout --no-track -b ${BRANCH_META_MOZILLA} origin/${BRANCH_META_MOZILLA} )
 	touch meta-mozilla/.git/config
 
+.PHONY: setup-meta-chromium
+.PRECIOUS: meta-chromium/.git/config
+setup-meta-chromium meta-chromium/.git/config:
+	[ -e meta-chromium/.git/config ] || \
+	( echo "setting up meta-chromium"; \
+	  git clone ${URL_META_CHROMIUM} meta-chromium )
+	( cd meta-chromium && \
+	  git checkout ${BRANCH_META_CHROMIUM} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_META_CHROMIUM} origin/${BRANCH_META_CHROMIUM} )
+	touch meta-chromium/.git/config
+
 .PHONY: setup-%
 setup-%:
 	${MAKE} $*/.configured
@@ -305,7 +322,7 @@ shr-unstable/.configured: common/.git/config openembedded/.git/config
 	touch shr-unstable/.configured
 	
 .PRECIOUS: shr-core/.configured
-shr-core/.configured: common/.git/config openembedded-core/.git/config meta-openembedded/.git/config meta-smartphone/.git/config meta-mozilla/.git/config
+shr-core/.configured: common/.git/config openembedded-core/.git/config meta-openembedded/.git/config meta-smartphone/.git/config meta-mozilla/.git/config meta-chromium/.git/config
 	@echo "preparing shr-core tree"
 	[ -d shr-core ] || ( mkdir -p shr-core )
 	[ -e downloads ] || ( mkdir -p downloads )
@@ -313,6 +330,7 @@ shr-core/.configured: common/.git/config openembedded-core/.git/config meta-open
 	[ -e shr-core/meta-openembedded ] || ( cd shr-core ; ln -sf ../meta-openembedded . )
 	[ -e shr-core/meta-smartphone ] || ( cd shr-core ; ln -sf ../meta-smartphone . )
 	[ -e shr-core/meta-mozilla ] || ( cd shr-core ; ln -sf ../meta-mozilla . )
+	[ -e shr-core/meta-chromium ] || ( cd shr-core ; ln -sf ../meta-chromium . )
 	[ -e shr-core/setup-env ] || ( cd shr-core ; ln -sf ../common/setup-env . )
 	[ -e shr-core/setup-local ] || ( cd shr-core ; cp ../common/setup-local .; echo 'export BBFETCH2=True' >> setup-local )
 	[ -e shr-core/downloads ] || ( cd shr-core ; ln -sf ../downloads . )
@@ -374,6 +392,13 @@ changelog-meta-mozilla: meta-mozilla/.git/config
 	( cd meta-mozilla ; \
 	  git remote update ; \
 	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_META_MOZILLA} )
+
+.PHONY: changelog-meta-chromium
+changelog-meta-chromium: meta-chromium/.git/config
+	@echo "Changelog for meta-chromium"
+	( cd meta-chromium ; \
+	  git remote update ; \
+	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_META_CHROMIUM} )
 
 .PHONY: changelog-openembedded
 changelog-openembedded: openembedded/.git/config
@@ -524,6 +549,15 @@ update-meta-mozilla: meta-mozilla/.git/config
 	  git checkout ${BRANCH_META_MOZILLA} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_META_MOZILLA} origin/${BRANCH_META_MOZILLA} ; \
 	  git reset --hard origin/${BRANCH_META_MOZILLA} )
+
+.PHONY: update-meta-chromium
+update-meta-chromium: meta-chromium/.git/config
+	@echo "updating meta-chromium tree"
+	( cd meta-chromium ; \
+	  git clean -d -f ; git reset --hard ; git fetch ; \
+	  git checkout ${BRANCH_META_CHROMIUM} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_META_CHROMIUM} origin/${BRANCH_META_CHROMIUM} ; \
+	  git reset --hard origin/${BRANCH_META_CHROMIUM} )
 
 update-shr-core-conffiles: shr-core/.configured
 	@echo "syncing shr-core config files up to date"
