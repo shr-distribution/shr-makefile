@@ -17,7 +17,7 @@ BRANCH_OE_CORE = shr
 BRANCH_META_OE = shr
 BRANCH_META_SMARTPHONE = shr
 BRANCH_META_BROWSER = master
-BRANCH_META_CHROMIUM = master
+BRANCH_META_WEBOS = master
 
 URL_OE = "git://github.com/openembedded/openembedded.git"
 URL_OE_CORE = "git://git.openembedded.org/openembedded-core-contrib"
@@ -31,6 +31,7 @@ URL_META_OE = "git://git.openembedded.org/meta-openembedded-contrib"
 URL_META_OE_UP = "git://git.openembedded.org/meta-openembedded"
 
 URL_META_BROWSER = "git://github.com/OSSystems/meta-browser.git"
+URL_META_WEBOS = "git://github.com/morphis/meta-webos.git"
 
 OE_CLASSIC_ENABLED = "1"
 CHANGELOG_ENABLED = "0"
@@ -57,7 +58,7 @@ show-config:
 	@echo "BRANCH_META_OE         ${BRANCH_META_OE}"
 	@echo "BRANCH_META_SMARTPHONE ${BRANCH_META_SMARTPHONE}"
 	@echo "BRANCH_META_BROWSER    ${BRANCH_META_BROWSER}"
-	@echo "BRANCH_META_CHROMIUM   ${BRANCH_META_CHROMIUM}"
+	@echo "BRANCH_META_WEBOS      ${BRANCH_META_WEBOS}"
 	@echo ""
 	@echo "URL_OE                 ${URL_OE}"
 	@echo "URL_OE_CORE            ${URL_OE_CORE}"
@@ -67,7 +68,7 @@ show-config:
 	@echo "URL_META_SMARTPHONE    ${URL_META_SMARTPHONE}"
 	@echo "URL_META_OE            ${URL_META_OE}"
 	@echo "URL_META_BROWSER       ${URL_META_BROWSER}"
-	@echo "URL_META_CHROMIUM      ${URL_META_CHROMIUM}"
+	@echo "URL_META_WEBOS         ${URL_META_WEBOS}"
 	@echo ""
 	@echo "OE_CLASSIC_ENABLED     ${OE_CLASSIC_ENABLED}"
 
@@ -83,6 +84,7 @@ changelog:
 	[ ! -e meta-openembedded ] || ${MAKE} changelog-meta-openembedded
 	[ ! -e meta-smartphone ]   || ${MAKE} changelog-meta-smartphone
 	[ ! -e meta-browser ]      || ${MAKE} changelog-meta-browser
+	[ ! -e meta-webos ]        || ${MAKE} changelog-meta-webos
 	if [ "${OE_CLASSIC_ENABLED}" = "1" ] ; then \
 		[ ! -e openembedded ] || ${MAKE} changelog-openembedded ; \
 		[ ! -e shr-unstable ] || ${MAKE} changelog-shr-unstable ; \
@@ -117,7 +119,8 @@ update:
 	[ ! -e openembedded-core ] || ${MAKE} update-openembedded-core
 	[ ! -e meta-openembedded ] || ${MAKE} update-meta-openembedded
 	[ ! -e meta-smartphone ]   || ${MAKE} update-meta-smartphone
-	[ ! -e meta-browser ]   || ${MAKE} update-meta-browser
+	[ ! -e meta-browser ]      || ${MAKE} update-meta-browser
+	[ ! -e meta-webos ]        || ${MAKE} update-meta-webos
 	if [ "${OE_CLASSIC_ENABLED}" = "1" ] ; then \
 		[ ! -e openembedded ] || ${MAKE} update-openembedded ; \
 		[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable ; \
@@ -247,6 +250,17 @@ setup-meta-browser meta-browser/.git/config:
 	  git checkout --no-track -b ${BRANCH_META_BROWSER} origin/${BRANCH_META_BROWSER} )
 	touch meta-browser/.git/config
 
+.PHONY: setup-meta-webos
+.PRECIOUS: meta-webos/.git/config
+setup-meta-webos meta-webos/.git/config:
+	[ -e meta-webos/.git/config ] || \
+	( echo "setting up meta-webos"; \
+	  git clone ${URL_META_WEBOS} meta-webos )
+	( cd meta-webos && \
+	  git checkout ${BRANCH_META_WEBOS} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_META_WEBOS} origin/${BRANCH_META_WEBOS} )
+	touch meta-webos/.git/config
+
 .PHONY: setup-%
 setup-%:
 	${MAKE} $*/.configured
@@ -308,7 +322,7 @@ shr-unstable/.configured: common/.git/config openembedded/.git/config
 	touch shr-unstable/.configured
 	
 .PRECIOUS: shr-core/.configured
-shr-core/.configured: common/.git/config openembedded-core/.git/config meta-openembedded/.git/config meta-smartphone/.git/config meta-browser/.git/config
+shr-core/.configured: common/.git/config openembedded-core/.git/config meta-openembedded/.git/config meta-smartphone/.git/config meta-browser/.git/config meta-webos/.git/config
 	@echo "preparing shr-core tree"
 	[ -d shr-core ] || ( mkdir -p shr-core )
 	[ -e downloads ] || ( mkdir -p downloads )
@@ -316,6 +330,7 @@ shr-core/.configured: common/.git/config openembedded-core/.git/config meta-open
 	[ -e shr-core/meta-openembedded ] || ( cd shr-core ; ln -sf ../meta-openembedded . )
 	[ -e shr-core/meta-smartphone ] || ( cd shr-core ; ln -sf ../meta-smartphone . )
 	[ -e shr-core/meta-browser ] || ( cd shr-core ; ln -sf ../meta-browser . )
+	[ -e shr-core/meta-webos ] || ( cd shr-core ; ln -sf ../meta-webos . )
 	[ -e shr-core/setup-env ] || ( cd shr-core ; ln -sf ../common/setup-env . )
 	[ -e shr-core/setup-local ] || ( cd shr-core ; cp ../common/setup-local .; echo 'export BBFETCH2=True' >> setup-local )
 	[ -e shr-core/downloads ] || ( cd shr-core ; ln -sf ../downloads . )
@@ -377,6 +392,13 @@ changelog-meta-browser: meta-browser/.git/config
 	( cd meta-browser ; \
 	  git remote update ; \
 	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_META_BROWSER} )
+
+.PHONY: changelog-meta-webos
+changelog-meta-webos: meta-webos/.git/config
+	@echo "Changelog for meta-webos"
+	( cd meta-webos ; \
+	  git remote update ; \
+	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_META_WEBOS} )
 
 .PHONY: changelog-openembedded
 changelog-openembedded: openembedded/.git/config
@@ -527,6 +549,15 @@ update-meta-browser: meta-browser/.git/config
 	  git checkout ${BRANCH_META_BROWSER} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_META_BROWSER} origin/${BRANCH_META_BROWSER} ; \
 	  git reset --hard origin/${BRANCH_META_BROWSER} )
+
+.PHONY: update-meta-webos
+update-meta-webos: meta-webos/.git/config
+	@echo "updating meta-webos tree"
+	( cd meta-webos ; \
+	  git clean -d -f ; git reset --hard ; git fetch ; \
+	  git checkout ${BRANCH_META_WEBOS} 2>/dev/null || \
+	  git checkout --no-track -b ${BRANCH_META_WEBOS} origin/${BRANCH_META_WEBOS} ; \
+	  git reset --hard origin/${BRANCH_META_WEBOS} )
 
 update-shr-core-conffiles: shr-core/.configured
 	@echo "syncing shr-core config files up to date"
