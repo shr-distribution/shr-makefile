@@ -98,8 +98,8 @@ update:
 	[ ! -e meta-browser ]      || ${MAKE} update-meta-browser
 	[ ! -e bitbake ]      || ${MAKE} update-bitbake
 	if [ -d shr-core ] ; then \
-		if ! diff -q shr-core/conf/bblayers.conf common/conf/shr-core/bblayers.conf ; then \
-			echo -e "\\033[1;31m" "WARNING: you have different bblayers.conf, please sync it from common directory or call update-shr-core-conffiles to replace all config files with new versions" ; \
+		if ! diff -q shr-core/conf/bblayers.conf common/conf/bblayers.conf ; then \
+			echo -e "\\033[1;31m" "WARNING: you have different bblayers.conf, please sync it from common directory or call update-conffiles to replace all config files with new versions" ; \
 			echo -e "\\e[0m" ; \
 		fi ; \
 	fi
@@ -226,7 +226,7 @@ shr-core/.configured: common/.git/config openembedded-core/.git/config meta-open
 	[ -e shr-core/setup-local ] || ( cd shr-core ; cp ../common/setup-local .; echo 'export BBFETCH2=True' >> setup-local )
 	[ -e shr-core/downloads ] || ( cd shr-core ; ln -sf ../downloads . )
 	[ -e shr-core/bitbake ] || ( cd shr-core ; ln -sf ../bitbake . )
-	[ -d shr-core/conf ] || ( cp -ra common/conf/shr-core shr-core/conf )
+	[ -d shr-core/conf ] || ( cp -ra common/conf shr-core/conf )
 	[ -e shr-core/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-core'" > shr-core/conf/topdir.conf
 	touch shr-core/.configured
 
@@ -379,11 +379,11 @@ update-meta-browser: meta-browser/.git/config
 	  git checkout --no-track -b ${BRANCH_META_BROWSER} origin/${BRANCH_META_BROWSER} ; \
 	  git reset --hard origin/${BRANCH_META_BROWSER} )
 
-update-shr-core-conffiles: shr-core/.configured
+update-conffiles: shr-core/.configured
 	@echo "syncing shr-core config files up to date"
-	cp common/conf/shr-core/auto.conf shr-core/conf/auto.conf
-	cp common/conf/shr-core/bblayers.conf shr-core/conf/bblayers.conf
-	cp common/conf/shr-core/site.conf shr-core/conf/site.conf
+	cp common/conf/auto.conf shr-core/conf/auto.conf
+	cp common/conf/bblayers.conf shr-core/conf/bblayers.conf
+	cp common/conf/site.conf shr-core/conf/site.conf
 
 .PHONY: status-common
 status-common: common/.git/config
