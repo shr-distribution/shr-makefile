@@ -223,7 +223,7 @@ shr-core/.configured: common/.git/config openembedded-core/.git/config meta-open
 	[ -e shr-core/meta-smartphone ] || ( cd shr-core ; ln -sf ../meta-smartphone . )
 	[ -e shr-core/meta-browser ] || ( cd shr-core ; ln -sf ../meta-browser . )
 	[ -e shr-core/setup-env ] || ( cd shr-core ; ln -sf ../common/setup-env . )
-	[ -e shr-core/setup-local ] || ( cd shr-core ; cp ../common/setup-local .; echo 'export BBFETCH2=True' >> setup-local )
+	[ -e shr-core/setup-local ] || ( cd shr-core ; cp ../common/setup-local . )
 	[ -e shr-core/downloads ] || ( cd shr-core ; ln -sf ../downloads . )
 	[ -e shr-core/bitbake ] || ( cd shr-core ; ln -sf ../bitbake . )
 	[ -d shr-core/conf ] || ( cp -ra common/conf shr-core/conf )
