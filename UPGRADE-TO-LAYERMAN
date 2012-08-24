@@ -1,0 +1,4 @@
+OE @ ~ $ make update
+OE @ ~ $ rm -f shr-core/.configured
+OE @ ~ $ make setup-shr-core
+OE @ ~ $ make update
