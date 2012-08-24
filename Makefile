@@ -9,7 +9,6 @@ BRANCH_CHROOT_32BIT = 32bit
 BRANCH_COMMON = master
 
 BRANCH_OE = master
-BRANCH_OE_SHR_TESTING = shr/testing2011.1
 BRANCH_OE_SHR_STABLE = shr/stable2009
 
 BRANCH_OE_CORE = shr
@@ -47,7 +46,6 @@ show-config:
 	@echo "BRANCH_COMMON          ${BRANCH_COMMON}"
 	@echo ""
 	@echo "BRANCH_OE              ${BRANCH_OE}"
-	@echo "BRANCH_OE_SHR_TESTING  ${BRANCH_OE_SHR_TESTING}"
 	@echo "BRANCH_OE_SHR_STABLE   ${BRANCH_OE_SHR_STABLE}"
 	@echo ""
 	@echo "BRANCH_OE_CORE         ${BRANCH_OE_CORE}"
@@ -80,7 +78,6 @@ changelog:
 	[ ! -e meta-browser ]      || ${MAKE} changelog-meta-browser
 	if [ "${OE_CLASSIC_ENABLED}" = "1" ] ; then \
 		[ ! -e openembedded ] || ${MAKE} changelog-openembedded ; \
-		[ ! -e shr-testing ]  || ${MAKE} changelog-shr-testing ; \
 	fi
 	[ ! -e bitbake ]      || ${MAKE} changelog-bitbake
 
@@ -114,7 +111,6 @@ update:
 	[ ! -e meta-browser ]      || ${MAKE} update-meta-browser
 	if [ "${OE_CLASSIC_ENABLED}" = "1" ] ; then \
 		[ ! -e openembedded ] || ${MAKE} update-openembedded ; \
-		[ ! -e shr-testing ]  || ${MAKE} update-shr-testing ; \
 	fi
 	[ ! -e bitbake ]      || ${MAKE} update-bitbake
 	if [ -d shr-core ] ; then \
@@ -244,32 +240,6 @@ setup-meta-browser meta-browser/.git/config:
 setup-%:
 	${MAKE} $*/.configured
 
-
-.PRECIOUS: shr-testing/.configured
-shr-testing/.configured: common/.git/config openembedded/.git/config
-	@echo "preparing shr-testing tree"
-	[ -d shr-testing ] || ( mkdir -p shr-testing )
-	[ -e downloads ] || ( mkdir -p downloads )
-	[ -e shr-testing/setup-env ] || ( cd shr-testing ; ln -sf ../common/setup-env . )
-	[ -e shr-testing/setup-local ] || ( cd shr-testing ; cp ../common/setup-local . )
-	[ -e shr-testing/downloads ] || ( cd shr-testing ; ln -sf ../downloads . )
-	[ -e shr-testing/openembedded ] || ( cd shr-testing ; \
-	  git clone --reference ../openembedded ${URL_OE} openembedded; \
-	  cd openembedded ; \
-	  echo "replace git object reference with relative path" ; \
-	  echo "../../../../openembedded/.git/objects/" > .git/objects/info/alternates ; \
-	  git checkout ${BRANCH_OE_SHR_TESTING} 2>/dev/null || \
-	  git checkout --no-track -b ${BRANCH_OE_SHR_TESTING} origin/${BRANCH_OE_SHR_TESTING} )
-	[ -d shr-testing/conf ] || ( mkdir -p shr-testing/conf )
-	[ -e shr-testing/conf/site.conf ] || ( cd shr-testing/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
-	[ -e shr-testing/conf/auto.conf ] || ( cp common/conf/auto.conf shr-testing/conf/auto.conf; \
-	  echo "#DISTRO_FEED_URI=\"http://build.shr-project.org/shr-testing2011.1/ipk/\"" >> shr-testing/conf/auto.conf ; \
-	)
-	[ -e shr-testing/conf/local.conf ] || ( cp common/conf/local.conf shr-testing/conf/local.conf )
-	[ -e shr-testing/conf/local-builds.inc ] || ( cp common/conf/local-builds.inc shr-testing/conf/local-builds.inc )
-	[ -e shr-testing/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-testing'" > shr-testing/conf/topdir.conf
-	touch shr-testing/.configured
-	
 .PRECIOUS: shr-core/.configured
 shr-core/.configured: common/.git/config openembedded-core/.git/config meta-openembedded/.git/config meta-smartphone/.git/config meta-browser/.git/config
 	@echo "preparing shr-core tree"
@@ -348,13 +318,6 @@ changelog-openembedded: openembedded/.git/config
 	  git remote update ; \
 	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_OE} )
 
-.PHONY: changelog-shr-testing
-changelog-shr-testing: shr-testing/.configured
-	@echo "Changelog for shr-testing"
-	( cd shr-testing/openembedded ; \
-	  git remote update ; \
-	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_OE_SHR_TESTING} )
-
 .PHONY: changelog-bitbake
 changelog-bitbake: bitbake/.git/config
 	@echo "Changelog bitbake"
@@ -425,16 +388,6 @@ update-openembedded: openembedded/.git/config
 	  echo "cd `pwd`; git reset --hard"; \
 	  echo ; \
 	  echo "ATTENTION: that will kill all eventual changes" ) )
-
-.PHONY: update-shr-testing
-update-shr-testing: shr-testing/.configured
-	@echo "updating shr-testing tree"
-	( cd shr-testing/openembedded ; \
-	  sed -e s/git.openembedded.net/git.openembedded.org/ -i .git/config ; \
-	  git clean -d -f ; git reset --hard ; git fetch ; \
-	  git checkout ${BRANCH_OE_SHR_TESTING} 2>/dev/null || \
-	  git checkout --no-track -b ${BRANCH_OE_SHR_TESTING} origin/${BRANCH_OE_SHR_TESTING} ; \
-	  git reset --hard origin/${BRANCH_OE_SHR_TESTING} )
 
 .PHONY: update-openembedded-core
 update-openembedded-core: openembedded-core/.git/config
