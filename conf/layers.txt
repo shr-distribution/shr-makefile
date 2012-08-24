@@ -1,4 +1,4 @@
 openembedded-core,git://github.com/shr-distribution/oe-core.git,shr,HEAD
 meta-openembedded,git://github.com/shr-distribution/meta-oe.git,shr,HEAD
 meta-smartphone,git://github.com/shr-distribution/meta-smartphone.git,shr,HEAD
-meta-browser,git://github.com/OSSystems/meta-browser.git,master,HEAD
+meta-browser,git://github.com/shr-distribution/meta-browser.git,shr,HEAD
