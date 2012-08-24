@@ -9,7 +9,6 @@ BRANCH_CHROOT_32BIT = 32bit
 BRANCH_COMMON = master
 
 BRANCH_OE = master
-BRANCH_OE_SHR_UNSTABLE = master
 BRANCH_OE_SHR_TESTING = shr/testing2011.1
 BRANCH_OE_SHR_STABLE = shr/stable2009
 
@@ -48,7 +47,6 @@ show-config:
 	@echo "BRANCH_COMMON          ${BRANCH_COMMON}"
 	@echo ""
 	@echo "BRANCH_OE              ${BRANCH_OE}"
-	@echo "BRANCH_OE_SHR_UNSTABLE ${BRANCH_OE_SHR_UNSTABLE}"
 	@echo "BRANCH_OE_SHR_TESTING  ${BRANCH_OE_SHR_TESTING}"
 	@echo "BRANCH_OE_SHR_STABLE   ${BRANCH_OE_SHR_STABLE}"
 	@echo ""
@@ -82,7 +80,6 @@ changelog:
 	[ ! -e meta-browser ]      || ${MAKE} changelog-meta-browser
 	if [ "${OE_CLASSIC_ENABLED}" = "1" ] ; then \
 		[ ! -e openembedded ] || ${MAKE} changelog-openembedded ; \
-		[ ! -e shr-unstable ] || ${MAKE} changelog-shr-unstable ; \
 		[ ! -e shr-testing ]  || ${MAKE} changelog-shr-testing ; \
 	fi
 	[ ! -e bitbake ]      || ${MAKE} changelog-bitbake
@@ -117,7 +114,6 @@ update:
 	[ ! -e meta-browser ]      || ${MAKE} update-meta-browser
 	if [ "${OE_CLASSIC_ENABLED}" = "1" ] ; then \
 		[ ! -e openembedded ] || ${MAKE} update-openembedded ; \
-		[ ! -e shr-unstable ] || ${MAKE} update-shr-unstable ; \
 		[ ! -e shr-testing ]  || ${MAKE} update-shr-testing ; \
 	fi
 	[ ! -e bitbake ]      || ${MAKE} update-bitbake
@@ -274,36 +270,6 @@ shr-testing/.configured: common/.git/config openembedded/.git/config
 	[ -e shr-testing/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-testing'" > shr-testing/conf/topdir.conf
 	touch shr-testing/.configured
 	
-.PRECIOUS: shr-unstable/.configured
-shr-unstable/.configured: common/.git/config openembedded/.git/config
-	@echo "preparing shr-unstable tree"
-	[ -d shr-unstable ] || ( mkdir -p shr-unstable )
-	[ -e downloads ] || ( mkdir -p downloads )
-	[ -e shr-unstable/setup-env ] || ( cd shr-unstable ; ln -sf ../common/setup-env . )
-	[ -e shr-unstable/setup-local ] || ( cd shr-unstable ; cp ../common/setup-local . )
-	[ -e shr-unstable/downloads ] || ( cd shr-unstable ; ln -sf ../downloads . )
-	[ -e shr-unstable/openembedded ] || ( cd shr-unstable ; \
-	  git clone --reference ../openembedded ${URL_OE} openembedded; \
-	  cd openembedded ; \
-	  echo "replace git object reference with relative path" ; \
-	  echo "../../../../openembedded/.git/objects/" > .git/objects/info/alternates ; \
-	  git checkout ${BRANCH_OE_SHR_UNSTABLE} 2>/dev/null || \
-	  git checkout --no-track -b ${BRANCH_OE_SHR_UNSTABLE} origin/${BRANCH_OE_SHR_UNSTABLE} )
-	[ -d shr-unstable/conf ] || ( mkdir -p shr-unstable/conf )
-	[ -e shr-unstable/conf/site.conf ] || ( cd shr-unstable/conf ; ln -sf ../../common/conf/site.conf ./site.conf )
-	[ -e shr-unstable/conf/auto.conf ] || ( cp common/conf/auto.conf shr-unstable/conf/auto.conf; \
-	  echo "#DISTRO_FEED_URI=\"http://build.shr-project.org/shr-unstable/ipk/\"" >> shr-unstable/conf/auto.conf ; \
-	)
-	[ -e shr-unstable/conf/local.conf ] || ( cp common/conf/local.conf shr-unstable/conf/local.conf; \
-	  echo "# shr-autorev.inc is no longer supported by SHR devs for shr-unstable" >> shr-unstable/conf/local.conf ; \
-	  echo "# so it's possible that newer revisions will need also newer EFL then what's available in shr-unstable" >> shr-unstable/conf/local.conf ; \
-	  echo "# if you need newer SHR apps or EFL, use shr-core" >> shr-unstable/conf/local.conf ; \
-	  echo "#require conf/distro/include/shr-autorev.inc" >> shr-unstable/conf/local.conf ; \
-	)
-	[ -e shr-unstable/conf/local-builds.inc ] || ( cp common/conf/local-builds.inc shr-unstable/conf/local-builds.inc; )
-	[ -e shr-unstable/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-unstable'" > shr-unstable/conf/topdir.conf
-	touch shr-unstable/.configured
-	
 .PRECIOUS: shr-core/.configured
 shr-core/.configured: common/.git/config openembedded-core/.git/config meta-openembedded/.git/config meta-smartphone/.git/config meta-browser/.git/config
 	@echo "preparing shr-core tree"
@@ -381,13 +347,6 @@ changelog-openembedded: openembedded/.git/config
 	( cd openembedded ; \
 	  git remote update ; \
 	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_OE} )
-
-.PHONY: changelog-shr-unstable
-changelog-shr-unstable: shr-unstable/.configured
-	@echo "Changelog for shr-unstable"
-	( cd shr-unstable/openembedded ; \
-	  git remote update ; \
-	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_OE_SHR_UNSTABLE} )
 
 .PHONY: changelog-shr-testing
 changelog-shr-testing: shr-testing/.configured
@@ -476,16 +435,6 @@ update-shr-testing: shr-testing/.configured
 	  git checkout ${BRANCH_OE_SHR_TESTING} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_OE_SHR_TESTING} origin/${BRANCH_OE_SHR_TESTING} ; \
 	  git reset --hard origin/${BRANCH_OE_SHR_TESTING} )
-
-.PHONY: update-shr-unstable
-update-shr-unstable: shr-unstable/.configured
-	@echo "updating shr-unstable tree"
-	( cd shr-unstable/openembedded ; \
-	  sed -e s/git.openembedded.net/git.openembedded.org/ -i .git/config ; \
-	  git clean -d -f ; git reset --hard ; git fetch ; \
-	  git checkout ${BRANCH_OE_SHR_UNSTABLE} 2>/dev/null || \
-	  git checkout --no-track -b ${BRANCH_OE_SHR_UNSTABLE} origin/${BRANCH_OE_SHR_UNSTABLE} ; \
-	  git reset --hard origin/${BRANCH_OE_SHR_UNSTABLE} )
 
 .PHONY: update-openembedded-core
 update-openembedded-core: openembedded-core/.git/config
