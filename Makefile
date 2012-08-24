@@ -8,14 +8,11 @@ BRANCH_CHROOT = master
 BRANCH_CHROOT_32BIT = 32bit
 BRANCH_COMMON = master
 
-BRANCH_OE = master
-
 BRANCH_OE_CORE = shr
 BRANCH_META_OE = shr
 BRANCH_META_SMARTPHONE = shr
 BRANCH_META_BROWSER = master
 
-URL_OE = "git://github.com/openembedded/openembedded.git"
 URL_OE_CORE = "git://git.openembedded.org/openembedded-core-contrib"
 URL_OE_CORE_UP = "git://git.openembedded.org/openembedded-core"
 URL_SHR_MAKEFILE = "http://git.shr-project.org/repo/shr-makefile.git"
@@ -28,7 +25,6 @@ URL_META_OE_UP = "git://git.openembedded.org/meta-openembedded"
 
 URL_META_BROWSER = "git://github.com/OSSystems/meta-browser.git"
 
-OE_CLASSIC_ENABLED = "1"
 CHANGELOG_ENABLED = "0"
 CHANGELOG_FORMAT = "%h %ci %aN%n        %s%n"
 CHANGELOG_FORMAT_REBASE = "rebase: %h %ci %aN%n                %s%n"
@@ -44,14 +40,11 @@ show-config:
 	@echo "BRANCH_CHROOT_32BIT    ${BRANCH_CHROOT_32BIT}"
 	@echo "BRANCH_COMMON          ${BRANCH_COMMON}"
 	@echo ""
-	@echo "BRANCH_OE              ${BRANCH_OE}"
-	@echo ""
 	@echo "BRANCH_OE_CORE         ${BRANCH_OE_CORE}"
 	@echo "BRANCH_META_OE         ${BRANCH_META_OE}"
 	@echo "BRANCH_META_SMARTPHONE ${BRANCH_META_SMARTPHONE}"
 	@echo "BRANCH_META_BROWSER    ${BRANCH_META_BROWSER}"
 	@echo ""
-	@echo "URL_OE                 ${URL_OE}"
 	@echo "URL_OE_CORE            ${URL_OE_CORE}"
 	@echo "URL_SHR_MAKEFILE       ${URL_SHR_MAKEFILE}"
 	@echo ""
@@ -60,7 +53,6 @@ show-config:
 	@echo "URL_META_OE            ${URL_META_OE}"
 	@echo "URL_META_BROWSER       ${URL_META_BROWSER}"
 	@echo ""
-	@echo "OE_CLASSIC_ENABLED     ${OE_CLASSIC_ENABLED}"
 
 .PHONY: all
 all: update build
@@ -74,9 +66,6 @@ changelog:
 	[ ! -e meta-openembedded ] || ${MAKE} changelog-meta-openembedded
 	[ ! -e meta-smartphone ]   || ${MAKE} changelog-meta-smartphone
 	[ ! -e meta-browser ]      || ${MAKE} changelog-meta-browser
-	if [ "${OE_CLASSIC_ENABLED}" = "1" ] ; then \
-		[ ! -e openembedded ] || ${MAKE} changelog-openembedded ; \
-	fi
 	[ ! -e bitbake ]      || ${MAKE} changelog-bitbake
 
 .PHONY: update
@@ -107,9 +96,6 @@ update:
 	[ ! -e meta-openembedded ] || ${MAKE} update-meta-openembedded
 	[ ! -e meta-smartphone ]   || ${MAKE} update-meta-smartphone
 	[ ! -e meta-browser ]      || ${MAKE} update-meta-browser
-	if [ "${OE_CLASSIC_ENABLED}" = "1" ] ; then \
-		[ ! -e openembedded ] || ${MAKE} update-openembedded ; \
-	fi
 	[ ! -e bitbake ]      || ${MAKE} update-bitbake
 	if [ -d shr-core ] ; then \
 		if ! diff -q shr-core/conf/bblayers.conf common/conf/shr-core/bblayers.conf ; then \
@@ -178,17 +164,6 @@ setup-common common/.git/config:
 	  git checkout ${BRANCH_COMMON} 2>/dev/null || \
 	  git checkout --no-track -b ${BRANCH_COMMON} origin/${BRANCH_COMMON} )
 	touch common/.git/config
-
-.PHONY: setup-openembedded
-.PRECIOUS: openembedded/.git/config
-setup-openembedded openembedded/.git/config:
-	[ -e openembedded/.git/config ] || \
-	( echo "setting up openembedded"; \
-	  git clone ${URL_OE} openembedded )
-	( cd openembedded && \
-	  git checkout ${BRANCH_OE} 2>/dev/null || \
-	  git checkout --no-track -b ${BRANCH_OE} origin/${BRANCH_OE} )
-	touch openembedded/.git/config
 
 .PHONY: setup-openembedded-core
 .PRECIOUS: openembedded-core/.git/config
@@ -309,13 +284,6 @@ changelog-meta-browser: meta-browser/.git/config
 	  git remote update ; \
 	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_META_BROWSER} )
 
-.PHONY: changelog-openembedded
-changelog-openembedded: openembedded/.git/config
-	@echo "Changelog for openembedded"
-	( cd openembedded ; \
-	  git remote update ; \
-	  PAGER= git log --pretty=format:${CHANGELOG_FORMAT} ..origin/${BRANCH_OE} )
-
 .PHONY: changelog-bitbake
 changelog-bitbake: bitbake/.git/config
 	@echo "Changelog bitbake"
@@ -372,20 +340,6 @@ update-bitbake: bitbake/.git/config
 	  git checkout --no-track -b ${BITBAKE_VERSION} origin/${BITBAKE_VERSION} ; \
 	  git reset --hard origin/${BITBAKE_VERSION}; \
 	)
-
-.PHONY: update-openembedded
-update-openembedded: openembedded/.git/config
-	@echo "updating openembedded"
-	( cd openembedded ; \
-	  sed -e s/git.openembedded.net/git.openembedded.org/ -i .git/config ; \
-	  git pull || ( \
-	  echo ; \
-	  echo "!!! looks like either the OE git server has problems"; \
-	  echo "or you have a dirty OE tree ;)"; \
-	  echo "to fix that do the following:"; \
-	  echo "cd `pwd`; git reset --hard"; \
-	  echo ; \
-	  echo "ATTENTION: that will kill all eventual changes" ) )
 
 .PHONY: update-openembedded-core
 update-openembedded-core: openembedded-core/.git/config
