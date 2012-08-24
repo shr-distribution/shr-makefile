@@ -9,7 +9,6 @@ BRANCH_CHROOT_32BIT = 32bit
 BRANCH_COMMON = master
 
 BRANCH_OE = master
-BRANCH_OE_SHR_STABLE = shr/stable2009
 
 BRANCH_OE_CORE = shr
 BRANCH_META_OE = shr
@@ -46,7 +45,6 @@ show-config:
 	@echo "BRANCH_COMMON          ${BRANCH_COMMON}"
 	@echo ""
 	@echo "BRANCH_OE              ${BRANCH_OE}"
-	@echo "BRANCH_OE_SHR_STABLE   ${BRANCH_OE_SHR_STABLE}"
 	@echo ""
 	@echo "BRANCH_OE_CORE         ${BRANCH_OE_CORE}"
 	@echo "BRANCH_META_OE         ${BRANCH_META_OE}"
