@@ -71,7 +71,7 @@ function update_oe()
 function tag_layers()
 {
     set_environment
-    env gawk -v command=tag -v commandarg=$TAG -f ${OE_BASE}/scripts/layers.awk ${OE_SOURCE_DIR}/layers.txt
+    env gawk -v command=tag -v commandarg=$TAG -f ${OE_BASE}/scripts/layers.awk ${OE_LAYERS_TXT}
     echo $TAG >> ${OE_BASE}/tags
 }
 
