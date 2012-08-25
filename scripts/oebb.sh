@@ -66,6 +66,16 @@ function update_oe()
 }
 
 ###############################################################################
+# tag_layers - Tag all layers with a given tag
+###############################################################################
+function tag_layers()
+{
+    set_environment
+    env gawk -v command=tag -v commandarg=$TAG -f ${OE_BASE}/scripts/layers.awk ${OE_SOURCE_DIR}/layers.txt
+    echo $TAG >> ${OE_BASE}/tags
+}
+
+###############################################################################
 # changelog - Display changelog for all layers with a given tag
 ###############################################################################
 function changelog()
@@ -119,6 +129,17 @@ then
         exit 0
     fi
 
+    if [ $1 = "tag" ]
+    then
+        if [ -n "$2" ] ; then
+            TAG="$2"
+        else
+            TAG="$(date -u +'%Y%m%d-%H%M')"
+        fi
+        tag_layers $TAG
+        exit 0
+    fi
+
     if [ $1 = "changelog" ]
     then
         if [ -z $2 ] ; then
@@ -153,6 +174,7 @@ fi
 # Help Screen
 echo ""
 echo "Usage: $0 update"
+echo "       $0 tag [tagname]"
 echo "       $0 changelog <tagname>"
 echo "       $0 checkout <tagname>"
 echo "       $0 clean"
