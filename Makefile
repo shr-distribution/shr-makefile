@@ -45,7 +45,6 @@ update:
 	fi
 	[ ! -e common ]       || ${MAKE} update-common 
 	if [ -d shr-core ] ; then \
-		[ -e scripts/oebb.sh ] && ( OE_SOURCE_DIR=`pwd`/shr-core scripts/oebb.sh update ) ; \
 		if ! diff -q shr-core/conf/bblayers.conf common/conf/bblayers.conf ; then \
 			echo -e "\\033[1;31m" "WARNING: you have different bblayers.conf, please sync it from common directory or call update-conffiles to replace all config files with new versions" ; \
 			echo -e "\\e[0m" ; \
@@ -54,6 +53,7 @@ update:
 			echo -e "\\033[1;31m" "WARNING: you have different layers.txt, please sync it from common directory or call update-conffiles to replace all config files with new versions" ; \
 			echo -e "\\e[0m" ; \
 		fi ; \
+		[ -e scripts/oebb.sh ] && ( OE_SOURCE_DIR=`pwd`/shr-core scripts/oebb.sh update ) ; \
 	fi
 
 .PHONY: setup-shr-chroot
@@ -181,6 +181,7 @@ update-shr-chroot-32bit: ../.git/config-32bit
 	  sed -i "s#bitbake:x:1026:bitbake#bitbake:x:`id -g`:bitbake#g" etc/group; \
 	)
 
+.PHONY: update-conffiles
 update-conffiles: shr-core/.configured
 	@echo "syncing shr-core config files up to date"
 	cp common/conf/auto.conf shr-core/conf/auto.conf
