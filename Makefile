@@ -117,6 +117,7 @@ shr-core/.configured: common/.git/config
 	[ -e shr-core/setup-local ] || ( cd shr-core ; cp ../common/setup-local . )
 	[ -e shr-core/downloads ] || ( cd shr-core ; ln -sf ../downloads . )
 	[ -d shr-core/conf ] || ( cp -ra common/conf shr-core/conf )
+	[ -e shr-core/conf/layers.txt ] || ( cp -ra common/conf/layers.txt shr-core/conf )
 	[ -e shr-core/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-core'" > shr-core/conf/topdir.conf
 	[ -e scripts/oebb.sh ] && ( OE_SOURCE_DIR=`pwd`/shr-core scripts/oebb.sh update )
 	touch shr-core/.configured
