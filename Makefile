@@ -7,7 +7,7 @@ BRANCH_CHROOT = master
 BRANCH_CHROOT_32BIT = 32bit
 BRANCH_COMMON = master
 
-URL_SHR_MAKEFILE = "http://git.shr-project.org/repo/shr-makefile.git"
+URL_COMMON = "http://git.shr-project.org/repo/shr-makefile.git"
 
 # use git://, because http:// transport doesn't support --depth
 URL_SHR_CHROOT = "git://git.shr-project.org/shr-chroot.git"
@@ -28,12 +28,9 @@ show-config:
 	@echo "BRANCH_CHROOT          ${BRANCH_CHROOT}"
 	@echo "BRANCH_CHROOT_32BIT    ${BRANCH_CHROOT_32BIT}"
 	@echo "BRANCH_COMMON          ${BRANCH_COMMON}"
-	@echo "URL_SHR_MAKEFILE       ${URL_SHR_MAKEFILE}"
+	@echo "URL_COMMON             ${URL_COMMON}"
 	@echo "URL_SHR_CHROOT         ${URL_SHR_CHROOT}"
 	@echo ""
-
-.PHONY: all
-all: update build
 
 .PHONY: changelog
 changelog:
@@ -104,7 +101,7 @@ setup-shr-chroot-32bit shr-chroot-32bit/.git/config-32bit:
 setup-common common/.git/config:
 	[ -e common/.git/config ] || \
 	( echo "setting up common (Makefile)"; \
-	  git clone ${URL_SHR_MAKEFILE} common && \
+	  git clone ${URL_COMMON} common && \
 	  rm -f Makefile && \
 	  ln -s common/Makefile Makefile )
 	( cd common && \
