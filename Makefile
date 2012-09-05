@@ -113,6 +113,7 @@ shr-core/.configured: common/.git/config
 	[ -d shr-core ] || ( mkdir -p shr-core )
 	[ -e downloads ] || ( mkdir -p downloads )
 	[ -d scripts ] || ( cp -ra common/scripts scripts )
+	[ -L shr-core/bitbake ] && rm -f shr-core/bitbake
 	[ -e shr-core/setup-env ] || ( cd shr-core ; ln -sf ../common/setup-env . )
 	[ -e shr-core/setup-local ] || ( cd shr-core ; cp ../common/setup-local . )
 	[ -e shr-core/downloads ] || ( cd shr-core ; ln -sf ../downloads . )
