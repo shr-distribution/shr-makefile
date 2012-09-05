@@ -81,7 +81,7 @@ function tag_layers()
 function reset_layers()
 {
     set_environment
-    env gawk -v command=reset -v -f ${OE_BASE}/scripts/layers.awk ${OE_SOURCE_DIR}/layers.txt 
+    env gawk -v command=reset -f ${OE_BASE}/scripts/layers.awk ${OE_LAYERS_TXT} 
 }
 
 ###############################################################################
