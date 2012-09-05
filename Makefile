@@ -13,6 +13,7 @@ URL_SHR_MAKEFILE = "http://git.shr-project.org/repo/shr-makefile.git"
 URL_SHR_CHROOT = "git://git.shr-project.org/shr-chroot.git"
 
 UPDATE_CONFFILES_ENABLED = "0"
+RESET_ENABLED = "0"
 
 CHANGELOG_ENABLED = "0"
 CHANGELOG_FORMAT = "%h %ci %aN%n        %s%n"
@@ -59,6 +60,9 @@ update:
 			echo -e "\\e[0m" ; \
 		fi ; \
 		[ -e scripts/oebb.sh ] && ( OE_SOURCE_DIR=`pwd`/shr-core scripts/oebb.sh update ) ; \
+		if [ "${RESET_ENABLED}" = "1" ] ; then \
+			[ -e scripts/oebb.sh ] && ( OE_SOURCE_DIR=`pwd`/shr-core scripts/oebb.sh reset ) ; \
+		fi; \
 	fi
 
 .PHONY: setup-shr-chroot
