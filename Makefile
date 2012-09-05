@@ -12,6 +12,8 @@ URL_SHR_MAKEFILE = "http://git.shr-project.org/repo/shr-makefile.git"
 # use git://, because http:// transport doesn't support --depth
 URL_SHR_CHROOT = "git://git.shr-project.org/shr-chroot.git"
 
+UPDATE_CONFFILES_ENABLED = "0"
+
 CHANGELOG_ENABLED = "0"
 CHANGELOG_FORMAT = "%h %ci %aN%n        %s%n"
 CHANGELOG_FORMAT_REBASE = "rebase: %h %ci %aN%n                %s%n"
@@ -42,6 +44,9 @@ changelog:
 update: 
 	if [ "${CHANGELOG_ENABLED}" = "1" ] ; then \
 		${MAKE} changelog ; \
+	fi
+	if [ "${UPDATE_CONFFILES_ENABLED}" = "1" ] ; then \
+		${MAKE} update-conffiles ; \
 	fi
 	[ ! -e common ]       || ${MAKE} update-common 
 	if [ -d shr-core ] ; then \
