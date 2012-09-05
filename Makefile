@@ -199,5 +199,6 @@ update-conffiles: shr-core/.configured
 	cp common/conf/bblayers.conf shr-core/conf/bblayers.conf
 	cp common/conf/layers.txt shr-core/conf/layers.txt
 	cp common/conf/site.conf shr-core/conf/site.conf
+	cp common/scripts/* scripts/
 
 # End of Makefile
