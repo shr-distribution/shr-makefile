@@ -189,6 +189,7 @@ fi
 # Help Screen
 echo ""
 echo "Usage: $0 update"
+echo "       $0 reset"
 echo "       $0 tag [tagname]"
 echo "       $0 changelog <tagname>"
 echo "       $0 checkout <tagname>"
