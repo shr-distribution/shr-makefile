@@ -1,4 +1,4 @@
-bitbake,git://github.com/shr-distribution/bitbake.git,master,675b237a284dff84e972546774b69e2f89afb360
+bitbake,git://github.com/shr-distribution/bitbake.git,master,81b0c0cd15cbd61285e6525f482412051371ea4c
 openembedded-core,git://github.com/shr-distribution/oe-core.git,shr,HEAD
 meta-openembedded,git://github.com/shr-distribution/meta-oe.git,shr,HEAD
 meta-smartphone,git://github.com/shr-distribution/meta-smartphone.git,shr,HEAD
