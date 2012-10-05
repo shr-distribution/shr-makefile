@@ -192,12 +192,14 @@ update-shr-chroot-32bit: ../.git/config-32bit
 	)
 
 .PHONY: update-conffiles
-update-conffiles: ${SETUP_DIR}/.configured
-	@echo "syncing ${SETUP_DIR} config files up to date"
-	cp common/conf/auto.conf ${SETUP_DIR}/conf/auto.conf
-	cp common/conf/bblayers.conf ${SETUP_DIR}/conf/bblayers.conf
-	cp common/conf/layers.txt ${SETUP_DIR}/conf/layers.txt
-	cp common/conf/site.conf ${SETUP_DIR}/conf/site.conf
-	cp common/scripts/* scripts/
+update-conffiles:
+	[ -d ${SETUP_DIR}/conf ] && ( \
+	  echo "syncing ${SETUP_DIR} config files up to date"; \
+	  cp common/conf/auto.conf ${SETUP_DIR}/conf/auto.conf; \
+	  cp common/conf/bblayers.conf ${SETUP_DIR}/conf/bblayers.conf; \
+	  cp common/conf/layers.txt ${SETUP_DIR}/conf/layers.txt; \
+	  cp common/conf/site.conf ${SETUP_DIR}/conf/site.conf; \
+	  cp common/scripts/* scripts/; \
+	)
 
 # End of Makefile
