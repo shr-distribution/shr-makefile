@@ -19,6 +19,8 @@ CHANGELOG_ENABLED = "0"
 CHANGELOG_FORMAT = "%h %ci %aN%n        %s%n"
 CHANGELOG_FORMAT_REBASE = "rebase: %h %ci %aN%n                %s%n"
 
+SETUP_DIR = "shr-core"
+
 ifneq ($(wildcard config.mk),)
 include config.mk
 endif
@@ -47,18 +49,18 @@ update:
 	if [ "${UPDATE_CONFFILES_ENABLED}" = "1" ] ; then \
 		${MAKE} update-conffiles ; \
 	fi
-	if [ -d shr-core ] ; then \
-		if ! diff -q shr-core/conf/bblayers.conf common/conf/bblayers.conf ; then \
+	if [ -d ${SETUP_DIR} ] ; then \
+		if ! diff -q ${SETUP_DIR}/conf/bblayers.conf common/conf/bblayers.conf ; then \
 			echo -e "\\033[1;31m" "WARNING: you have different bblayers.conf, please sync it from common directory or call update-conffiles to replace all config files with new versions" ; \
 			echo -e "\\e[0m" ; \
 		fi ; \
-		if ! diff -q shr-core/conf/layers.txt common/conf/layers.txt; then \
+		if ! diff -q ${SETUP_DIR}/conf/layers.txt common/conf/layers.txt; then \
 			echo -e "\\033[1;31m" "WARNING: you have different layers.txt, please sync it from common directory or call update-conffiles to replace all config files with new versions" ; \
 			echo -e "\\e[0m" ; \
 		fi ; \
-		[ -e scripts/oebb.sh ] && ( OE_SOURCE_DIR=`pwd`/shr-core scripts/oebb.sh update ) ; \
+		[ -e scripts/oebb.sh ] && ( OE_SOURCE_DIR=`pwd`/${SETUP_DIR} scripts/oebb.sh update ) ; \
 		if [ "${RESET_ENABLED}" = "1" ] ; then \
-			[ -e scripts/oebb.sh ] && ( OE_SOURCE_DIR=`pwd`/shr-core scripts/oebb.sh reset ) ; \
+			[ -e scripts/oebb.sh ] && ( OE_SOURCE_DIR=`pwd`/${SETUP_DIR} scripts/oebb.sh reset ) ; \
 		fi; \
 	fi
 
@@ -115,19 +117,19 @@ setup-%:
 
 .PRECIOUS: shr-core/.configured
 shr-core/.configured: common/.git/config
-	@echo "preparing shr-core tree"
-	[ -d shr-core ] || ( mkdir -p shr-core )
+	@echo "preparing ${SETUP_DIR} tree"
+	[ -d ${SETUP_DIR} ] || ( mkdir -p ${SETUP_DIR} )
 	[ -e downloads ] || ( mkdir -p downloads )
 	[ -d scripts ] || ( cp -ra common/scripts scripts )
-	[ -L shr-core/bitbake ] && rm -f shr-core/bitbake
-	[ -e shr-core/setup-env ] || ( cd shr-core ; ln -sf ../common/setup-env . )
-	[ -e shr-core/setup-local ] || ( cd shr-core ; cp ../common/setup-local . )
-	[ -e shr-core/downloads ] || ( cd shr-core ; ln -sf ../downloads . )
-	[ -d shr-core/conf ] || ( cp -ra common/conf shr-core/conf )
-	[ -e shr-core/conf/layers.txt ] || ( cp -ra common/conf/layers.txt shr-core/conf )
-	[ -e shr-core/conf/topdir.conf ] || echo "TOPDIR='`pwd`/shr-core'" > shr-core/conf/topdir.conf
-	[ -e scripts/oebb.sh ] && ( OE_SOURCE_DIR=`pwd`/shr-core scripts/oebb.sh update )
-	touch shr-core/.configured
+	[ -L ${SETUP_DIR}/bitbake ] && rm -f ${SETUP_DIR}/bitbake
+	[ -e ${SETUP_DIR}/setup-env ] || ( cd ${SETUP_DIR} ; ln -sf ../common/setup-env . )
+	[ -e ${SETUP_DIR}/setup-local ] || ( cd ${SETUP_DIR} ; cp ../common/setup-local . )
+	[ -e ${SETUP_DIR}/downloads ] || ( cd ${SETUP_DIR} ; ln -sf ../downloads . )
+	[ -d ${SETUP_DIR}/conf ] || ( cp -ra common/conf ${SETUP_DIR}/conf )
+	[ -e ${SETUP_DIR}/conf/layers.txt ] || ( cp -ra common/conf/layers.txt ${SETUP_DIR}/conf )
+	[ -e ${SETUP_DIR}/conf/topdir.conf ] || echo "TOPDIR='`pwd`/${SETUP_DIR}'" > ${SETUP_DIR}/conf/topdir.conf
+	[ -e scripts/oebb.sh ] && ( OE_SOURCE_DIR=`pwd`/${SETUP_DIR} scripts/oebb.sh update )
+	touch ${SETUP_DIR}/.configured
 
 .PHONY: changelog-shr-chroot
 changelog-shr-chroot: ../.git/config-64bit
@@ -190,12 +192,12 @@ update-shr-chroot-32bit: ../.git/config-32bit
 	)
 
 .PHONY: update-conffiles
-update-conffiles: shr-core/.configured
-	@echo "syncing shr-core config files up to date"
-	cp common/conf/auto.conf shr-core/conf/auto.conf
-	cp common/conf/bblayers.conf shr-core/conf/bblayers.conf
-	cp common/conf/layers.txt shr-core/conf/layers.txt
-	cp common/conf/site.conf shr-core/conf/site.conf
+update-conffiles: ${SETUP_DIR}/.configured
+	@echo "syncing ${SETUP_DIR} config files up to date"
+	cp common/conf/auto.conf ${SETUP_DIR}/conf/auto.conf
+	cp common/conf/bblayers.conf ${SETUP_DIR}/conf/bblayers.conf
+	cp common/conf/layers.txt ${SETUP_DIR}/conf/layers.txt
+	cp common/conf/site.conf ${SETUP_DIR}/conf/site.conf
 	cp common/scripts/* scripts/
 
 # End of Makefile
