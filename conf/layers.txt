@@ -1,5 +1,5 @@
-bitbake,git://github.com/shr-distribution/bitbake.git,1.18,HEAD
-openembedded-core,git://github.com/shr-distribution/oe-core.git,dylan,HEAD
-meta-openembedded,git://github.com/shr-distribution/meta-oe.git,dylan,HEAD
-meta-smartphone,git://github.com/shr-distribution/meta-smartphone.git,dylan,HEAD
-meta-browser,git://github.com/shr-distribution/meta-browser.git,dylan,HEAD
+bitbake,git://github.com/shr-distribution/bitbake.git,jansa/test,HEAD
+openembedded-core,git://github.com/shr-distribution/oe-core.git,jansa/test,HEAD
+meta-openembedded,git://github.com/shr-distribution/meta-oe.git,jansa/test,HEAD
+meta-smartphone,git://github.com/shr-distribution/meta-smartphone.git,jansa/test,HEAD
+meta-browser,git://github.com/shr-distribution/meta-browser.git,jansa/test,HEAD
