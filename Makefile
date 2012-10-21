@@ -122,7 +122,7 @@ shr-core/.configured: common/.git/config
 	[ -d ${SETUP_DIR} ] || ( mkdir -p ${SETUP_DIR} )
 	[ -e downloads ] || ( mkdir -p downloads )
 	[ -d scripts ] || ( cp -ra common/scripts scripts )
-	[ -L ${SETUP_DIR}/bitbake ] && rm -f ${SETUP_DIR}/bitbake
+	[ -L ${SETUP_DIR}/bitbake ] && rm -f ${SETUP_DIR}/bitbake || echo "bitbake is not a symlink"
 	[ -e ${SETUP_DIR}/setup-env ] || ( cd ${SETUP_DIR} ; ln -sf ../common/setup-env . )
 	[ -e ${SETUP_DIR}/setup-local ] || ( cd ${SETUP_DIR} ; cp ../common/setup-local . )
 	[ -e ${SETUP_DIR}/downloads ] || ( cd ${SETUP_DIR} ; ln -sf ../downloads . )
