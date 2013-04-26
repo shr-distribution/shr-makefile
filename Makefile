@@ -5,7 +5,7 @@ MAKEFLAGS = -swr
 
 BRANCH_CHROOT = master
 BRANCH_CHROOT_32BIT = 32bit
-BRANCH_COMMON = master
+BRANCH_COMMON = dylan
 
 URL_COMMON = "http://git.shr-project.org/repo/shr-makefile.git"
 
