@@ -3,4 +3,4 @@ openembedded-core,git://github.com/shr-distribution/oe-core.git,jansa/test,HEAD
 meta-openembedded,git://github.com/shr-distribution/meta-oe.git,jansa/test,HEAD
 meta-smartphone,git://github.com/shr-distribution/meta-smartphone.git,jansa/test,HEAD
 meta-browser,git://github.com/shr-distribution/meta-browser.git,jansa/test,HEAD
-meta-qt5,git://github.com/meta-qt5/meta-qt5.git,master,HEAD
+meta-qt5,git://github.com/meta-qt5/meta-qt5.git,jansa/test,HEAD
