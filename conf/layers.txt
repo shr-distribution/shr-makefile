@@ -1,6 +1,6 @@
-bitbake,git://github.com/shr-distribution/bitbake.git,jansa/test,HEAD
-openembedded-core,git://github.com/shr-distribution/oe-core.git,jansa/test,HEAD
-meta-openembedded,git://github.com/shr-distribution/meta-oe.git,jansa/test,HEAD
-meta-smartphone,git://github.com/shr-distribution/meta-smartphone.git,jansa/test,HEAD
-meta-browser,git://github.com/shr-distribution/meta-browser.git,jansa/test,HEAD
-meta-qt5,git://github.com/meta-qt5/meta-qt5.git,jansa/test,HEAD
+bitbake,git://github.com/shr-distribution/bitbake.git,jansa/master,HEAD
+openembedded-core,git://github.com/openembedded/openembedded-core-contrib.git,jansa/master,HEAD
+meta-openembedded,git://github.com/openembedded/meta-openembedded-contrib.git,jansa/master,HEAD
+meta-smartphone,git://github.com/shr-distribution/meta-smartphone.git,jansa/master,HEAD
+meta-browser,git://github.com/shr-distribution/meta-browser.git,jansa/master,HEAD
+meta-qt5,git://github.com/meta-qt5/meta-qt5.git,jansa/master,HEAD
