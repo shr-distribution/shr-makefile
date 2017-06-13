@@ -7,7 +7,7 @@ BRANCH_CHROOT = master
 BRANCH_CHROOT_32BIT = 32bit
 BRANCH_COMMON = jansa/master-all
 
-URL_COMMON = "http://git.shr-project.org/repo/shr-makefile.git"
+URL_COMMON = "https://github.com/shr-distribution/shr-makefile.git"
 
 # use git://, because http:// transport doesn't support --depth
 URL_SHR_CHROOT = "git://git.shr-project.org/shr-chroot.git"
