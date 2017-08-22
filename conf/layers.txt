@@ -1,7 +1,5 @@
 bitbake,git://github.com/shr-distribution/bitbake.git,jansa/master,HEAD
 openembedded-core,git://git.openembedded.org/openembedded-core-contrib.git,jansa/master,HEAD
 meta-openembedded,git://git.openembedded.org/meta-openembedded-contrib.git,jansa/master,HEAD
-meta-smartphone,git://github.com/shr-distribution/meta-smartphone.git,jansa/master,HEAD
 meta-browser,git://github.com/shr-distribution/meta-browser.git,jansa/master,HEAD
 meta-qt5,git://github.com/meta-qt5/meta-qt5.git,jansa/master,HEAD
-meta-webos-ports,git://github.com/webOS-ports/meta-webos-ports.git,jansa/master,HEAD
