@@ -7,10 +7,15 @@ BRANCH_CHROOT = master
 BRANCH_CHROOT_32BIT = 32bit
 BRANCH_COMMON = jansa/master
 
-URL_COMMON = "http://git.shr-project.org/repo/shr-makefile.git"
+URL_COMMON = "https://github.com/shr-distribution/shr-makefile.git"
 
 # use git://, because http:// transport doesn't support --depth
-URL_SHR_CHROOT = "git://git.shr-project.org/shr-chroot.git"
+# THIS DOESN'T EXIST, use github.com only because it will fail sooner
+# then trying to reach unaccessible git.shr-project.org
+# Nobody should use shr-chroot nowadays, use Ubuntu 14.04 Trusty
+# in docker container if you want to rebuild old SHR release
+# for whatever weird reason (like I just did :)).
+URL_SHR_CHROOT = "https://github.com/shr-distribution/shr-chroot.git"
 
 UPDATE_CONFFILES_ENABLED = "0"
 RESET_ENABLED = "0"
