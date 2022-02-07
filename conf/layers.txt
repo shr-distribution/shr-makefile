@@ -3,3 +3,5 @@ openembedded-core,git://github.com/shr-distribution/oe-core.git,dylan,HEAD
 meta-openembedded,git://github.com/shr-distribution/meta-oe.git,dylan,HEAD
 meta-smartphone,git://github.com/shr-distribution/meta-smartphone.git,dylan,HEAD
 meta-browser,git://github.com/shr-distribution/meta-browser.git,dylan,HEAD
+meta-handheld,git://github.com/shr-project/meta-handheld.git,jansa/dylan,HEAD
+meta-jama,git://github.com/shr-project/meta-jama.git,master,HEAD

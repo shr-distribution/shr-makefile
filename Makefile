@@ -5,7 +5,7 @@ MAKEFLAGS = -swr
 
 BRANCH_CHROOT = master
 BRANCH_CHROOT_32BIT = 32bit
-BRANCH_COMMON = dylan
+BRANCH_COMMON = jansa/dylan
 
 URL_COMMON = "https://github.com/shr-distribution/shr-makefile.git"
 
